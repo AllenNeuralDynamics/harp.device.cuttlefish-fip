@@ -1,0 +1,65 @@
+(kicad_sch (version 20230121) (generator eeschema)
+
+  (uuid de782c9d-fd54-45ed-aa91-6297331e40f6)
+
+  (paper "A4")
+
+  (lib_symbols
+  )
+
+
+  (sheet (at 188.595 79.375) (size 21.59 19.05) (fields_autoplaced)
+    (stroke (width 0.1524) (type solid))
+    (fill (color 0 0 0 0.0000))
+    (uuid 0a3ca9e0-8456-436f-bd26-b821eb190bb3)
+    (property "Sheetname" "Octal TTL IO" (at 188.595 78.6634 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheetfile" "octal_ttl_io.kicad_sch" (at 188.595 99.0096 0)
+      (effects (font (size 1.27 1.27)) (justify left top) hide)
+    )
+    (instances
+      (project "ttl_io"
+        (path "/de782c9d-fd54-45ed-aa91-6297331e40f6" (page "3"))
+      )
+    )
+  )
+
+  (sheet (at 126.365 80.01) (size 20.955 18.415) (fields_autoplaced)
+    (stroke (width 0.1524) (type solid))
+    (fill (color 0 0 0 0.0000))
+    (uuid 1fe1f8ff-b1f9-48b6-8256-97b16d4120ca)
+    (property "Sheetname" "Harp Core Rp2040 + isolated USB" (at 126.365 79.2984 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheetfile" "harp_core_rp2040_w_isolated_usb.kicad_sch" (at 126.365 99.0096 0)
+      (effects (font (size 1.27 1.27)) (justify left top) hide)
+    )
+    (instances
+      (project "ttl_io"
+        (path "/de782c9d-fd54-45ed-aa91-6297331e40f6" (page "2"))
+      )
+    )
+  )
+
+  (sheet (at 76.835 78.74) (size 24.13 19.05) (fields_autoplaced)
+    (stroke (width 0.1524) (type solid))
+    (fill (color 0 0 0 0.0000))
+    (uuid 76bb2607-2d2e-4d2c-9a45-1b3b3938988a)
+    (property "Sheetname" "Power Supplies" (at 76.835 78.0284 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheetfile" "power_supplies.kicad_sch" (at 76.835 98.3746 0)
+      (effects (font (size 1.27 1.27)) (justify left top) hide)
+    )
+    (instances
+      (project "ttl_io"
+        (path "/de782c9d-fd54-45ed-aa91-6297331e40f6" (page "4"))
+      )
+    )
+  )
+
+  (sheet_instances
+    (path "/" (page "1"))
+  )
+)
