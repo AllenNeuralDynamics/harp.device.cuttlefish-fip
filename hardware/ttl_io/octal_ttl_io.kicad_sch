@@ -1402,7 +1402,7 @@
     (property "Datasheet" "" (at 60.325 135.89 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 3613e76e-9731-4226-944c-814fc98d6c31))
+    (pin "1" (uuid 5bcbb13f-32f3-4eb9-97b4-e27bb33dcc15))
     (instances
       (project "ttl_io"
         (path "/de782c9d-fd54-45ed-aa91-6297331e40f6/0a3ca9e0-8456-436f-bd26-b821eb190bb3"
@@ -1614,8 +1614,8 @@
     (property "Manufacturer" "Murata Electronics" (at 50.165 140.97 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 5024b3dd-bd22-4827-aac3-16a7c638a096))
-    (pin "2" (uuid ce8da74b-8eb8-4a03-bb70-4997f8356886))
+    (pin "1" (uuid 979d8b18-1b64-4d11-b791-ef6ce713233d))
+    (pin "2" (uuid c26070bb-af28-4c2b-a4b0-8766242f734a))
     (instances
       (project "ttl_io"
         (path "/de782c9d-fd54-45ed-aa91-6297331e40f6/0a3ca9e0-8456-436f-bd26-b821eb190bb3"
@@ -1727,7 +1727,7 @@
     (property "Datasheet" "" (at 28.575 68.58 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid b27f097e-fce7-4d82-86b5-507f515a041e))
+    (pin "1" (uuid 62da9327-3447-4667-b6fd-27e4e89a5875))
     (instances
       (project "ttl_io"
         (path "/de782c9d-fd54-45ed-aa91-6297331e40f6/0a3ca9e0-8456-436f-bd26-b821eb190bb3"
@@ -1855,7 +1855,7 @@
     (property "Datasheet" "" (at 60.325 68.58 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 90380bf6-c1de-451a-876d-ca07e71338ac))
+    (pin "1" (uuid 8f50901c-fd53-47a3-a0f3-1ee79fa841c2))
     (instances
       (project "ttl_io"
         (path "/de782c9d-fd54-45ed-aa91-6297331e40f6/0a3ca9e0-8456-436f-bd26-b821eb190bb3"
@@ -1942,8 +1942,8 @@
     (property "PCBWay Link" "" (at 36.83 73.66 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 3df96a6d-a1c4-4872-a488-d951bdc83df3))
-    (pin "2" (uuid 8afdcb7f-f9ef-4e2b-9050-33b47b9effd5))
+    (pin "1" (uuid a00f83f1-48ff-4a64-afa8-bac488bce2a4))
+    (pin "2" (uuid be60051e-9912-4627-b61e-bfbfd23ff033))
     (instances
       (project "ttl_io"
         (path "/de782c9d-fd54-45ed-aa91-6297331e40f6/0a3ca9e0-8456-436f-bd26-b821eb190bb3"
@@ -2000,8 +2000,8 @@
     (property "PCBWay Link" "https://www.pcbway.com/components/detail/0402B104K160CT/307171/" (at 28.575 73.66 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid d610b7d0-ee9b-4a99-bd7f-3671f0e9cf1c))
-    (pin "2" (uuid c64e057f-c099-4b89-a1fd-76c607e41280))
+    (pin "1" (uuid 2afbac68-c123-4ef8-abaf-4f1ce289918e))
+    (pin "2" (uuid f7986f64-bc7d-4dfb-907a-b652d733be5b))
     (instances
       (project "ttl_io"
         (path "/de782c9d-fd54-45ed-aa91-6297331e40f6/0a3ca9e0-8456-436f-bd26-b821eb190bb3"
@@ -2124,19 +2124,19 @@
     (property "Value" "Conn_Coaxial" (at 274.955 110.1482 0)
       (effects (font (size 1.27 1.27)) (justify left) hide)
     )
-    (property "Footprint" "" (at 271.78 108.585 0)
+    (property "Footprint" "kicad_component_library:BNC_TEConnectivity_CONBNC001_Vertical" (at 271.78 108.585 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Datasheet" "https://www.digikey.com/htmldatasheets/production/58667/0/0/1/consma002-smd-g.pdf" (at 271.78 108.585 0)
+    (property "Datasheet" "https://www.te.com/commerce/DocumentDelivery/DDEController?Action=srchrtrv&DocNm=CONBNC001&DocType=Data+Sheet&DocLang=English&DocFormat=pdf&PartCntxt=CONBNC001" (at 271.78 108.585 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Link" "https://www.digikey.com/en/products/detail/te-connectivity-linx/CONSMA002-SMD-G-T/10524518" (at 271.78 108.585 0)
+    (property "Link" "https://www.digikey.com/en/products/detail/te-connectivity-linx/CONBNC001/16013844?" (at 271.78 108.585 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Manufacturer" " TE Connectivity Linx" (at 271.78 108.585 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Manufacturer Number" "CONSMA002-SMD-G-T" (at 271.78 108.585 0)
+    (property "Manufacturer Number" "CONBNC001" (at 271.78 108.585 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 932ffce5-3329-4d76-bf5f-31b95b58b3d5))
@@ -2561,19 +2561,19 @@
     (property "Value" "Conn_Coaxial" (at 141.605 44.1082 0)
       (effects (font (size 1.27 1.27)) (justify left) hide)
     )
-    (property "Footprint" "" (at 138.43 42.545 0)
+    (property "Footprint" "kicad_component_library:BNC_TEConnectivity_CONBNC001_Vertical" (at 138.43 42.545 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Datasheet" "https://www.digikey.com/htmldatasheets/production/58667/0/0/1/consma002-smd-g.pdf" (at 138.43 42.545 0)
+    (property "Datasheet" "https://www.te.com/commerce/DocumentDelivery/DDEController?Action=srchrtrv&DocNm=CONBNC001&DocType=Data+Sheet&DocLang=English&DocFormat=pdf&PartCntxt=CONBNC001" (at 138.43 42.545 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Link" "https://www.digikey.com/en/products/detail/te-connectivity-linx/CONSMA002-SMD-G-T/10524518" (at 138.43 42.545 0)
+    (property "Link" "https://www.digikey.com/en/products/detail/te-connectivity-linx/CONBNC001/16013844?" (at 138.43 42.545 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Manufacturer" " TE Connectivity Linx" (at 138.43 42.545 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Manufacturer Number" "CONSMA002-SMD-G-T" (at 138.43 42.545 0)
+    (property "Manufacturer Number" "CONBNC001" (at 138.43 42.545 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid c3a7b330-51e4-409e-91ab-fef37db03a26))
@@ -2767,19 +2767,19 @@
     (property "Value" "Conn_Coaxial" (at 208.28 44.1082 0)
       (effects (font (size 1.27 1.27)) (justify left) hide)
     )
-    (property "Footprint" "" (at 205.105 42.545 0)
+    (property "Footprint" "kicad_component_library:BNC_TEConnectivity_CONBNC001_Vertical" (at 205.105 42.545 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Datasheet" "https://www.digikey.com/htmldatasheets/production/58667/0/0/1/consma002-smd-g.pdf" (at 205.105 42.545 0)
+    (property "Datasheet" "https://www.te.com/commerce/DocumentDelivery/DDEController?Action=srchrtrv&DocNm=CONBNC001&DocType=Data+Sheet&DocLang=English&DocFormat=pdf&PartCntxt=CONBNC001" (at 205.105 42.545 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Link" "https://www.digikey.com/en/products/detail/te-connectivity-linx/CONSMA002-SMD-G-T/10524518" (at 205.105 42.545 0)
+    (property "Link" "https://www.digikey.com/en/products/detail/te-connectivity-linx/CONBNC001/16013844?" (at 205.105 42.545 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Manufacturer" " TE Connectivity Linx" (at 205.105 42.545 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Manufacturer Number" "CONSMA002-SMD-G-T" (at 205.105 42.545 0)
+    (property "Manufacturer Number" "CONBNC001" (at 205.105 42.545 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 56206a81-548e-490f-9b7c-ae75e01aac35))
@@ -2813,7 +2813,7 @@
     (property "Datasheet" "" (at 50.165 68.58 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 7c1db6f0-859e-43bc-9d22-f4391362ee62))
+    (pin "1" (uuid 3a16ed37-fa69-4b87-96c3-dc6470704851))
     (instances
       (project "ttl_io"
         (path "/de782c9d-fd54-45ed-aa91-6297331e40f6/0a3ca9e0-8456-436f-bd26-b821eb190bb3"
@@ -3139,7 +3139,7 @@
     (property "Datasheet" "" (at 36.83 135.89 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid a5670c1f-bf05-44e2-aa97-b14813e311d4))
+    (pin "1" (uuid ae7dfcb1-9374-4476-949a-669acce0ad33))
     (instances
       (project "ttl_io"
         (path "/de782c9d-fd54-45ed-aa91-6297331e40f6/0a3ca9e0-8456-436f-bd26-b821eb190bb3"
@@ -3229,25 +3229,25 @@
   (symbol (lib_id "Connector:Conn_Coaxial") (at 71.755 42.545 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 52995e6b-eca2-4fb4-a91c-9bfae0e1ef48)
-    (property "Reference" "J4" (at 70.485 39.243 0)
+    (property "Reference" "J5" (at 70.485 39.243 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "Conn_Coaxial" (at 74.93 44.1082 0)
       (effects (font (size 1.27 1.27)) (justify left) hide)
     )
-    (property "Footprint" "" (at 71.755 42.545 0)
+    (property "Footprint" "kicad_component_library:BNC_TEConnectivity_CONBNC001_Vertical" (at 71.755 42.545 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Datasheet" "https://www.digikey.com/htmldatasheets/production/58667/0/0/1/consma002-smd-g.pdf" (at 71.755 42.545 0)
+    (property "Datasheet" "https://www.te.com/commerce/DocumentDelivery/DDEController?Action=srchrtrv&DocNm=CONBNC001&DocType=Data+Sheet&DocLang=English&DocFormat=pdf&PartCntxt=CONBNC001" (at 71.755 42.545 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Link" "https://www.digikey.com/en/products/detail/te-connectivity-linx/CONSMA002-SMD-G-T/10524518" (at 71.755 42.545 0)
+    (property "Link" "https://www.digikey.com/en/products/detail/te-connectivity-linx/CONBNC001/16013844?" (at 71.755 42.545 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Manufacturer" " TE Connectivity Linx" (at 71.755 42.545 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Manufacturer Number" "CONSMA002-SMD-G-T" (at 71.755 42.545 0)
+    (property "Manufacturer Number" "CONBNC001" (at 71.755 42.545 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 8a37ae5f-131f-43f5-a1b3-ca2d8cde4c98))
@@ -3255,7 +3255,7 @@
     (instances
       (project "ttl_io"
         (path "/de782c9d-fd54-45ed-aa91-6297331e40f6/0a3ca9e0-8456-436f-bd26-b821eb190bb3"
-          (reference "J4") (unit 1)
+          (reference "J5") (unit 1)
         )
       )
       (project "harp_lick_detector_capactive"
@@ -3302,8 +3302,8 @@
     (property "PCBWay Link" "" (at 36.83 140.97 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid fafa4c3b-0038-4d28-807c-303c831afbca))
-    (pin "2" (uuid 69d0ca43-e36c-4302-9213-66041b1f788e))
+    (pin "1" (uuid 4d39c899-5252-43e0-86cb-cf9612fcddb4))
+    (pin "2" (uuid a91c6ef2-e598-4c8e-801f-c7bdfda8cf1a))
     (instances
       (project "ttl_io"
         (path "/de782c9d-fd54-45ed-aa91-6297331e40f6/0a3ca9e0-8456-436f-bd26-b821eb190bb3"
@@ -3415,7 +3415,7 @@
     (property "Datasheet" "" (at 28.575 135.89 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 5b3a1a0f-36d0-47cf-afdc-66443ec56f69))
+    (pin "1" (uuid e255aaac-8cf3-4580-a715-b9f3e9218c08))
     (instances
       (project "ttl_io"
         (path "/de782c9d-fd54-45ed-aa91-6297331e40f6/0a3ca9e0-8456-436f-bd26-b821eb190bb3"
@@ -4084,19 +4084,19 @@
     (property "Value" "Conn_Coaxial" (at 208.28 110.1482 0)
       (effects (font (size 1.27 1.27)) (justify left) hide)
     )
-    (property "Footprint" "" (at 205.105 108.585 0)
+    (property "Footprint" "kicad_component_library:BNC_TEConnectivity_CONBNC001_Vertical" (at 205.105 108.585 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Datasheet" "https://www.digikey.com/htmldatasheets/production/58667/0/0/1/consma002-smd-g.pdf" (at 205.105 108.585 0)
+    (property "Datasheet" "https://www.te.com/commerce/DocumentDelivery/DDEController?Action=srchrtrv&DocNm=CONBNC001&DocType=Data+Sheet&DocLang=English&DocFormat=pdf&PartCntxt=CONBNC001" (at 205.105 108.585 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Link" "https://www.digikey.com/en/products/detail/te-connectivity-linx/CONSMA002-SMD-G-T/10524518" (at 205.105 108.585 0)
+    (property "Link" "https://www.digikey.com/en/products/detail/te-connectivity-linx/CONBNC001/16013844?" (at 205.105 108.585 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Manufacturer" " TE Connectivity Linx" (at 205.105 108.585 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Manufacturer Number" "CONSMA002-SMD-G-T" (at 205.105 108.585 0)
+    (property "Manufacturer Number" "CONBNC001" (at 205.105 108.585 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 322cbd60-cd5b-4f0b-883b-9c48f15990ad))
@@ -4160,7 +4160,7 @@
     (property "Datasheet" "" (at 60.325 146.05 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid a2e2bee5-16a2-4e40-80d3-e39096c7f940))
+    (pin "1" (uuid 2a498c96-9ba6-4221-8367-621131640e05))
     (instances
       (project "ttl_io"
         (path "/de782c9d-fd54-45ed-aa91-6297331e40f6/0a3ca9e0-8456-436f-bd26-b821eb190bb3"
@@ -4567,7 +4567,7 @@
     (property "Datasheet" "" (at 50.165 78.74 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 5504b463-9b5c-4312-a304-0cb82f161e8e))
+    (pin "1" (uuid 8ea7f26b-a027-4958-b82f-5297cf495b88))
     (instances
       (project "ttl_io"
         (path "/de782c9d-fd54-45ed-aa91-6297331e40f6/0a3ca9e0-8456-436f-bd26-b821eb190bb3"
@@ -4627,19 +4627,19 @@
     (property "Value" "Conn_Coaxial" (at 141.605 110.1482 0)
       (effects (font (size 1.27 1.27)) (justify left) hide)
     )
-    (property "Footprint" "" (at 138.43 108.585 0)
+    (property "Footprint" "kicad_component_library:BNC_TEConnectivity_CONBNC001_Vertical" (at 138.43 108.585 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Datasheet" "https://www.digikey.com/htmldatasheets/production/58667/0/0/1/consma002-smd-g.pdf" (at 138.43 108.585 0)
+    (property "Datasheet" "https://www.te.com/commerce/DocumentDelivery/DDEController?Action=srchrtrv&DocNm=CONBNC001&DocType=Data+Sheet&DocLang=English&DocFormat=pdf&PartCntxt=CONBNC001" (at 138.43 108.585 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Link" "https://www.digikey.com/en/products/detail/te-connectivity-linx/CONSMA002-SMD-G-T/10524518" (at 138.43 108.585 0)
+    (property "Link" "https://www.digikey.com/en/products/detail/te-connectivity-linx/CONBNC001/16013844?" (at 138.43 108.585 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Manufacturer" " TE Connectivity Linx" (at 138.43 108.585 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Manufacturer Number" "CONSMA002-SMD-G-T" (at 138.43 108.585 0)
+    (property "Manufacturer Number" "CONBNC001" (at 138.43 108.585 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 8fc00945-720f-454e-90dd-50fb22ef3b4c))
@@ -4936,7 +4936,7 @@
     (property "Datasheet" "" (at 28.575 78.74 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 33a60cab-e5e3-4265-83cc-b82c806de18d))
+    (pin "1" (uuid c0692c62-2c9e-4f77-903e-c25daf37998c))
     (instances
       (project "ttl_io"
         (path "/de782c9d-fd54-45ed-aa91-6297331e40f6/0a3ca9e0-8456-436f-bd26-b821eb190bb3"
@@ -4966,7 +4966,7 @@
     (property "Datasheet" "" (at 60.325 78.74 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 92d5858e-f4f5-44b5-9506-0790205f88df))
+    (pin "1" (uuid e3d695e2-447c-4a89-80e4-3e6ba101f917))
     (instances
       (project "ttl_io"
         (path "/de782c9d-fd54-45ed-aa91-6297331e40f6/0a3ca9e0-8456-436f-bd26-b821eb190bb3"
@@ -5047,8 +5047,8 @@
     (property "PCBWay Link" "https://www.pcbway.com/components/detail/0402B104K160CT/307171/" (at 28.575 140.97 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 9f2ac854-65af-43e3-8cab-4b53a43d20c4))
-    (pin "2" (uuid d2e262da-a1a1-4707-aa93-c37a8da46a86))
+    (pin "1" (uuid 096a4146-4b30-419e-8b32-b98892764f90))
+    (pin "2" (uuid 9c1ba010-d9a9-4988-a9eb-90ff8e82b188))
     (instances
       (project "ttl_io"
         (path "/de782c9d-fd54-45ed-aa91-6297331e40f6/0a3ca9e0-8456-436f-bd26-b821eb190bb3"
@@ -5081,7 +5081,7 @@
     (property "Datasheet" "" (at 36.83 68.58 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 6bbdf15d-31bd-4f14-b741-eb76a00be8d2))
+    (pin "1" (uuid ceab9ecc-dbc7-4ad8-98ab-a1b1e69b2fdb))
     (instances
       (project "ttl_io"
         (path "/de782c9d-fd54-45ed-aa91-6297331e40f6/0a3ca9e0-8456-436f-bd26-b821eb190bb3"
@@ -5582,7 +5582,7 @@
     (property "Datasheet" "" (at 50.165 146.05 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 7b6fb163-6920-4aed-ade9-4210d521ed39))
+    (pin "1" (uuid e0fdf23d-6da9-4704-ab5e-cf0b01cd02bb))
     (instances
       (project "ttl_io"
         (path "/de782c9d-fd54-45ed-aa91-6297331e40f6/0a3ca9e0-8456-436f-bd26-b821eb190bb3"
@@ -5845,7 +5845,7 @@
     (property "Datasheet" "" (at 36.83 146.05 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid af321af1-1e03-449a-a447-6da94e725cbc))
+    (pin "1" (uuid d205e50c-3036-462b-8ac2-42f31917e8aa))
     (instances
       (project "ttl_io"
         (path "/de782c9d-fd54-45ed-aa91-6297331e40f6/0a3ca9e0-8456-436f-bd26-b821eb190bb3"
@@ -5921,7 +5921,7 @@
     (property "Datasheet" "" (at 36.83 78.74 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 411928a5-fcde-4557-8a2e-47deeed32958))
+    (pin "1" (uuid 0d40c747-35ac-485e-8a97-72a0fd7535e2))
     (instances
       (project "ttl_io"
         (path "/de782c9d-fd54-45ed-aa91-6297331e40f6/0a3ca9e0-8456-436f-bd26-b821eb190bb3"
@@ -6002,8 +6002,8 @@
     (property "Manufacturer" "Murata Electronics" (at 50.165 73.66 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 91ae652e-09f3-4419-acbd-97ff826e90e4))
-    (pin "2" (uuid c2f146eb-1280-4085-99c3-9b36ac1a4d63))
+    (pin "1" (uuid ffd72e81-3bdc-47d7-816f-b08abc856c9d))
+    (pin "2" (uuid f4e81c75-21d5-460b-8660-11b6b7a19cbf))
     (instances
       (project "ttl_io"
         (path "/de782c9d-fd54-45ed-aa91-6297331e40f6/0a3ca9e0-8456-436f-bd26-b821eb190bb3"
@@ -6160,8 +6160,8 @@
     (property "PCBWay Link" "https://www.pcbway.com/components/detail/0402B104K160CT/307171/" (at 60.325 73.66 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid dc253e4d-7cf3-43b7-8bbb-fd46c38d0986))
-    (pin "2" (uuid 07f68331-0244-4e36-9bd8-3cb083bf0416))
+    (pin "1" (uuid efea4bdb-6c9c-443b-8cbf-de9cb02c72a7))
+    (pin "2" (uuid 6b6cf5cb-6144-4ba8-84b1-9cd74598e9f7))
     (instances
       (project "ttl_io"
         (path "/de782c9d-fd54-45ed-aa91-6297331e40f6/0a3ca9e0-8456-436f-bd26-b821eb190bb3"
@@ -6320,7 +6320,7 @@
     (property "Datasheet" "" (at 50.165 135.89 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 8b7d4a8a-776d-449b-8b69-2196dd906486))
+    (pin "1" (uuid fca9a008-2d85-4f11-9743-d692af467a2e))
     (instances
       (project "ttl_io"
         (path "/de782c9d-fd54-45ed-aa91-6297331e40f6/0a3ca9e0-8456-436f-bd26-b821eb190bb3"
@@ -6495,19 +6495,19 @@
     (property "Value" "Conn_Coaxial" (at 274.955 44.1082 0)
       (effects (font (size 1.27 1.27)) (justify left) hide)
     )
-    (property "Footprint" "" (at 271.78 42.545 0)
+    (property "Footprint" "kicad_component_library:BNC_TEConnectivity_CONBNC001_Vertical" (at 271.78 42.545 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Datasheet" "https://www.digikey.com/htmldatasheets/production/58667/0/0/1/consma002-smd-g.pdf" (at 271.78 42.545 0)
+    (property "Datasheet" "https://www.te.com/commerce/DocumentDelivery/DDEController?Action=srchrtrv&DocNm=CONBNC001&DocType=Data+Sheet&DocLang=English&DocFormat=pdf&PartCntxt=CONBNC001" (at 271.78 42.545 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Link" "https://www.digikey.com/en/products/detail/te-connectivity-linx/CONSMA002-SMD-G-T/10524518" (at 271.78 42.545 0)
+    (property "Link" "https://www.digikey.com/en/products/detail/te-connectivity-linx/CONBNC001/16013844?" (at 271.78 42.545 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Manufacturer" " TE Connectivity Linx" (at 271.78 42.545 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Manufacturer Number" "CONSMA002-SMD-G-T" (at 271.78 42.545 0)
+    (property "Manufacturer Number" "CONBNC001" (at 271.78 42.545 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 9143868a-ccce-457e-86cf-c7f809ab9f73))
@@ -6939,8 +6939,8 @@
     (property "PCBWay Link" "https://www.pcbway.com/components/detail/0402B104K160CT/307171/" (at 60.325 140.97 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid d49b2ee7-3dcf-4ad1-b6bd-ef0270f6e31f))
-    (pin "2" (uuid 60219cd5-93ac-480f-bc5d-fcc096574a45))
+    (pin "1" (uuid 94235511-41bd-456b-9a23-fc1fe8654fd3))
+    (pin "2" (uuid 944123ad-6b69-411d-9fab-2684cf52c2c1))
     (instances
       (project "ttl_io"
         (path "/de782c9d-fd54-45ed-aa91-6297331e40f6/0a3ca9e0-8456-436f-bd26-b821eb190bb3"
@@ -7019,7 +7019,7 @@
   )
 
   (symbol (lib_id "power:GND") (at 43.815 121.92 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (in_bom yes) (on_board yes) (dnp no)
     (uuid e961aef8-79ef-418c-89da-4030b9b004c7)
     (property "Reference" "#PWR086" (at 43.815 128.27 0)
       (effects (font (size 1.27 1.27)) hide)
@@ -7033,7 +7033,7 @@
     (property "Datasheet" "" (at 43.815 121.92 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 6e327e39-81a2-42bc-a3d8-b3226ce9ce9a))
+    (pin "1" (uuid baea67ee-90b8-4382-add0-b26a0129de50))
     (instances
       (project "ttl_io"
         (path "/de782c9d-fd54-45ed-aa91-6297331e40f6/0a3ca9e0-8456-436f-bd26-b821eb190bb3"
@@ -7063,7 +7063,7 @@
     (property "Datasheet" "" (at 28.575 146.05 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 440e20e2-aada-4c40-b1aa-eaaf57326a21))
+    (pin "1" (uuid 65c98591-3289-4edb-bb5b-69e1996707ac))
     (instances
       (project "ttl_io"
         (path "/de782c9d-fd54-45ed-aa91-6297331e40f6/0a3ca9e0-8456-436f-bd26-b821eb190bb3"
@@ -7375,19 +7375,19 @@
     (property "Value" "Conn_Coaxial" (at 74.93 110.2752 0)
       (effects (font (size 1.27 1.27)) (justify left) hide)
     )
-    (property "Footprint" "" (at 71.755 108.712 0)
+    (property "Footprint" "kicad_component_library:BNC_TEConnectivity_CONBNC001_Vertical" (at 71.755 108.712 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Datasheet" "https://www.digikey.com/htmldatasheets/production/58667/0/0/1/consma002-smd-g.pdf" (at 71.755 108.712 0)
+    (property "Datasheet" "https://www.te.com/commerce/DocumentDelivery/DDEController?Action=srchrtrv&DocNm=CONBNC001&DocType=Data+Sheet&DocLang=English&DocFormat=pdf&PartCntxt=CONBNC001" (at 71.755 108.712 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Link" "https://www.digikey.com/en/products/detail/te-connectivity-linx/CONSMA002-SMD-G-T/10524518" (at 71.755 108.712 0)
+    (property "Link" "https://www.digikey.com/en/products/detail/te-connectivity-linx/CONBNC001/16013844?" (at 71.755 108.712 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Manufacturer" " TE Connectivity Linx" (at 71.755 108.712 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Manufacturer Number" "CONSMA002-SMD-G-T" (at 71.755 108.712 0)
+    (property "Manufacturer Number" "CONBNC001" (at 71.755 108.712 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid a520ce5d-fd56-4788-8d31-4b3a25099abc))
