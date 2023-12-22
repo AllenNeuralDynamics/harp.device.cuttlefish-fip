@@ -530,6 +530,10 @@
     [
       "76bb2607-2d2e-4d2c-9a45-1b3b3938988a",
       "Power Supplies"
+    ],
+    [
+      "8352d8ea-b8cc-4a0b-8dc2-c260602618fd",
+      "Bus Selection"
     ]
   ],
   "text_variables": {}
