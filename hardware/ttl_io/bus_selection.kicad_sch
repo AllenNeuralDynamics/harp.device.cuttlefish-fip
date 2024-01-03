@@ -765,7 +765,7 @@
     (uuid f9922470-a9eb-445e-8cf5-ab57560531f2)
   )
 
-  (text "Truth Table" (at 224.155 66.04 0)
+  (text "Truth Table" (at 224.155 64.135 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 54d83290-940d-4a92-b32f-7d1639354d47)
   )
@@ -778,8 +778,8 @@
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 6cc23094-5eda-4542-a883-d1bce1d90617)
   )
-  (text "    Input:  0V  | 3.3V\n D9 LED:    on  | off\n\n~{HARP_CTRL}:   1  |  0\n ~{EXT_CTRL}:   0  |  1\n EXT_CTRL:   1  |  0"
-    (at 215.265 79.375 0)
+  (text "   Input:   0V | 3.3V\n D9 LED:    on | off\nBUS_STATE:  0V | 3.3V\nMode:      EXT | INT\n\n~{HARP_CTRL}:   1  |  0\n ~{EXT_CTRL}:   0  |  1\n EXT_CTRL:   1  |  0"
+    (at 219.075 81.28 0)
     (effects (font (face "Ubuntu Mono") (size 1.27 1.27)) (justify left bottom))
     (uuid 7f5d00d2-a7d5-4f98-9976-9efa18d1e517)
   )
