@@ -1259,7 +1259,7 @@
     (property "Manufacturer Number" "JS102011SAQN" (at 113.665 107.315 90)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Notes" "6V max" (at 113.665 107.315 90)
+    (property "Notes" "6V max, may not be washable." (at 113.665 107.315 90)
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid ba5534b3-4e11-48d1-b7e7-3f4e887d7084))
