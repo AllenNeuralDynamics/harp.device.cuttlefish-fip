@@ -92,7 +92,7 @@
       (mirror false)
       (drillshape 0)
       (scaleselection 1)
-      (outputdirectory "exports/lickety_split_r0.5/gerbers/")
+      (outputdirectory "exports/cuttlefish_v0.1.0/gerbers/")
     )
   )
 
@@ -4424,10 +4424,10 @@
       (net 3 "GND1") (pinfunction "SHIELD") (pintype "passive") (tstamp 30df0614-b253-4384-9c55-ac0f725734e3))
     (pad "S1" thru_hole oval (at 4.32 1.15 90) (size 1.3 2.6) (drill oval 0.6 1.9) (layers "*.Cu" "*.Mask")
       (net 3 "GND1") (pinfunction "SHIELD") (pintype "passive") (tstamp e425a8d4-8abc-4427-9140-b38b7f94b0dd))
-    (model "${KICAD6_3DMODEL_DIR}/Connector_USB.3dshapes/USB_C_Receptacle_JAE_DX07S016JA1R1500.wrl"
-      (offset (xyz 0 0 0))
+    (model "/home/poofjunior/projects/kicad_libraries/kicad_component_library/kicad_component_library.3dshapes/DX07S016JA1R1500.step"
+      (offset (xyz 0 -0.14 0))
       (scale (xyz 1 1 1))
-      (rotate (xyz 0 0 0))
+      (rotate (xyz -90 0 0))
     )
   )
 
@@ -7623,10 +7623,10 @@
       (net 1 "GND") (pintype "passive") (tstamp b78babfb-0dce-4fab-9418-edafff5d34cc))
     (pad "T" smd rect (at -3.7 5.8 270) (size 2.8 2.8) (layers "F.Cu" "F.Paste" "F.Mask")
       (net 33 "/Harp Core Rp2040 + isolated USB/HARP_CLK_SYNC") (pintype "passive") (tstamp ebbbbc68-042f-4835-a872-57e5dbde626e))
-    (model "${KICAD6_3DMODEL_DIR}/Connector_Audio.3dshapes/Jack_3.5mm_CUI_SJ-3523-SMT_Horizontal.wrl"
-      (offset (xyz 0 0 0))
+    (model "/home/poofjunior/projects/kicad_libraries/kicad_component_library/kicad_component_library.3dshapes/SJ-3523-SMT-TR.step"
+      (offset (xyz 0 2.5 0))
       (scale (xyz 1 1 1))
-      (rotate (xyz 0 0 0))
+      (rotate (xyz 90 180 -90))
     )
   )
 
@@ -8403,10 +8403,10 @@
       (net 148 "Net-(D9-K)") (pinfunction "B") (pintype "passive") (tstamp c2179aad-59c8-4e0b-9cc6-48602abd9f30))
     (pad "3" smd rect (at 2.5 -2.75 90) (size 1.25 2.5) (layers "F.Cu" "F.Paste" "F.Mask")
       (net 84 "unconnected-(SW2-C-Pad3)") (pinfunction "C") (pintype "passive+no_connect") (tstamp a02f0180-f9a7-40f1-a0b6-bd46a4a4a29f))
-    (model "${KICAD6_3DMODEL_DIR}/Button_Switch_SMD.3dshapes/SW_SPDT_CK-JS102011SAQN.wrl"
-      (offset (xyz 0 0 0))
+    (model "/home/poofjunior/projects/kicad_libraries/kicad_component_library/kicad_component_library.3dshapes/JS102011SAQN.step"
+      (offset (xyz 0 0 0.25))
       (scale (xyz 1 1 1))
-      (rotate (xyz 0 0 0))
+      (rotate (xyz -90 0 0))
     )
   )
 
@@ -9201,7 +9201,7 @@
     (property "ki_keywords" "switch single-pole double-throw spdt ON-ON")
     (path "/8c1a62b0-969f-4450-b1f5-1e658d3e4e0f")
     (attr smd)
-    (fp_text reference "SW3" (at -4 -3.3 -180) (layer "F.SilkS")
+    (fp_text reference "SW3" (at -4 -3.3) (layer "F.SilkS")
         (effects (font (size 0.7 0.7) (thickness 0.1)))
       (tstamp 8003f80f-1e28-4609-9063-75af10585547)
     )
@@ -9383,10 +9383,10 @@
       (net 145 "Net-(SW3-B)") (pinfunction "B") (pintype "passive") (tstamp f7f892be-1694-40da-a5b7-c84d490adf30))
     (pad "3" smd rect (at 2.5 -2.75 270) (size 1.25 2.5) (layers "F.Cu" "F.Paste" "F.Mask")
       (net 8 "+5V") (pinfunction "C") (pintype "passive") (tstamp 5d9da614-22b5-411a-a4ab-0d44819658a9))
-    (model "${KICAD6_3DMODEL_DIR}/Button_Switch_SMD.3dshapes/SW_SPDT_CK-JS102011SAQN.wrl"
-      (offset (xyz 0 0 0))
+    (model "/home/poofjunior/projects/kicad_libraries/kicad_component_library/kicad_component_library.3dshapes/JS102011SAQN.step"
+      (offset (xyz 0 0 0.25))
       (scale (xyz 1 1 1))
-      (rotate (xyz 0 0 0))
+      (rotate (xyz -90 0 0))
     )
   )
 
@@ -14346,6 +14346,11 @@
       (net 2 "+3V3") (pinfunction "VCC") (pintype "power_in") (thermal_bridge_angle 45) (tstamp c2a455a2-1451-466a-b25d-27caa296c104))
     (pad "9" smd rect (at 0 0 270) (size 0.3 1.7) (layers "F.Cu" "F.Paste" "F.Mask")
       (thermal_bridge_angle 45) (tstamp 07407ce6-06be-43dd-be44-f143c3b75382))
+    (model "/home/poofjunior/projects/kicad_libraries/kicad_component_library/kicad_component_library.3dshapes/W25Q16JVUXIQ_TR.stp"
+      (offset (xyz 0 0 0))
+      (scale (xyz 1 1 1))
+      (rotate (xyz 0 0 0))
+    )
   )
 
   (footprint "kicad_component_library:L_CommonModeChoke_TDKCorporation_1210" (layer "F.Cu")
