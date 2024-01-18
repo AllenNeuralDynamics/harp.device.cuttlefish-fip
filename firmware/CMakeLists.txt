@@ -22,14 +22,15 @@ pico_sdk_init()
 
 # Add Harp Core as separate library.
 add_subdirectory(lib/harp.core.rp2040/firmware)
+add_subdirectory(lib/etl build)
 
 add_executable(${PROJECT_NAME}
     src/main.cpp
 )
 
-#add_library(core1_lick_detection
-#    src/core1_lick_detection.cpp
-#)
+add_library(pulse_scheduler
+    src/pulse_scheduler.cpp
+)
 
 #add_library(lick_detector
 #    src/lick_detector.cpp
@@ -47,8 +48,10 @@ include_directories(inc)
 #target_link_libraries(core1_lick_detection pico_stdlib hardware_irq
 #                      lick_detector hardware_dma pico_multicore pio_ads7049
 #                      hardware_pio)
-target_link_libraries(${PROJECT_NAME} pico_stdlib hardware_pwm ad9833
-                      core1_lick_detection pico_multicore harp_sync harp_c_app)
+target_link_libraries(pulse_scheduler PUBLIC pico_stdlib)
+target_link_libraries(pulse_scheduler PRIVATE etl::etl)
+target_link_libraries(${PROJECT_NAME} pico_stdlib pulse_scheduler
+                      harp_sync harp_c_app)
 
 # create map/bin/hex/uf2 file in addition to ELF.
 pico_add_extra_outputs(${PROJECT_NAME})

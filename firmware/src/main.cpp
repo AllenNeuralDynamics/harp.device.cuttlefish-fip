@@ -1,6 +1,5 @@
 #include <pico/stdlib.h>
 #include <cstring>
-#include <pio_encoder.h>
 #include <config.h>
 #include <harp_message.h>
 #include <harp_core.h>
@@ -59,7 +58,8 @@ void set_port_direction(msg_t& msg)
 {
     HarpCore::copy_msg_payload_to_register(msg);
     // set gpio directions to outputs (1) or inputs (0).
-    gpio_set_dir_mask(uint32_t(app_regs.port_dir) << PORT_DIR_BASE);
+    gpio_set_dir_masked((0xFF << PORT_DIR_BASE),
+                        uint32_t(app_regs.port_dir) << PORT_DIR_BASE);
     // set ttl buffers to outputs or inputs.
     if (!HarpCore::is_muted())
         HarpCore::send_harp_reply(WRITE, msg.header.address);
@@ -69,7 +69,7 @@ void read_from_port(uint8_t reg_address)
 {
     app_regs.port_raw = uint8_t(0xFF & (gpio_get_all() >> PORT_BASE));
     if (!HarpCore::is_muted())
-        HarpCore::send_harp_reply(READ, msg.header.address);
+        HarpCore::send_harp_reply(READ, reg_address);
 }
 
 void write_to_port(msg_t& msg)
@@ -122,14 +122,14 @@ RegSpecs app_reg_specs[reg_count]
 
 RegFnPair reg_handler_fns[reg_count]
 {
-    {HarpCore::read_reg_generic, HarpCore::set_port_direction},
-    {HarpCore::read_from_port, HarpCore::write_to_port},
-    {HarpCore::read_reg_generic, HarpCore::write_schedule_ctrl},
-    {HarpCore::read_reg_generic, HarpCore::write_trigger_type},
+    {HarpCore::read_reg_generic, set_port_direction},
+    {read_from_port, write_to_port},
+    {HarpCore::read_reg_generic, write_schedule_ctrl},
+    {HarpCore::read_reg_generic, write_trigger_type},
     {HarpCore::read_reg_generic, HarpCore::write_reg_generic},
     {HarpCore::read_reg_generic, HarpCore::write_reg_generic},
     {HarpCore::read_reg_generic, HarpCore::write_reg_generic},
-    {HarpCore::read_reg_generic, HarpCore::write_schedule_port_state},
+    {HarpCore::read_reg_generic, write_schedule_port_state},
     // More handler function pairs here if we add additional registers.
 };
 
@@ -143,10 +143,9 @@ void reset_app()
     // init all pins used as GPIOs.
     gpio_init_mask((0xFF << PORT_DIR_BASE) || (0xFF << PORT_BASE));
     // Reset PORT to all inputs. Reset DIR to all outputs.
-    gpio_set_dir_mask((0xFF << PORT_DIR_BASE) || (0xFF << PORT_BASE),
-                      (0xFF << PORT_DIR_BASE)); // 1 is output; 0 is input.
-    // FIXME: this doesn't work if other things are pins are configured.
-    gpio_put_masked(0); // Set DIR bits to all 0.
+    gpio_set_dir_masked((0xFF << PORT_DIR_BASE) || (0xFF << PORT_BASE),
+                        (0xFF << PORT_DIR_BASE)); // 1 is output; 0 is input.
+    gpio_put_masked((0xFF << PORT_DIR_BASE), 0); // Set DIR bits to all 0.
 }
 
 // Create Core.
@@ -169,7 +168,7 @@ int main()
     // Init Synchronizer.
     HarpSynchronizer::init(uart0, HARP_SYNC_RX_PIN);
     app.set_synchronizer(&HarpSynchronizer::instance());
-    app.reset();
+    reset_app();
     while(true)
         app.run();
 }
