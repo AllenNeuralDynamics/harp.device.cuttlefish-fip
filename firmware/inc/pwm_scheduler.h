@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <pico/stdlib.h>
 #include <hardware/irq.h>
-#include <scheduled_pwm.h>
+#include <pwm_task.h>
 #include <etl/priority_queue.h>
 #ifdef DEBUG
 #include <cstdio> // for printf
@@ -14,18 +14,17 @@
 #define NUM_TTL_IOS (8)
 
 
-class PWMSchedule
+class PWMScheduler
 {
 public:
-    PWMScheduler(uint8_t ttl_base_pin, uint8_t dir_base_pin);
+    PWMScheduler();
     ~PWMScheduler();
 
     bool schedule(PortEvent event);
     void start();
     void clear();
 
-    friend int64_t set_new_ttl_pin_state(alarm_id_t id,
-                                                  void* user_data);
+    friend int64_t set_new_ttl_pin_state(alarm_id_t id, void* user_data);
 
 /**
  * \brief called periodically. Sets up next PortEvent to occur on a timer.
@@ -33,14 +32,11 @@ public:
     void update();
 
 private:
-    const uint8_t ttl_base_pin_;
-    const uint8_t dir_base_pin_;
-
     etl::vector<std::reference_wrapper<PortEvent>, 8> next_events_; /// container for next simultaneous events.
-    etl::priority_queue<PortEvent,
+    etl::priority_queue<PWMTask,
                         NUM_ENTRIES,
-                        etl::vector<PortEvent, NUM_ENTRIES>,
-                        etl::greater<PortEvent>> pq_;
+                        etl::vector<PWMTask, NUM_ENTRIES>,
+                        etl::greater<PWMTask>> pq_;
 
     volatile uint32_t next_gpio_port_state_;
     volatile uint32_t next_gpio_port_mask_;
