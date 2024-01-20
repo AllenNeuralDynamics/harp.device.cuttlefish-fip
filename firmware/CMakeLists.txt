@@ -4,7 +4,6 @@ include(${PICO_SDK_PATH}/pico_sdk_init.cmake)
 
 project(cuttlefish)
 
-
 set(CMAKE_CXX_STANDARD 17)
 
 # Enable try/catch exception interface.
@@ -12,7 +11,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 
 # Compile for profiling/debugging/etc. Default: none enabled.
-add_definitions(-DDEBUG)
+#add_definitions(-DDEBUG)
 #add_definitions(-DDEBUG_HARP_MSG_IN)
 #add_definitions(-DDEBUG_HARP_MSG_OUT)
 #add_definitions(-DPROFILE_CPU)
@@ -24,17 +23,17 @@ pico_sdk_init()
 add_subdirectory(lib/harp.core.rp2040/firmware)
 add_subdirectory(lib/etl build)
 
+add_library(pwm_scheduler
+    src/pwm_scheduler.cpp
+)
+
+add_library(pwm_task
+    src/pwm_task.cpp
+)
+
 add_executable(${PROJECT_NAME}
     src/main.cpp
 )
-
-add_library(pulse_scheduler
-    src/pulse_scheduler.cpp
-)
-
-#add_library(lick_detector
-#    src/lick_detector.cpp
-#)
 
 # Specify where to look for header files if they're not all in the same place.
 #target_include_directories(${PROJECT_NAME} PUBLIC inc)
@@ -44,13 +43,10 @@ include_directories(inc)
 #add_compile_options(-O3)
 
 # Link libraries to the targets that need them.
-
-#target_link_libraries(core1_lick_detection pico_stdlib hardware_irq
-#                      lick_detector hardware_dma pico_multicore pio_ads7049
-#                      hardware_pio)
-target_link_libraries(pulse_scheduler PUBLIC pico_stdlib)
-target_link_libraries(pulse_scheduler PRIVATE etl::etl)
-target_link_libraries(${PROJECT_NAME} pico_stdlib pulse_scheduler
+target_link_libraries(pwm_scheduler PUBLIC etl::etl) # why public?
+target_link_libraries(pwm_scheduler PUBLIC pico_stdlib)
+target_link_libraries(pwm_task hardware_gpio pico_stdlib)
+target_link_libraries(${PROJECT_NAME} pico_stdlib pwm_scheduler pwm_task
                       harp_sync harp_c_app)
 
 # create map/bin/hex/uf2 file in addition to ELF.

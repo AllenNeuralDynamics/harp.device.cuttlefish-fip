@@ -1,5 +1,5 @@
-#ifndef PULSE_SCHEDULER_H
-#define PULSE_SCHEDULER_H
+#ifndef PWM_SCHEDULER_H
+#define PWM_SCHEDULER_H
 #include <stdint.h>
 #include <pico/stdlib.h>
 #include <hardware/irq.h>
@@ -20,25 +20,37 @@ public:
     PWMScheduler();
     ~PWMScheduler();
 
-    bool schedule(PortEvent event);
+    bool schedule_pwm_task(PWMTask&& pwm_task)
+    {
+        if (pq_.size() == pq_.max_size())
+            return false;
+        pq_.push(pwm_task);
+        return true;
+    }
     void start();
     void clear();
 
     friend int64_t set_new_ttl_pin_state(alarm_id_t id, void* user_data);
 
 /**
- * \brief called periodically. Sets up next PortEvent to occur on a timer.
+ * \brief called periodically. Sets up next PWMTask to occur on a timer.
  */
     void update();
 
+/**
+ * \brief absolute time before which the priority queue needs to be updated.
+ */
+    uint64_t next_update_time_;
+
 private:
-    etl::vector<std::reference_wrapper<PortEvent>, 8> next_events_; /// container for next simultaneous events.
+    etl::vector<std::reference_wrapper<PWMTask>, NUM_TTL_IOS> next_tasks_; /// container for next simultaneous events.
     etl::priority_queue<PWMTask,
                         NUM_ENTRIES,
                         etl::vector<PWMTask, NUM_ENTRIES>,
-                        etl::greater<PWMTask>> pq_;
+                        etl::greater<>> pq_; // TODO: Do we need to pass PWMTask into etl::greater?
 
     volatile uint32_t next_gpio_port_state_;
     volatile uint32_t next_gpio_port_mask_;
+    volatile bool alarm_queued_;
 };
-#endif // PULSE_SCHEDULER_H
+#endif // PWM_SCHEDULER_H

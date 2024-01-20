@@ -1,10 +1,8 @@
 #ifndef PWM_TASK_H
 #define PWM_TASK_H
 #include <stdint.h>
-//#include <pico/stdlib.h>
+#include <pico/stdlib.h>
 #include <hardware/gpio.h>
-#include <hardware/irq.h>
-#include <etl/priority_queue.h>
 #ifdef DEBUG
 #include <cstdio> // for printf
 #endif
@@ -15,52 +13,76 @@
 class PWMTask
 {
 public:
-    PWMTask(uint32_t t_delay_us, uint32_t t_rise_us,
-                 uint32_t t_fall_us, uint32_t t_period_us,
-                 uint8_t pin, uint32_t count = 0,
-                 bool invert = false);
+    // FIXME: pin should be a pin mask since this PWMTask could apply to multiple pins.
+    PWMTask(uint32_t t_delay_us, uint32_t t_on_us, uint32_t t_period_us,
+            uint8_t gpio_pin, uint32_t count = 0, bool invert = false);
 
     ~PWMTask();
+
+/**
+ * \brief comparison operator for scheduling.
+ * \note <=, >, >= derived from this operator in etl comparison implementation.
+ */
+    friend bool operator<(const PWMTask& lhs, const PWMTask& rhs)
+    {return int32_t(rhs.next_update_time_us_ - lhs.next_update_time_us_) > 0;}
 
     enum update_state_t: uint8_t
     {
         LOW = 0,
         HIGH = 1
-    }
+    };
     uint32_t delay_us_;
     uint32_t on_time_us_; // effectively duty_cycle
     uint32_t period_us_;
 
-    uint32_t pin_mask_; // active channels.
-
-    // FIXME: we need a comparison operator to sort which PWMTask instance
-    //  should update next..
+    uint32_t pin_; // active channels.
 
     void update(bool force = false, bool skip_output_action = false);
 
 /**
- * \brief public wrapper for the next absolute time this instance must update.
+ * \brief read-only public wrapper for the next absolute time that this
+ *  instance must update.
  */
-    const uint64_t& next_update_time;
-/**
- * \brief public wrapper for the current state.
- */
-    const uint8_t& state;
+    const inline uint64_t& next_update_time_us(){return next_update_time_us_;}
 
+/**
+ * \brief read-only public wrapper for the current state.
+ */
+    const inline uint8_t state() {return state_;}
+
+/**
+ * \brief read-only public wrapper for the gpio pin.
+ */
+    const inline uint8_t pin(){return pin_;}
+
+    // TODO: should access Harp time.
     inline void start()
-    {
-        start_time_us_ = time_us_64(); // TODO: should access pico time.
-        reset();
-    }
+    {start_at_time(time_us_64());}
 
 /**
  * \brief start the PWM state machine but override its start time to
  *  schedule it in the future.
  */
-    inline void start_at_time(uint32_t start_time_us)
+    inline void start_at_time(uint64_t start_time_us)
     {
         start_time_us_ = start_time_us;
-        start();
+        reset();
+    }
+
+/**
+ * \brief true if an update is due/overdue.
+ */
+    inline bool time_to_update() // FIXME: should be harp time.
+    {return int32_t(time_us_64() - next_update_time_us_) >= 0;}
+
+/**
+ * \brief true if update() must be called again in the future.
+ */
+    inline bool requires_future_update()
+    {
+        if (count_ == 0 || cycles_ != count_)
+            return true;
+        return false;
     }
 
 private:
@@ -71,24 +93,9 @@ private:
     uint64_t next_update_time_us_; // relative to the start time.
 
     inline void reset()
-    {   state = LOW;
+    {   gpio_put(pin_, 0);
+        state_ = LOW;
         next_update_time_us_ = start_time_us_ + delay_us_;
-    }
-
-/**
- * \brief true if an update is due/overdue.
- */
-    inline bool time_to_update() // FIXME: should be harp time.
-    {return int32_t(time_us_64() - next_update_time_us) >= 0;}
-
-/**
- * \brief true if update() must be called again in the future.
- */
-    inline bool requires_future_update()
-    {
-        if (count == 0 || cycles != count)
-            return true;
-        return false;
     }
 
 };

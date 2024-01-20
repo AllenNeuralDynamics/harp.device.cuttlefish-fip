@@ -5,6 +5,7 @@
 #include <harp_core.h>
 #include <harp_c_app.h>
 #include <harp_synchronizer.h>
+#include <pwm_scheduler.h>
 #ifdef DEBUG
     #include <cstdio> // for printf
 #endif
@@ -22,6 +23,8 @@ const uint16_t serial_number = 0;
 
 // Setup for Harp App
 const size_t reg_count = 8;
+
+PWMScheduler pwm_schedule;
 
 #pragma pack(push, 1)
 struct app_regs_t
@@ -135,7 +138,8 @@ RegFnPair reg_handler_fns[reg_count]
 
 void update_app_state()
 {
-    // Nothing to do?
+    // internally only updates as-needed.
+    pwm_schedule.update();
 }
 
 void reset_app()
@@ -169,6 +173,8 @@ int main()
     HarpSynchronizer::init(uart0, HARP_SYNC_RX_PIN);
     app.set_synchronizer(&HarpSynchronizer::instance());
     reset_app();
+    // Schedule some waveforms.
+    pwm_schedule.schedule_pwm_task(PWMTask(0, 500'000, 1'000'000, 25));
     while(true)
         app.run();
 }
