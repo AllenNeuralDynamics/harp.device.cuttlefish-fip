@@ -6,7 +6,7 @@
 #include <pwm_task.h>
 #include <etl/priority_queue.h>
 #ifdef DEBUG
-#include <cstdio> // for printf
+    #include <cstdio> // for printf
 #endif
 
 
@@ -25,6 +25,9 @@ public:
         if (pq_.size() == pq_.max_size())
             return false;
         pq_.push(pwm_task);
+        printf("Pushed task\r\n");
+        printf("Task: (%d, %d, %d, %d)\r\n",
+                pwm_task.delay_us_, pwm_task.on_time_us_, pwm_task.period_us_, pwm_task.pin_);
         return true;
     }
     void start();
@@ -40,7 +43,7 @@ public:
 /**
  * \brief absolute time before which the priority queue needs to be updated.
  */
-    uint64_t next_update_time_;
+    uint64_t next_update_time_us_;
 
 private:
     etl::vector<std::reference_wrapper<PWMTask>, NUM_TTL_IOS> next_tasks_; /// container for next simultaneous events.

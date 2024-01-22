@@ -4,7 +4,7 @@
 #include <pico/stdlib.h>
 #include <hardware/gpio.h>
 #ifdef DEBUG
-#include <cstdio> // for printf
+    #include <cstdio> // for printf
 #endif
 
 /**
@@ -37,18 +37,17 @@ public:
 
     uint32_t pin_; // active channels.
 
+    // TODO: make protected or use friend class.
+    update_state_t state_;
+
     void update(bool force = false, bool skip_output_action = false);
 
 /**
  * \brief read-only public wrapper for the next absolute time that this
  *  instance must update.
  */
-    const inline uint64_t& next_update_time_us(){return next_update_time_us_;}
-
-/**
- * \brief read-only public wrapper for the current state.
- */
-    const inline uint8_t state() {return state_;}
+    const inline uint64_t next_update_time_us()
+    {return next_update_time_us_;}
 
 /**
  * \brief read-only public wrapper for the gpio pin.
@@ -88,15 +87,18 @@ public:
 private:
     uint32_t count_; // N==0: pulse forever. N>0: execute N times.
     uint32_t cycles_; // how many times we have pulsed.
-    update_state_t state_;
     uint64_t start_time_us_;
-    uint64_t next_update_time_us_; // relative to the start time.
+/**
+ * \brief absolute time that the state machine needs to update.
+ */
+    uint64_t next_update_time_us_;
 
     inline void reset()
-    {   gpio_put(pin_, 0);
+    {
+        cycles_ = 0;
+        gpio_put(pin_, 0);
         state_ = LOW;
         next_update_time_us_ = start_time_us_ + delay_us_;
     }
-
 };
 #endif // PWM_TASK_H

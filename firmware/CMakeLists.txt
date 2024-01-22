@@ -11,7 +11,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 
 # Compile for profiling/debugging/etc. Default: none enabled.
-#add_definitions(-DDEBUG)
+add_definitions(-DDEBUG)
 #add_definitions(-DDEBUG_HARP_MSG_IN)
 #add_definitions(-DDEBUG_HARP_MSG_OUT)
 #add_definitions(-DPROFILE_CPU)
@@ -20,7 +20,7 @@ set(CMAKE_CXX_STANDARD 17)
 pico_sdk_init()
 
 # Add Harp Core as separate library.
-add_subdirectory(lib/harp.core.rp2040/firmware)
+#add_subdirectory(lib/harp.core.rp2040/firmware)
 add_subdirectory(lib/etl build)
 
 add_library(pwm_scheduler
@@ -46,8 +46,8 @@ include_directories(inc)
 target_link_libraries(pwm_scheduler PUBLIC etl::etl) # why public?
 target_link_libraries(pwm_scheduler PUBLIC pico_stdlib)
 target_link_libraries(pwm_task hardware_gpio pico_stdlib)
-target_link_libraries(${PROJECT_NAME} pico_stdlib pwm_scheduler pwm_task
-                      harp_sync harp_c_app)
+target_link_libraries(${PROJECT_NAME} pico_stdlib pwm_scheduler pwm_task)
+                      #harp_sync harp_c_app)
 
 # create map/bin/hex/uf2 file in addition to ELF.
 pico_add_extra_outputs(${PROJECT_NAME})
@@ -55,9 +55,12 @@ pico_add_extra_outputs(${PROJECT_NAME})
 # USB serial. Enable this for every library/executable that uses it.
 #pico_enable_stdio_usb(${PROJECT_NAME} 1)
 
-if(DEBUG)
-    message(WARNING "Debug printf() messages enabled from harp core to UART \
-            with baud rate 921600.")
-    pico_enable_stdio_uart(${PROJECT_NAME} 1)
-    #pico_enable_stdio_uart(core1_lick_detection 1)
-endif()
+pico_enable_stdio_usb(${PROJECT_NAME} 1)
+pico_enable_stdio_usb(pwm_scheduler 1)
+#if(DEBUG)
+#    message(WARNING "Debug printf() messages enabled from harp core to UART \
+#            with baud rate 921600.")
+#    #pico_enable_stdio_uart(${PROJECT_NAME} 1)
+#    pico_enable_stdio_usb(${PROJECT_NAME} 1)
+#    pico_enable_stdio_usb(pwm_scheduler 1)
+#endif()

@@ -3,7 +3,7 @@
 PWMTask::PWMTask(uint32_t t_delay_us, uint32_t t_on_us, uint32_t t_period_us,
                  uint8_t gpio_pin, uint32_t count, bool invert)
 : delay_us_{t_delay_us}, on_time_us_{t_on_us}, period_us_{t_period_us},
-  pin_{gpio_pin}
+  pin_{gpio_pin}, count_{count_}, cycles_{0}
 {
     // Initialize this GPIO pin.
     gpio_init(pin_);
