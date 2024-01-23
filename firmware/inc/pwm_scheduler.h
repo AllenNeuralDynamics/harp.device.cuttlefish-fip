@@ -20,15 +20,11 @@ public:
     PWMScheduler();
     ~PWMScheduler();
 
-    bool schedule_pwm_task(PWMTask&& pwm_task)
+    void schedule_pwm_task(PWMTask& task)
     {
-        if (pq_.size() == pq_.max_size())
-            return false;
-        pq_.push(pwm_task);
-        printf("Pushed task\r\n");
-        printf("Task: (%d, %d, %d, %d)\r\n",
-                pwm_task.delay_us_, pwm_task.on_time_us_, pwm_task.period_us_, pwm_task.pin_);
-        return true;
+        pq_.push(task);
+        printf("Pushed PWMTask: (%d, %d, %d, %d)\r\n",
+                task.delay_us_, task.on_time_us_, task.period_us_, task.pin());
     }
     void start();
     void clear();
@@ -46,11 +42,17 @@ public:
     uint64_t next_update_time_us_;
 
 private:
-    etl::vector<std::reference_wrapper<PWMTask>, NUM_TTL_IOS> next_tasks_; /// container for next simultaneous events.
-    etl::priority_queue<PWMTask,
+
+/**
+ * \brief the priority queue
+ * \details We need to use references wrappers to access mutable versions of
+ *      queue elements. This is consistent with the std::priority_queue
+ *      implementation which returns const references to top().
+ */
+    etl::priority_queue<std::reference_wrapper<PWMTask>,
                         NUM_ENTRIES,
-                        etl::vector<PWMTask, NUM_ENTRIES>,
-                        etl::greater<>> pq_; // TODO: Do we need to pass PWMTask into etl::greater?
+                        etl::vector<std::reference_wrapper<PWMTask>, NUM_ENTRIES>,
+                        etl::greater<std::reference_wrapper<PWMTask>>> pq_;
 
     volatile uint32_t next_gpio_port_state_;
     volatile uint32_t next_gpio_port_mask_;

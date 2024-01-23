@@ -5,7 +5,9 @@
 //#include <harp_core.h>
 //#include <harp_c_app.h>
 //#include <harp_synchronizer.h>
+#include <etl/vector.h>
 #include <pwm_scheduler.h>
+#include <pwm_task.h>
 #ifdef DEBUG
     #include <stdio.h>
     #include <cstdio> // for printf
@@ -163,6 +165,9 @@ struct app_regs_t
 //                               reg_handler_fns, reg_count, update_app_state,
 //                               reset_app);
 
+
+etl::vector<PWMTask, 8> tasks;
+
 // Core0 main.
 int main()
 {
@@ -172,12 +177,17 @@ int main()
     while (!stdio_usb_connected()){} // Block until connection to serial port.
     printf("Hello, from an RP2040!\r\n");
 #endif
+    tasks.push_back(PWMTask(0, 500'000, 1000'000, 24));
+    tasks.push_back(PWMTask(0, 1000'000, 2'000'000, 25));
+
     // Init Synchronizer.
     //HarpSynchronizer::init(uart0, HARP_SYNC_RX_PIN);
     //app.set_synchronizer(&HarpSynchronizer::instance());
     //reset_app();
+
     // Schedule some waveforms.
-    pwm_schedule.schedule_pwm_task(PWMTask(0, 50'000, 100'000, 25));
+    pwm_schedule.schedule_pwm_task(tasks[0]);
+    pwm_schedule.schedule_pwm_task(tasks[1]);
     pwm_schedule.start();
     while (true)
         pwm_schedule.update();

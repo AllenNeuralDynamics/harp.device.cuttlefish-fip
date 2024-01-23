@@ -21,10 +21,9 @@ public:
 
 /**
  * \brief comparison operator for scheduling.
- * \note <=, >, >= derived from this operator in etl comparison implementation.
  */
     friend bool operator<(const PWMTask& lhs, const PWMTask& rhs)
-    {return int32_t(rhs.next_update_time_us_ - lhs.next_update_time_us_) > 0;}
+    {return int64_t(rhs.next_update_time_us_ - lhs.next_update_time_us_) > 0;}
 
     enum update_state_t: uint8_t
     {
@@ -34,11 +33,6 @@ public:
     uint32_t delay_us_;
     uint32_t on_time_us_; // effectively duty_cycle
     uint32_t period_us_;
-
-    uint32_t pin_; // active channels.
-
-    // TODO: make protected or use friend class.
-    update_state_t state_;
 
     void update(bool force = false, bool skip_output_action = false);
 
@@ -53,6 +47,11 @@ public:
  * \brief read-only public wrapper for the gpio pin.
  */
     const inline uint8_t pin(){return pin_;}
+
+/**
+ * \brief read-only public wrapper for the state
+ */
+    const inline uint8_t state(){return state_;}
 
     // TODO: should access Harp time.
     inline void start()
@@ -85,9 +84,13 @@ public:
     }
 
 private:
+    uint32_t pin_; // active channels.
+    update_state_t state_;
     uint32_t count_; // N==0: pulse forever. N>0: execute N times.
     uint32_t cycles_; // how many times we have pulsed.
+public:
     uint64_t start_time_us_;
+private:
 /**
  * \brief absolute time that the state machine needs to update.
  */

@@ -46,7 +46,8 @@ include_directories(inc)
 target_link_libraries(pwm_scheduler PUBLIC etl::etl) # why public?
 target_link_libraries(pwm_scheduler PUBLIC pico_stdlib)
 target_link_libraries(pwm_task hardware_gpio pico_stdlib)
-target_link_libraries(${PROJECT_NAME} pico_stdlib pwm_scheduler pwm_task)
+target_link_libraries(${PROJECT_NAME} PRIVATE etl::etl)
+target_link_libraries(${PROJECT_NAME} PUBLIC pico_stdlib pwm_scheduler pwm_task)
                       #harp_sync harp_c_app)
 
 # create map/bin/hex/uf2 file in addition to ELF.
