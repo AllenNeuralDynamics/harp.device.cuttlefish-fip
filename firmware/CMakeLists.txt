@@ -11,7 +11,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 
 # Compile for profiling/debugging/etc. Default: none enabled.
-add_definitions(-DDEBUG)
+#add_definitions(-DDEBUG)
 #add_definitions(-DDEBUG_HARP_MSG_IN)
 #add_definitions(-DDEBUG_HARP_MSG_OUT)
 #add_definitions(-DPROFILE_CPU)
@@ -40,7 +40,7 @@ add_executable(${PROJECT_NAME}
 # Specify where to look for header files if they're all in one place.
 include_directories(inc)
 
-#add_compile_options(-O3)
+#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fverbose-asm")
 
 # Link libraries to the targets that need them.
 target_link_libraries(pwm_scheduler PUBLIC etl::etl) # why public?
@@ -53,15 +53,9 @@ target_link_libraries(${PROJECT_NAME} PUBLIC pico_stdlib pwm_scheduler pwm_task)
 # create map/bin/hex/uf2 file in addition to ELF.
 pico_add_extra_outputs(${PROJECT_NAME})
 
-# USB serial. Enable this for every library/executable that uses it.
-#pico_enable_stdio_usb(${PROJECT_NAME} 1)
-
-pico_enable_stdio_usb(${PROJECT_NAME} 1)
-pico_enable_stdio_usb(pwm_scheduler 1)
-#if(DEBUG)
-#    message(WARNING "Debug printf() messages enabled from harp core to UART \
-#            with baud rate 921600.")
-#    #pico_enable_stdio_uart(${PROJECT_NAME} 1)
-#    pico_enable_stdio_usb(${PROJECT_NAME} 1)
-#    pico_enable_stdio_usb(pwm_scheduler 1)
-#endif()
+if(DEBUG)
+    message(WARNING "Debug printf() messages enabled from harp core to UART \
+            with baud rate 921600.")
+    pico_enable_stdio_usb(${PROJECT_NAME} 1)
+    pico_enable_stdio_usb(pwm_scheduler 1)
+endif()

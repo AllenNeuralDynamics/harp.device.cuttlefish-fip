@@ -12,6 +12,7 @@
 
 #define NUM_ENTRIES (64)
 #define NUM_TTL_IOS (8)
+#define MAX_QUEUEABLE_ALARMS (4)
 
 
 class PWMScheduler
@@ -23,8 +24,10 @@ public:
     void schedule_pwm_task(PWMTask& task)
     {
         pq_.push(task);
+#ifdef DEBUG
         printf("Pushed PWMTask: (%d, %d, %d, %d)\r\n",
                 task.delay_us_, task.on_time_us_, task.period_us_, task.pin());
+#endif
     }
     void start();
     void clear();
@@ -57,5 +60,6 @@ private:
     volatile uint32_t next_gpio_port_state_;
     volatile uint32_t next_gpio_port_mask_;
     volatile bool alarm_queued_;
+    volatile size_t num_alarms_queued_;
 };
 #endif // PWM_SCHEDULER_H

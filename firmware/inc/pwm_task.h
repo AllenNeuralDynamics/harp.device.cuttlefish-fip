@@ -30,6 +30,7 @@ public:
         LOW = 0,
         HIGH = 1
     };
+
     uint32_t delay_us_;
     uint32_t on_time_us_; // effectively duty_cycle
     uint32_t period_us_;
@@ -46,12 +47,17 @@ public:
 /**
  * \brief read-only public wrapper for the gpio pin.
  */
-    const inline uint8_t pin(){return pin_;}
+    const inline uint8_t pin()
+    {return pin_;}
+
+    const inline uint64_t start_time_us()
+    {return start_time_us_;}
 
 /**
  * \brief read-only public wrapper for the state
  */
-    const inline uint8_t state(){return state_;}
+    const inline uint8_t state()
+    {return state_;}
 
     // TODO: should access Harp time.
     inline void start()
@@ -88,9 +94,7 @@ private:
     update_state_t state_;
     uint32_t count_; // N==0: pulse forever. N>0: execute N times.
     uint32_t cycles_; // how many times we have pulsed.
-public:
     uint64_t start_time_us_;
-private:
 /**
  * \brief absolute time that the state machine needs to update.
  */

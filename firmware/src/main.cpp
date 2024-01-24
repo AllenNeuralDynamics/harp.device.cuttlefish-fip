@@ -177,8 +177,6 @@ int main()
     while (!stdio_usb_connected()){} // Block until connection to serial port.
     printf("Hello, from an RP2040!\r\n");
 #endif
-    tasks.push_back(PWMTask(0, 500'000, 1000'000, 24));
-    tasks.push_back(PWMTask(0, 1000'000, 2'000'000, 25));
 
     // Init Synchronizer.
     //HarpSynchronizer::init(uart0, HARP_SYNC_RX_PIN);
@@ -186,9 +184,26 @@ int main()
     //reset_app();
 
     // Schedule some waveforms.
+    tasks.push_back(PWMTask(0, 50, 100, 25));
+    tasks.push_back(PWMTask(0, 50, 100, 24));
+    tasks.push_back(PWMTask(0, 50, 100, 23));
+    tasks.push_back(PWMTask(0, 50, 100, 22));
+    tasks.push_back(PWMTask(0, 50, 100, 21));
+    tasks.push_back(PWMTask(0, 50, 100, 20));
+    tasks.push_back(PWMTask(0, 50, 100, 19));
+    tasks.push_back(PWMTask(0, 50, 100, 18));
+
     pwm_schedule.schedule_pwm_task(tasks[0]);
     pwm_schedule.schedule_pwm_task(tasks[1]);
+    pwm_schedule.schedule_pwm_task(tasks[2]);
+    pwm_schedule.schedule_pwm_task(tasks[3]);
+    pwm_schedule.schedule_pwm_task(tasks[4]);
+    pwm_schedule.schedule_pwm_task(tasks[5]);
+    pwm_schedule.schedule_pwm_task(tasks[6]);
+    pwm_schedule.schedule_pwm_task(tasks[7]);
+
     pwm_schedule.start();
+
     while (true)
         pwm_schedule.update();
     //while(true)
