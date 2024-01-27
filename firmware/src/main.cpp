@@ -72,23 +72,23 @@ int main()
     //reset_app();
 
     // Schedule some waveforms.
-    pwm_tasks.push_back(PWMTask(0, 50000, 100000, (1u << 25)|(1u << 24)));
-    //tasks.push_back(PWMTask(0, 500, 1000, 24));
-    //tasks.push_back(PWMTask(0, 500, 1000, 23));
-    //tasks.push_back(PWMTask(0, 500, 1000, 22));
-    //tasks.push_back(PWMTask(0, 500, 1000, 21));
-    //tasks.push_back(PWMTask(0, 500, 1000, 20));
-    //tasks.push_back(PWMTask(0, 500, 1000, 19));
-    //tasks.push_back(PWMTask(0, 500, 1000, 18));
+    pwm_tasks.push_back(PWMTask(0, 50000, 100000, (1u << 25)));
+    pwm_tasks.push_back(PWMTask(0, 25000, 50000, (1u << 24)));
+    //pwm_tasks.push_back(PWMTask(0, 500, 1000, 23));
+    //pwm_tasks.push_back(PWMTask(0, 500, 1000, 22));
+    //pwm_tasks.push_back(PWMTask(0, 500, 1000, 21));
+    //pwm_tasks.push_back(PWMTask(0, 500, 1000, 20));
+    //pwm_tasks.push_back(PWMTask(0, 500, 1000, 19));
+    //pwm_tasks.push_back(PWMTask(0, 500, 1000, 18));
 
     pwm_schedule.schedule_pwm_task(pwm_tasks[0]);
-    //pwm_schedule.schedule_pwm_task(tasks[1]);
-    //pwm_schedule.schedule_pwm_task(tasks[2]);
-    //pwm_schedule.schedule_pwm_task(tasks[3]);
-    //pwm_schedule.schedule_pwm_task(tasks[4]);
-    //pwm_schedule.schedule_pwm_task(tasks[5]);
-    //pwm_schedule.schedule_pwm_task(tasks[6]);
-    //pwm_schedule.schedule_pwm_task(tasks[7]);
+    pwm_schedule.schedule_pwm_task(pwm_tasks[1]);
+    //pwm_schedule.schedule_pwm_task(pwm_tasks[2]);
+    //pwm_schedule.schedule_pwm_task(pwm_tasks[3]);
+    //pwm_schedule.schedule_pwm_task(pwm_tasks[4]);
+    //pwm_schedule.schedule_pwm_task(pwm_tasks[5]);
+    //pwm_schedule.schedule_pwm_task(pwm_tasks[6]);
+    //pwm_schedule.schedule_pwm_task(pwm_tasks[7]);
 
     pwm_schedule.start();
 
@@ -101,8 +101,11 @@ int main()
         //app.run();
         pwm_schedule.update();
 #ifdef PROFILE_CPU
-        cpu_cycles = loop_start_cpu_cycle - SYST_CVR; // SYSTICK counts down.
+        // SYSTICK is 24bit and counts down.
+        cpu_cycles = ((loop_start_cpu_cycle << 8) - (SYST_CVR << 8)) >> 8;
         if ((curr_time_us - prev_print_time_us) < PRINT_LOOP_INTERVAL_US)
+            continue;
+        if (cpu_cycles <= 60)
             continue;
         prev_print_time_us = curr_time_us;
         printf("cpu cycles/loop: %lu\r\n", cpu_cycles);
