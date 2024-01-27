@@ -3,7 +3,7 @@
 int64_t set_new_ttl_pin_state(alarm_id_t id, void* user_data);
 
 PWMScheduler::PWMScheduler()
-:alarm_queued_{false}, num_alarms_queued_{0}
+: alarm_queued_{false}
 {}
 
 PWMScheduler::~PWMScheduler()
@@ -32,11 +32,7 @@ void PWMScheduler::clear()
 void PWMScheduler::update()
 {
     // Prevent queuing another alarm until the port state change has occured.
-    // TODO: we could actually schedule a few state changes instead of just 1 by
-    //   adding multiple alarms.
-    //   One alarm per PWMTask would be ideal for worst-case situation.
-    //if (alarm_queued_)
-    if (num_alarms_queued_ > MAX_QUEUEABLE_ALARMS)
+    if (alarm_queued_)
         return;
     next_gpio_port_mask_ = 0;
     next_gpio_port_state_ = 0;
@@ -50,9 +46,10 @@ void PWMScheduler::update()
         // Skip gpio action since we will fire all pins of all PWMTasks at once.
         pwm.update(true, true); // force = true; skip_output_action = true.
         // Update the queued gpio port state.
-        next_gpio_port_mask_ |= (1u << pwm.pin());
-        next_gpio_port_state_ &= ~(1u << pwm.pin());
-        next_gpio_port_state_ |= (pwm.state() << pwm.pin());
+        next_gpio_port_mask_ |= pwm.pin_mask();
+        next_gpio_port_state_ &= ~pwm.pin_mask();
+        next_gpio_port_state_ |= (pwm.state() == PWMTask::update_state_t::HIGH)?
+                                    pwm.pin_mask(): 0;
         // Put this task back in the pq.
         pq_.push(pwm);
         // Continue scheduling all PWM tasks that will fire simultaneously.
@@ -63,7 +60,6 @@ void PWMScheduler::update()
     // scheduler neeeds to be updated. Do this first in case the alarm fires
     // immediately.
     alarm_queued_ = true;
-    num_alarms_queued_ += 1;
     next_update_time_us_ = pq_.top().get().next_update_time_us();
     // Schedule the GPIO port state change!
     // Schedule alarm with ptr to class instance as a parameter.
@@ -71,11 +67,11 @@ void PWMScheduler::update()
     add_alarm_at(next_pwm_task_update_time_us, set_new_ttl_pin_state, this, true);
 }
 
-int64_t set_new_ttl_pin_state(alarm_id_t id, void* user_data)
+// Put the ISR in RAM so as to avoid flash access.
+int64_t __not_in_flash_func(set_new_ttl_pin_state)(alarm_id_t id, void* user_data)
 {
     PWMScheduler& self = *((PWMScheduler*)user_data);
     gpio_put_masked(self.next_gpio_port_mask_, self.next_gpio_port_state_);
     self.alarm_queued_ = false;
-    self.num_alarms_queued_ -= 1;
     return 0; // Do not reschedule.
 }

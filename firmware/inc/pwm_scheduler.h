@@ -25,8 +25,8 @@ public:
     {
         pq_.push(task);
 #ifdef DEBUG
-        printf("Pushed PWMTask: (%d, %d, %d, %d)\r\n",
-                task.delay_us_, task.on_time_us_, task.period_us_, task.pin());
+        printf("Pushed PWMTask: (%d, %d, %d, 0x%08x)\r\n",
+               task.delay_us_, task.on_time_us_, task.period_us_, task.pin_mask());
 #endif
     }
     void start();
@@ -60,6 +60,5 @@ private:
     volatile uint32_t next_gpio_port_state_;
     volatile uint32_t next_gpio_port_mask_;
     volatile bool alarm_queued_;
-    volatile size_t num_alarms_queued_;
 };
 #endif // PWM_SCHEDULER_H

@@ -15,7 +15,7 @@ class PWMTask
 public:
     // FIXME: pin should be a pin mask since this PWMTask could apply to multiple pins.
     PWMTask(uint32_t t_delay_us, uint32_t t_on_us, uint32_t t_period_us,
-            uint8_t gpio_pin, uint32_t count = 0, bool invert = false);
+            uint32_t pin_mask, uint32_t count = 0, bool invert = false);
 
     ~PWMTask();
 
@@ -47,8 +47,8 @@ public:
 /**
  * \brief read-only public wrapper for the gpio pin.
  */
-    const inline uint8_t pin()
-    {return pin_;}
+    const inline uint32_t pin_mask()
+    {return pin_mask_;}
 
     const inline uint64_t start_time_us()
     {return start_time_us_;}
@@ -90,7 +90,7 @@ public:
     }
 
 private:
-    uint32_t pin_; // active channels.
+    uint32_t pin_mask_; // active channels.
     update_state_t state_;
     uint32_t count_; // N==0: pulse forever. N>0: execute N times.
     uint32_t cycles_; // how many times we have pulsed.
@@ -103,7 +103,7 @@ private:
     inline void reset()
     {
         cycles_ = 0;
-        gpio_put(pin_, 0);
+        gpio_put_masked(pin_mask_, 0);
         state_ = LOW;
         next_update_time_us_ = start_time_us_ + delay_us_;
     }

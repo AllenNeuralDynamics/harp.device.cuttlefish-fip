@@ -3,6 +3,7 @@
 
 
 #define UART_TX_PIN (0) // for printf-style debugging.
+
 #define HARP_SYNC_RX_PIN (5)
 #define LED0 (24)
 #define LED1 (25)
