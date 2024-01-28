@@ -5,6 +5,7 @@
 #include <hardware/irq.h>
 #include <pwm_task.h>
 #include <etl/priority_queue.h>
+#include <hardware/timer.h>
 #ifdef DEBUG
     #include <cstdio> // for printf
 #endif
@@ -23,7 +24,11 @@ public:
 
     void schedule_pwm_task(PWMTask& task)
     {
-        pq_.push(task);
+        // Aggreggate initial pin state vector.
+        next_gpio_port_mask_ |= task.pin_mask();
+        if (task.state() == PWMTask::update_state_t::HIGH)
+            next_gpio_port_mask_ |= task.pin_mask();
+        pq_.push(task); // pushes task with unset "t=0" time.
 #ifdef DEBUG
         printf("Pushed PWMTask: (%d, %d, %d, 0x%08x)\r\n",
                task.delay_us_, task.on_time_us_, task.period_us_, task.pin_mask());
@@ -32,7 +37,7 @@ public:
     void start();
     void clear();
 
-    friend int64_t set_new_ttl_pin_state(alarm_id_t id, void* user_data);
+    friend void set_new_ttl_pin_state(void);
 
 /**
  * \brief called periodically. Sets up next PWMTask to occur on a timer.
@@ -46,6 +51,7 @@ public:
 
 private:
 
+
 /**
  * \brief the priority queue
  * \details We need to use references wrappers to access mutable versions of
@@ -57,8 +63,9 @@ private:
                         etl::vector<std::reference_wrapper<PWMTask>, NUM_ENTRIES>,
                         etl::greater<std::reference_wrapper<PWMTask>>> pq_;
 
-    volatile uint32_t next_gpio_port_state_;
-    volatile uint32_t next_gpio_port_mask_;
-    volatile bool alarm_queued_;
+    static volatile int32_t alarm_num_;
+    static volatile uint32_t next_gpio_port_state_;
+    static volatile uint32_t next_gpio_port_mask_;
+    static volatile bool alarm_queued_;
 };
 #endif // PWM_SCHEDULER_H

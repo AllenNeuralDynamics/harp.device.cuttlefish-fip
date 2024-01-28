@@ -64,6 +64,7 @@ int main()
     uint32_t prev_print_time_us;
     uint32_t curr_time_us;
     uint32_t cpu_cycles;
+    uint32_t max_cpu_cycles = 0;
 #endif
 
     // Init Synchronizer.
@@ -72,8 +73,10 @@ int main()
     //reset_app();
 
     // Schedule some waveforms.
-    pwm_tasks.push_back(PWMTask(0, 50000, 100000, (1u << 25)));
-    pwm_tasks.push_back(PWMTask(0, 25000, 50000, (1u << 24)));
+    // technically: if the first loop iteration weren't so slow, we could probably
+    //  push 150KHz since we're at ~536 cycles/loop
+    pwm_tasks.push_back(PWMTask(0, 5, 10, (1u << 25))); // 100 KHz
+    pwm_tasks.push_back(PWMTask(0, 100, 200, (1u << 24)));
     //pwm_tasks.push_back(PWMTask(0, 500, 1000, 23));
     //pwm_tasks.push_back(PWMTask(0, 500, 1000, 22));
     //pwm_tasks.push_back(PWMTask(0, 500, 1000, 21));
@@ -94,6 +97,8 @@ int main()
 
     while(true)
     {
+// WARNING: PROFILING the CPU can cause the first loop iteration of the
+//  scheduler to take too long.
 #ifdef PROFILE_CPU
         loop_start_cpu_cycle = SYST_CVR;
         curr_time_us = time_us_64_unsafe();
@@ -103,12 +108,13 @@ int main()
 #ifdef PROFILE_CPU
         // SYSTICK is 24bit and counts down.
         cpu_cycles = ((loop_start_cpu_cycle << 8) - (SYST_CVR << 8)) >> 8;
+        if (cpu_cycles > max_cpu_cycles)
+            max_cpu_cycles = cpu_cycles;
         if ((curr_time_us - prev_print_time_us) < PRINT_LOOP_INTERVAL_US)
             continue;
-        if (cpu_cycles <= 60)
-            continue;
         prev_print_time_us = curr_time_us;
-        printf("cpu cycles/loop: %lu\r\n", cpu_cycles);
+        printf("max cpu cycles/loop: %lu\r\n", max_cpu_cycles);
+        max_cpu_cycles = 0;
 #endif
     }
 }

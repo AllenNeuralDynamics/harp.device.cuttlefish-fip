@@ -23,7 +23,7 @@ public:
  * \brief comparison operator for scheduling.
  */
     friend bool operator<(const PWMTask& lhs, const PWMTask& rhs)
-    {return int64_t(rhs.next_update_time_us_ - lhs.next_update_time_us_) > 0;}
+    {return int32_t(rhs.next_update_time_us_ - lhs.next_update_time_us_) > 0;}
 
     enum update_state_t: uint8_t
     {
@@ -41,7 +41,7 @@ public:
  * \brief read-only public wrapper for the next absolute time that this
  *  instance must update.
  */
-    const inline uint64_t next_update_time_us()
+    const inline uint32_t next_update_time_us()
     {return next_update_time_us_;}
 
 /**
@@ -50,7 +50,7 @@ public:
     const inline uint32_t pin_mask()
     {return pin_mask_;}
 
-    const inline uint64_t start_time_us()
+    const inline uint32_t start_time_us()
     {return start_time_us_;}
 
 /**
@@ -60,24 +60,24 @@ public:
     {return state_;}
 
     // TODO: should access Harp time.
-    inline void start()
-    {start_at_time(time_us_64());}
+    inline void start(bool skip_output_action = false)
+    {start_at_time(timer_hw->timerawl, skip_output_action);}
 
 /**
  * \brief start the PWM state machine but override its start time to
  *  schedule it in the future.
  */
-    inline void start_at_time(uint64_t start_time_us)
+    inline void start_at_time(uint32_t start_time_us, bool skip_output_action = false)
     {
         start_time_us_ = start_time_us;
-        reset();
+        reset(skip_output_action);
     }
 
 /**
  * \brief true if an update is due/overdue.
  */
     inline bool time_to_update() // FIXME: should be harp time.
-    {return int32_t(time_us_64() - next_update_time_us_) >= 0;}
+    {return int32_t(timer_hw->timerawl - next_update_time_us_) >= 0;}
 
 /**
  * \brief true if update() must be called again in the future.
@@ -94,18 +94,25 @@ private:
     update_state_t state_;
     uint32_t count_; // N==0: pulse forever. N>0: execute N times.
     uint32_t cycles_; // how many times we have pulsed.
-    uint64_t start_time_us_;
+    uint32_t start_time_us_;
 /**
  * \brief absolute time that the state machine needs to update.
  */
-    uint64_t next_update_time_us_;
+    uint32_t next_update_time_us_;
 
-    inline void reset()
+    inline void reset(bool skip_output_action = false)
     {
         cycles_ = 0;
         gpio_put_masked(pin_mask_, 0);
-        state_ = LOW;
+        state_ = (delay_us_ == 0)? HIGH: LOW;
         next_update_time_us_ = start_time_us_ + delay_us_;
+        if (state_ == HIGH)
+            next_update_time_us_ += on_time_us_;
+        if (skip_output_action)
+            return;
+        // Apply initial pwm state to gpio pins.
+        uint32_t pin_state = (state_ == HIGH)? pin_mask_: 0;
+        gpio_put_masked(pin_mask_, pin_state);
     }
 };
 #endif // PWM_TASK_H

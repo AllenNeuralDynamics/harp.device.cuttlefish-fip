@@ -19,6 +19,9 @@ PWMTask::PWMTask(uint32_t t_delay_us, uint32_t t_on_us, uint32_t t_period_us,
     }
     gpio_set_dir_masked(pin_mask_, pin_mask_); // configure as output.
     gpio_put_masked(pin_mask_, 0);
+
+    // set starting state.
+    state_ = (delay_us_ == 0)? HIGH : LOW;
 }
 
 

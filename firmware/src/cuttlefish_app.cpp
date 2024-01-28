@@ -1,7 +1,7 @@
 #include <cuttlefish_app.h>
 
 
-PWMScheduler pwm_schedule;
+PWMScheduler __not_in_flash("pwm_schedule") pwm_schedule;
 
 // Allocate space for up to 8 tasks. Put data structure in RAM so as to avoid
 // regular flash access.
