@@ -31,10 +31,13 @@ public:
         HIGH = 1
     };
 
-    uint32_t delay_us_;
-    uint32_t on_time_us_; // effectively duty_cycle
-    uint32_t period_us_;
-
+/**
+ * \brief should be called in a loop.
+ * \param[force] if true, the pwm state change will forcibly iterate, which is
+ *  useful if time/actions are managed by an external scheduler.
+ * \param[skip_output_action] if true, this class will not manipulate the GPIO
+ *  pins in the pin mask
+ */
     void update(bool force = false, bool skip_output_action = false);
 
 /**
@@ -44,22 +47,7 @@ public:
     const inline uint32_t next_update_time_us()
     {return next_update_time_us_;}
 
-/**
- * \brief read-only public wrapper for the gpio pin.
- */
-    const inline uint32_t pin_mask()
-    {return pin_mask_;}
-
-    const inline uint32_t start_time_us()
-    {return start_time_us_;}
-
-/**
- * \brief read-only public wrapper for the state
- */
-    const inline uint8_t state()
-    {return state_;}
-
-    // TODO: should access Harp time.
+    // TODO: should(?) have access to Harp time in the future.
     inline void start(bool skip_output_action = false)
     {start_at_time(timer_hw->timerawl, skip_output_action);}
 
@@ -90,11 +78,19 @@ public:
     }
 
 private:
-    uint32_t pin_mask_; // active channels.
-    update_state_t state_;
-    uint32_t count_; // N==0: pulse forever. N>0: execute N times.
-    uint32_t cycles_; // how many times we have pulsed.
-    uint32_t start_time_us_;
+    friend class PWMScheduler;
+
+    uint32_t delay_us_; /// pulse train delay (phase offset) in microseconds.
+    uint32_t on_time_us_; /// pulse train duty cycle in microseconds
+    uint32_t period_us_; /// pulse train period in microseconds
+
+    uint32_t pin_mask_; /// active channels.
+    update_state_t state_; /// current state of pulse waveform.
+    uint32_t count_; /// How many pulses to issue.
+                     ///  0: pulse forever. >0: execute N times.
+    uint32_t cycles_; /// how many times we have pulsed.
+    uint32_t start_time_us_; /// What (32-bit) time the pulse started.
+
 /**
  * \brief absolute time that the state machine needs to update.
  */

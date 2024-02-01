@@ -3,29 +3,14 @@
 #include <config.h>
 #include <harp_c_app.h>
 #include <harp_synchronizer.h>
-#ifdef DEBUG
-    #include <stdio.h>
-    #include <cstdio> // for printf
-#endif
 #include <cuttlefish_app.h>
+#include <schedule_ctrl_queues.h>
+#include <pico/multicore.h>
+#include <hardware/structs/bus_ctrl.h>
+#include <core1_main.h>
 
-#include <hardware/timer.h>
-
-// Cannot be called inside an interrupt.
-inline uint64_t time_us_64_unsafe()
-{
-    //uint32_t status = save_and_disable_interrupts();
-    uint64_t time = timer_hw->timelr; // Locks time until we read TIMEHR.
-    //restore_interrupts(status);
-    return (uint64_t(timer_hw->timehr) << 32) | time;
-}
-
-#ifdef PROFILE_CPU
-#define SYST_CSR (*(volatile uint32_t*)(PPB_BASE + 0xe010))
-#define SYST_CVR (*(volatile uint32_t*)(PPB_BASE + 0xe018))
-
-#define PRINT_LOOP_INTERVAL_US (16666) // ~60Hz
-#endif
+queue_t pwm_task_setup_queue;
+queue_t cmd_signal_queue;
 
 // Create device name array.
 const uint16_t who_am_i = CUTTLEFISH_HARP_DEVICE_ID;
@@ -39,82 +24,55 @@ const uint8_t fw_version_minor = 0;
 const uint16_t serial_number = 0;
 
 // Create Core.
-//HarpCApp& app = HarpCApp::init(who_am_i, hw_version_major, hw_version_minor,
-//                               assembly_version,
-//                               harp_version_major, harp_version_minor,
-//                               fw_version_major, fw_version_minor,
-//                               serial_number, "Cuttlefish",
-//                               &app_regs, app_reg_specs,
-//                               reg_handler_fns, reg_count, update_app_state,
-//                               reset_app);
+HarpCApp& app = HarpCApp::init(who_am_i, hw_version_major, hw_version_minor,
+                               assembly_version,
+                               harp_version_major, harp_version_minor,
+                               fw_version_major, fw_version_minor,
+                               serial_number, "Cuttlefish",
+                               &app_regs, app_reg_specs,
+                               reg_handler_fns, reg_count, update_app_state,
+                               reset_app);
 
 // Core0 main.
 int main()
 {
-#ifdef DEBUG
-    stdio_uart_init_full(uart0, 921600, UART_TX_PIN, -1); // use uart1 tx only.
-    //stdio_usb_init();
-    //while (!stdio_usb_connected()){} // Block until connection to serial port.
-    printf("Hello, from an RP2040!\r\n");
-#endif
-#ifdef PROFILE_CPU
-    // Configure SYSTICK register to tick with CPU clock (125MHz) and enable it.
-    SYST_CSR |= (1 << 2) | (1 << 0);
-    uint32_t loop_start_cpu_cycle;
-    uint32_t prev_print_time_us;
-    uint32_t curr_time_us;
-    uint32_t cpu_cycles;
-    uint32_t max_cpu_cycles = 0;
-#endif
-
     // Init Synchronizer.
-    //HarpSynchronizer::init(uart0, HARP_SYNC_RX_PIN);
-    //app.set_synchronizer(&HarpSynchronizer::instance());
-    //reset_app();
+    HarpSynchronizer::init(uart1, HARP_SYNC_RX_PIN);
+    app.set_synchronizer(&HarpSynchronizer::instance());
+    reset_app(); // init TTL buffer.
+    // Configure core1 to have high priority on the bus.
+    bus_ctrl_hw->priority = 0x00000010;
+    // Initialize queues for multicore communication.
+    queue_init(&pwm_task_setup_queue, sizeof(pwm_task_specs_t), 8);
+    queue_init(&cmd_signal_queue, sizeof(uint8_t), 2);
 
-    // Schedule some waveforms.
-    // technically: if the first loop iteration weren't so slow, we could probably
-    //  push 150KHz since we're at ~536 cycles/loop
-    pwm_tasks.push_back(PWMTask(0, 5, 10, (1u << 25))); // 100 KHz
-    pwm_tasks.push_back(PWMTask(0, 100, 200, (1u << 24)));
-    //pwm_tasks.push_back(PWMTask(0, 500, 1000, 23));
-    //pwm_tasks.push_back(PWMTask(0, 500, 1000, 22));
-    //pwm_tasks.push_back(PWMTask(0, 500, 1000, 21));
-    //pwm_tasks.push_back(PWMTask(0, 500, 1000, 20));
-    //pwm_tasks.push_back(PWMTask(0, 500, 1000, 19));
-    //pwm_tasks.push_back(PWMTask(0, 500, 1000, 18));
+    // For testing: schedule some waveforms on core1.
+    //pwm_task_specs_t pwm0{0, 5, 10, (1u << LED1)|(1u << PORT_BASE)}; // only works if we don't do anything else.
+    //pwm_task_specs_t pwm0{0, 20, 40, (1u << LED1)|(1u << PORT_BASE)};
+    //pwm_task_specs_t pwm1{0, 50, 100, (1u << LED0)};
+    pwm_task_specs_t pwm0{0, 2000, 4000, (1u << LED1)|(1u << PORT_BASE)};
+    pwm_task_specs_t pwm1{0, 5000, 10000, (1u << (PORT_BASE+1))};
+    pwm_task_specs_t pwm2{0, 2200, 4000, (1u << (PORT_BASE+2))};
+    pwm_task_specs_t pwm3{0, 5400, 10000, (1u << PORT_BASE+3)};
+    pwm_task_specs_t pwm4{0, 1300, 4000, (1u << (PORT_BASE+4))};
+    pwm_task_specs_t pwm5{0, 400, 800, (1u << (PORT_BASE+5))};
+    pwm_task_specs_t pwm6{0, 6000, 10000, (1u << (PORT_BASE+6))};
+    pwm_task_specs_t pwm7{0, 250, 500, (1u << LED0)|(1u << PORT_BASE+7)};
+    queue_try_add(&pwm_task_setup_queue, &pwm0);
+    queue_try_add(&pwm_task_setup_queue, &pwm1);
+    queue_try_add(&pwm_task_setup_queue, &pwm2);
+    queue_try_add(&pwm_task_setup_queue, &pwm3);
+    queue_try_add(&pwm_task_setup_queue, &pwm4);
+    queue_try_add(&pwm_task_setup_queue, &pwm5);
+    queue_try_add(&pwm_task_setup_queue, &pwm6);
+    queue_try_add(&pwm_task_setup_queue, &pwm7);
 
-    pwm_schedule.schedule_pwm_task(pwm_tasks[0]);
-    pwm_schedule.schedule_pwm_task(pwm_tasks[1]);
-    //pwm_schedule.schedule_pwm_task(pwm_tasks[2]);
-    //pwm_schedule.schedule_pwm_task(pwm_tasks[3]);
-    //pwm_schedule.schedule_pwm_task(pwm_tasks[4]);
-    //pwm_schedule.schedule_pwm_task(pwm_tasks[5]);
-    //pwm_schedule.schedule_pwm_task(pwm_tasks[6]);
-    //pwm_schedule.schedule_pwm_task(pwm_tasks[7]);
-
-    pwm_schedule.start();
-
+    // Start the queue.
+    uint8_t start_signal = 1;
+    queue_try_add(&cmd_signal_queue, &start_signal);
+    // Launch core 1, which runs the PWMScheduler.
+    multicore_launch_core1(core1_main);
+    // Loop forever.
     while(true)
-    {
-// WARNING: PROFILING the CPU can cause the first loop iteration of the
-//  scheduler to take too long.
-#ifdef PROFILE_CPU
-        loop_start_cpu_cycle = SYST_CVR;
-        curr_time_us = time_us_64_unsafe();
-#endif
-        //app.run();
-        pwm_schedule.update();
-#ifdef PROFILE_CPU
-        // SYSTICK is 24bit and counts down.
-        cpu_cycles = ((loop_start_cpu_cycle << 8) - (SYST_CVR << 8)) >> 8;
-        if (cpu_cycles > max_cpu_cycles)
-            max_cpu_cycles = cpu_cycles;
-        if ((curr_time_us - prev_print_time_us) < PRINT_LOOP_INTERVAL_US)
-            continue;
-        prev_print_time_us = curr_time_us;
-        printf("max cpu cycles/loop: %lu\r\n", max_cpu_cycles);
-        max_cpu_cycles = 0;
-#endif
-    }
+        app.run();
 }

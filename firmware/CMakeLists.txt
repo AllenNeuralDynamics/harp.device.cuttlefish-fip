@@ -11,10 +11,15 @@ set(CMAKE_CXX_STANDARD 17)
 
 
 # Compile for profiling/debugging/etc. Default: none enabled.
-add_definitions(-DDEBUG)
-#add_definitions(-DPROFILE_CPU)
+#add_definitions(-DDEBUG) # Warning! initializing uart slows down core1 loop.
+#add_definitions(-DPROFILE_CPU) # Warning! This slows down the core1 loop.
 #add_definitions(-DDEBUG_HARP_MSG_IN)
 #add_definitions(-DDEBUG_HARP_MSG_OUT)
+
+# Configure the entire program to be copied from flash to RAM at the start.
+# Since our binary size is small (<260KB), this is easier than marking every
+# data structure and function definition called in core1 to run from RAM.
+set(PICO_COPY_TO_RAM 1)
 
 # initialize the Raspberry Pi Pico SDK
 pico_sdk_init()
@@ -31,6 +36,10 @@ add_library(pwm_task
     src/pwm_task.cpp
 )
 
+add_library(core1_main
+    src/core1_main.cpp
+)
+
 add_executable(${PROJECT_NAME}
     src/main.cpp
     src/cuttlefish_app.cpp
@@ -45,17 +54,20 @@ include_directories(inc)
 
 # Link libraries to the targets that need them.
 target_link_libraries(pwm_scheduler PUBLIC pico_stdlib etl::etl)
-target_link_libraries(pwm_task hardware_gpio pico_stdlib)
-target_link_libraries(${PROJECT_NAME} PRIVATE etl::etl)
-target_link_libraries(${PROJECT_NAME} PUBLIC pico_stdlib pwm_scheduler pwm_task
-                      harp_core harp_sync harp_c_app)
+target_link_libraries(pwm_task PUBLIC hardware_gpio pico_stdlib)
+target_link_libraries(core1_main PRIVATE etl::etl)
+target_link_libraries(core1_main PUBLIC pico_stdlib pwm_scheduler pwm_task)
+target_link_libraries(${PROJECT_NAME} PUBLIC pico_stdlib core1_main
+                      pico_multicore harp_core harp_sync harp_c_app)
+
 
 # create map/bin/hex/uf2 file in addition to ELF.
 pico_add_extra_outputs(${PROJECT_NAME})
 
-if(DEBUG)
+if(DEFINED DEBUG)
     message(WARNING "Debug printf() messages enabled from harp core to UART \
             with baud rate 921600.")
-    pico_enable_stdio_uart(${PROJECT_NAME} 1)
-    pico_enable_stdio_uart(pwm_scheduler 1)
+    #pico_enable_stdio_uart(${PROJECT_NAME} 1)
+    #pico_enable_stdio_uart(pwm_scheduler 1)
+    pico_enable_stdio_uart(core1_main 1)
 endif()

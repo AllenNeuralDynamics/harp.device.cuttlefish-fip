@@ -10,6 +10,7 @@
 #include <etl/vector.h>
 #include <pwm_scheduler.h>
 #include <pwm_task.h>
+#include <schedule_ctrl_queues.h>
 #ifdef DEBUG
     #include <stdio.h>
     #include <cstdio> // for printf
@@ -27,26 +28,12 @@ extern const uint8_t fw_version_minor;
 extern const uint16_t serial_number;
 
 // Setup for Harp App
-const size_t reg_count = 8;
+const size_t reg_count = 7;
 
 extern PWMScheduler pwm_schedule;
 extern RegSpecs app_reg_specs[reg_count];
 extern RegFnPair reg_handler_fns[reg_count];
 extern HarpCApp& app;
-
-// Allocated space for up to 8 tasks.
-extern etl::vector<PWMTask, 8> pwm_tasks;
-
-// Container to dereference packed binary data for instantiating a PWMTask.
-#pragma pack(push, 1)
-struct pwm_task_specs_t
-{
-    uint32_t offset_us;
-    uint32_t on_time_us;
-    uint32_t period_us;
-    uint8_t port_mask;
-};
-#pragma pack(pop)
 
 #pragma pack(push, 1)
 struct app_regs_t
@@ -56,27 +43,30 @@ struct app_regs_t
     volatile uint8_t pwm_task[sizeof(pwm_task_specs_t)]; // {offset_us (U32),
                                                          //  start_time_us (U32),
                                                          //  stop_time_us (U32),
-                                                         //  port_mask (U8)}
-    volatile uint8_t trigger_type;  // [0]=1 : absolute time stored in
-                                    //         trigger_time_us starts th
-                                    //         schedule.
-                                    // [1]=1 : gpio pin configured as input
-                                    //         starts the schedule.
-                                    // [3:2]=xx  : pin rising-edge [00],
-                                    //             falling-edge [01], or
-                                    //             change[11]
-                                    //             starts the schedule.
-                                    // [7]=1 : start the schedule now
-                                    //         (i.e: software trigger).
-                                    // reset value = 0.
-    volatile uint8_t pin_trigger_mask; // which port pins (configured as input)
-                                       // cause the schedule to trigger.
-    volatile uint8_t pin_trigger_state; // value of the gpio pin(s) that caue
-                                        // the schedule to start.
-    volatile uint32_t time_trigger_us; // time (in "harp time" in microseconds)
-                                       // when the schedule starts.
-    volatile uint8_t schedule_ctrl; // [0] :  clear schedule
-                                    // [1] : dump schedule
+                                                         //  port_mask (U8),
+                                                         //  cycles (U8),
+                                                         //  invert (U8)}
+    volatile uint8_t arm_ext_trigger; // which port pins (configured as
+                                      // inputs) cause the schedule to
+                                      // trigger.
+                                      // Arm a hardware trigger.
+                                      // [0] = 1: TTL pin 0 starts the trigger.
+                                      // [1] = 1: TTL pin 1 starts the trigger.
+    volatile uint8_t ext_trigger_edge; // value of the gpio pin(s) that cause
+                                       // the schedule to start. Example:
+                                       // [0]: set external TTL pin 0 trigger
+                                       //      type to rising edge (1) or
+                                       //      falling edge (0).
+                                       // [1]: set external TTL pin 1 trigger
+                                       //      type to rising edge (1) or
+                                       //      falling edge (0).
+                                       // ...
+                                       // Resets to rising edge.
+    volatile uint8_t sw_trigger;    // Writing nonzero value to this register
+                                    // starts the schedule.
+    volatile uint8_t schedule_ctrl; // [0] :  clear pwm_tasks
+                                    // [1] : dump pwm_tasks as a series of
+                                    //       write messages.
     // More app "registers" here.
 };
 #pragma pack(pop)
@@ -106,9 +96,13 @@ void write_to_port(msg_t& msg);
  */
 void write_pwm_task(msg_t& msg);
 
-void write_schedule_ctrl(msg_t& msg);
+void write_arm_ext_trigger(msg_t& msg);
 
-void write_trigger_type(msg_t& msg);
+void write_ext_trigger_edge(msg_t& msg);
+
+void write_sw_trigger(msg_t& msg);
+
+void write_schedule_ctrl(msg_t& msg);
 
 /**
  * \brief update the app state. Called in a loop.
