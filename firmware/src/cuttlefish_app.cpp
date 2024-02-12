@@ -98,8 +98,17 @@ void write_sw_trigger(msg_t& msg)
 
 void write_schedule_ctrl(msg_t& msg)
 {
-    HarpCore::copy_msg_payload_to_register(msg);
-    // FIXME: implement this.
+    const uint8_t& schedule_ctrl = *((uint8_t*)msg.payload);
+    if (schedule_ctrl & 0x01)
+    {
+        multicore_reset_core1(); // Kill core1.
+        gpio_put_masked((0x000000FF << PORT_BASE), 0); // Write all GPIOs to 0.
+        multicore_launch_core1(core1_main); // Restart schedule.
+    }
+    else if (schedule_ctrl & 0x02)
+    {
+        // TODO: dump schedule.
+    }
     if (!HarpCore::is_muted())
         HarpCore::send_harp_reply(WRITE, msg.header.address);
 }

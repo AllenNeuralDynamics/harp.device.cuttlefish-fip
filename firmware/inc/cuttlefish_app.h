@@ -11,6 +11,8 @@
 #include <pwm_scheduler.h>
 #include <pwm_task.h>
 #include <schedule_ctrl_queues.h>
+#include <core1_main.h>
+#include <pico/multicore.h>
 #ifdef DEBUG
     #include <stdio.h>
     #include <cstdio> // for printf
@@ -64,7 +66,8 @@ struct app_regs_t
                                        // Resets to rising edge.
     volatile uint8_t sw_trigger;    // Writing nonzero value to this register
                                     // starts the schedule.
-    volatile uint8_t schedule_ctrl; // [0] :  clear pwm_tasks
+    volatile uint8_t schedule_ctrl; // Apply/read various settings. Reads as 0.
+                                    // [0] : clear pwm_tasks.
                                     // [1] : dump pwm_tasks as a series of
                                     //       write messages.
     // More app "registers" here.

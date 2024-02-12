@@ -10,6 +10,7 @@ from time import sleep, perf_counter
 
 PWM_TASK_REG = 34
 SW_TRIGGER_REG = 37
+SCHEDULE_CTRL_REG = 38
 
 #logger = logging.getLogger()
 #logger.setLevel(logging.DEBUG)
@@ -42,3 +43,8 @@ measurement = device.send(WriteU8ArrayMessage(PWM_TASK_REG,
                                               data_fmt, settings).frame)
 print("Enabling task.")
 device.send(WriteU8HarpMessage(SW_TRIGGER_REG, int(True)).frame)
+
+sleep(3)
+
+print("Disabling task.")
+device.send(WriteU8HarpMessage(SCHEDULE_CTRL_REG, 1).frame)
