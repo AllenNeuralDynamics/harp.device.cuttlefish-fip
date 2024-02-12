@@ -6,14 +6,14 @@
     #include <cstdio> // for printf
 #endif
 
-// Container to dereference packed binary data for instantiating a PWMTask.
+// Container to unpack pwm task specs from a received harp message.
 #pragma pack(push, 1)
 struct pwm_task_specs_t
 {
     uint32_t offset_us;
     uint32_t on_time_us;
     uint32_t period_us;
-    uint32_t port_mask;
+    uint8_t port_mask; // Device "port." 0 is device pin 0, etc.
     uint32_t cycles;
     uint8_t invert;
 };

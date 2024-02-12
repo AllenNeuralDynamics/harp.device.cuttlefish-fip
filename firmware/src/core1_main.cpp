@@ -16,8 +16,8 @@ etl::vector<PWMTask, NUM_TTL_IOS> pwm_tasks; // Allocate space for up to 8 tasks
 void core1_main()
 {
 #if defined(DEBUG) || defined(PROFILE_CPU)
-#warning "Initializing uart printing will slow down main loop."
-    stdio_uart_init_full(uart0, 921600, UART_TX_PIN, -1); // use uart0 tx only.
+#warning "Initializing uart printing will slow down core1 main loop."
+    stdio_uart_init_full(DEBUG_UART, 921600, DEBUG_UART_TX_PIN, -1); // tx only.
     printf("hello, from core1\r\n");
 #endif
 #if defined(PROFILE_CPU)
@@ -37,23 +37,18 @@ void core1_main()
         while (!queue_is_empty(&pwm_task_setup_queue))
         {
             queue_remove_blocking(&pwm_task_setup_queue, &task_specs);
-            pwm_tasks.push_back(PWMTask(task_specs.offset_us,
-                                        task_specs.on_time_us,
-                                        task_specs.period_us,
-                                        task_specs.port_mask,
-                                        task_specs.cycles,
-                                        task_specs.invert));
+            pwm_tasks.push_back(
+                PWMTask(task_specs.offset_us,
+                        task_specs.on_time_us,
+                        task_specs.period_us,
+                        (uint32_t(task_specs.port_mask) << PORT_BASE),
+                        task_specs.cycles,
+                        task_specs.invert));
             pwm_schedule.schedule_pwm_task(pwm_tasks.back());
         }
         if (!queue_is_empty(&cmd_signal_queue))
             queue_try_remove(&cmd_signal_queue, &cmd);
     } while (!cmd);
-    //pwm_tasks.push_back(PWMTask(0, 5, 10, (1u << LED1)|(1u << PORT_BASE))); // 10 KHz
-    //pwm_tasks.push_back(PWMTask(0, 20, 40, (1u << LED1)|(1u << PORT_BASE))); // 10 KHz
-    //pwm_tasks.push_back(PWMTask(0, 100, 200, (1u << LED0)));
-    //pwm_schedule.schedule_pwm_task(pwm_tasks[0]);
-    //pwm_schedule.schedule_pwm_task(pwm_tasks[1]);
-
     // Start after receiving the start signal.
     pwm_schedule.start();
     while(true)

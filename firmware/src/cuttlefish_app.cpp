@@ -58,9 +58,9 @@ void write_to_port(msg_t& msg)
 
 void write_pwm_task(msg_t& msg)
 {
-    HarpCore::copy_msg_payload_to_register(msg);
+    //HarpCore::copy_msg_payload_to_register(msg);
     // Interpret byte array as packed function arguments to create a PWMTask.
-    pwm_task_specs_t& specs = *((pwm_task_specs_t*)(&msg.payload));
+    pwm_task_specs_t& specs = *((pwm_task_specs_t*)msg.payload);
     // Send the task to core1.
     queue_try_add(&pwm_task_setup_queue, &specs);
     if (!HarpCore::is_muted())
@@ -89,13 +89,9 @@ void write_ext_trigger_edge(msg_t& msg)
 
 void write_sw_trigger(msg_t& msg)
 {
-    HarpCore::copy_msg_payload_to_register(msg);
-    const bool& start = bool(*((uint8_t*)msg.payload));
+    const uint8_t& start = *((uint8_t*)msg.payload);
     if (start)
-    {
-        // TODO: send start schedule cmd over queue.
-        //pwm_schedule.start();
-    }
+        queue_try_add(&cmd_signal_queue, &start);
     if (!HarpCore::is_muted())
         HarpCore::send_harp_reply(WRITE, msg.header.address);
 }

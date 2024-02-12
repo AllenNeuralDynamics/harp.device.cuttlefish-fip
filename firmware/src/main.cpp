@@ -37,7 +37,7 @@ HarpCApp& app = HarpCApp::init(who_am_i, hw_version_major, hw_version_minor,
 int main()
 {
     // Init Synchronizer.
-    HarpSynchronizer::init(uart1, HARP_SYNC_RX_PIN);
+    HarpSynchronizer::init(SYNC_UART, HARP_SYNC_RX_PIN);
     app.set_synchronizer(&HarpSynchronizer::instance());
     reset_app(); // init TTL buffer.
     // Configure core1 to have high priority on the bus.
@@ -50,26 +50,29 @@ int main()
     //pwm_task_specs_t pwm0{0, 5, 10, (1u << LED1)|(1u << PORT_BASE)}; // only works if we don't do anything else.
     //pwm_task_specs_t pwm0{0, 20, 40, (1u << LED1)|(1u << PORT_BASE)};
     //pwm_task_specs_t pwm1{0, 50, 100, (1u << LED0)};
-    pwm_task_specs_t pwm0{0, 2000, 4000, (1u << LED1)|(1u << PORT_BASE)};
-    pwm_task_specs_t pwm1{0, 5000, 10000, (1u << (PORT_BASE+1))};
-    pwm_task_specs_t pwm2{0, 2200, 4000, (1u << (PORT_BASE+2))};
-    pwm_task_specs_t pwm3{0, 5400, 10000, (1u << PORT_BASE+3)};
-    pwm_task_specs_t pwm4{0, 1300, 4000, (1u << (PORT_BASE+4))};
-    pwm_task_specs_t pwm5{0, 400, 800, (1u << (PORT_BASE+5))};
-    pwm_task_specs_t pwm6{0, 6000, 10000, (1u << (PORT_BASE+6))};
-    pwm_task_specs_t pwm7{0, 250, 500, (1u << LED0)|(1u << PORT_BASE+7)};
-    queue_try_add(&pwm_task_setup_queue, &pwm0);
-    queue_try_add(&pwm_task_setup_queue, &pwm1);
-    queue_try_add(&pwm_task_setup_queue, &pwm2);
-    queue_try_add(&pwm_task_setup_queue, &pwm3);
-    queue_try_add(&pwm_task_setup_queue, &pwm4);
-    queue_try_add(&pwm_task_setup_queue, &pwm5);
-    queue_try_add(&pwm_task_setup_queue, &pwm6);
-    queue_try_add(&pwm_task_setup_queue, &pwm7);
 
-    // Start the queue.
-    uint8_t start_signal = 1;
-    queue_try_add(&cmd_signal_queue, &start_signal);
+    // Stress test.
+    //pwm_task_specs_t pwm0{0, 2000, 4000, (1u << LED1)|(1u << PORT_BASE)};
+    //pwm_task_specs_t pwm1{0, 5000, 10000, (1u << (PORT_BASE+1))};
+    //pwm_task_specs_t pwm2{0, 2200, 4000, (1u << (PORT_BASE+2))};
+    //pwm_task_specs_t pwm3{0, 5400, 10000, (1u << PORT_BASE+3)};
+    //pwm_task_specs_t pwm4{0, 1300, 4000, (1u << (PORT_BASE+4))};
+    //pwm_task_specs_t pwm5{0, 400, 800, (1u << (PORT_BASE+5))};
+    //pwm_task_specs_t pwm6{0, 6000, 10000, (1u << (PORT_BASE+6))};
+    //pwm_task_specs_t pwm7{0, 250, 500, (1u << LED0)|(1u << PORT_BASE+7)};
+    //queue_try_add(&pwm_task_setup_queue, &pwm0);
+    //queue_try_add(&pwm_task_setup_queue, &pwm1);
+    //queue_try_add(&pwm_task_setup_queue, &pwm2);
+    //queue_try_add(&pwm_task_setup_queue, &pwm3);
+    //queue_try_add(&pwm_task_setup_queue, &pwm4);
+    //queue_try_add(&pwm_task_setup_queue, &pwm5);
+    //queue_try_add(&pwm_task_setup_queue, &pwm6);
+    //queue_try_add(&pwm_task_setup_queue, &pwm7);
+
+    //// Start the queue.
+    //uint8_t start_signal = 1;
+    //queue_try_add(&cmd_signal_queue, &start_signal);
+
     // Launch core 1, which runs the PWMScheduler.
     multicore_launch_core1(core1_main);
     // Loop forever.
