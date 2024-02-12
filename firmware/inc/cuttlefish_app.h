@@ -46,7 +46,7 @@ struct app_regs_t
                                                          //  start_time_us (U32),
                                                          //  stop_time_us (U32),
                                                          //  port_mask (U8),
-                                                         //  cycles (U8),
+                                                         //  cycles (U32),
                                                          //  invert (U8)}
     volatile uint8_t arm_ext_trigger; // which port pins (configured as
                                       // inputs) cause the schedule to
