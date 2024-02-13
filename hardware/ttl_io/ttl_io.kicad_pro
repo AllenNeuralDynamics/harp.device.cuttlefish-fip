@@ -520,7 +520,7 @@
       "idf": "",
       "netlist": "",
       "specctra_dsn": "",
-      "step": "",
+      "step": "../board/ttl_io.step",
       "vrml": ""
     },
     "page_layout_descr_file": ""
