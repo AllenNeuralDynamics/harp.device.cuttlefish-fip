@@ -34,8 +34,8 @@ settings = \
     500000,     # on_time_us
     1000000,    # period_us
     (1 << 0),   # port_mask. 0 is device pin0.
-    0,          # cycles
-    False       # invert
+    0,          # cycles. (0 = repeat forever.)
+    False       # invert.
 )
 data_fmt = "<LLLBLB"
 print("Configuring device with PWM task.")
