@@ -19,7 +19,7 @@ public:
     PWMScheduler();
     ~PWMScheduler();
 
-    void schedule_pwm_task(PWMTask& task)
+    inline void schedule_pwm_task(PWMTask& task)
     {
         // Aggreggate initial pin state vector.
         next_gpio_port_mask_ |= task.pin_mask_;
@@ -35,11 +35,24 @@ public:
     void clear();
 
     friend void set_new_ttl_pin_state(void);
+    friend void handle_missed_deadline();
+
+/**
+ * \brief cancel any active alarms and clear the queue.
+ */
+    void reset();
 
 /**
  * \brief called periodically. Sets up next PWMTask to occur on a timer.
  */
     void update();
+
+    // FIXME: this should be part of a reset function.
+    static inline void cancel_alarm()
+    {
+        timer_hw->armed |= (1u << alarm_num_); // Disarm alarm if it was armed.
+        alarm_queued_ = false;
+    }
 
 /**
  * \brief absolute time before which the priority queue needs to be updated.

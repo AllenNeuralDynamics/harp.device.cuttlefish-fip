@@ -12,11 +12,21 @@ inline uint64_t time_us_64_unsafe()
 PWMScheduler pwm_schedule;
 etl::vector<PWMTask, NUM_TTL_IOS> pwm_tasks; // Allocate space for up to 8 tasks.
 
+// Override default behavior.
+void handle_missed_deadline()
+{
+    gpio_init(LED1);
+    gpio_set_dir(LED1, 1); // output
+    gpio_put(LED1, 1); // turn on auxilary LED.
+    // TODO: push an error message back to core0.
+}
+
 // Core1 main.
 void core1_main()
 {
     // Clear existing tasks since this func can be called repeatedly from core0.
     pwm_tasks.clear();
+    pwm_schedule.reset();
 #if defined(DEBUG) || defined(PROFILE_CPU)
 #warning "Initializing uart printing will slow down core1 main loop."
     stdio_uart_init_full(DEBUG_UART, 921600, DEBUG_UART_TX_PIN, -1); // tx only.

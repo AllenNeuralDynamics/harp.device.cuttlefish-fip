@@ -18,7 +18,6 @@ SCHEDULE_CTRL_REG = 38
 #logger.handlers[-1].setFormatter(
 #    logging.Formatter(fmt='%(asctime)s:%(name)s:%(levelname)s: %(message)s'))
 
-
 # Open the device and print the info on screen
 # Open serial connection and save communication to a file
 if os.name == 'posix': # check for Linux.
@@ -43,8 +42,6 @@ measurement = device.send(WriteU8ArrayMessage(PWM_TASK_REG,
                                               data_fmt, settings).frame)
 print("Enabling task.")
 device.send(WriteU8HarpMessage(SW_TRIGGER_REG, int(True)).frame)
-
 sleep(3)
-
 print("Disabling task.")
 device.send(WriteU8HarpMessage(SCHEDULE_CTRL_REG, 1).frame)

@@ -1,6 +1,7 @@
 #include <pwm_scheduler.h>
 // Declare friend function prototype.
 void set_new_ttl_pin_state(void);
+void handle_missed_deadline();
 
 // Define static variable. These should not be in flash such that they
 // can be accessed by the ISR quickly.
@@ -23,7 +24,14 @@ PWMScheduler::PWMScheduler()
 
 PWMScheduler::~PWMScheduler()
 {
-    // TODO: unclaim alarm.
+    reset();
+}
+
+void PWMScheduler::reset()
+{
+    cancel_alarm(); // Cancel any upcoming alarms.
+    // TODO: we should consider writing all zeros to each PWMtask.
+    pq_.clear(); // Remove all tasks in the priority queue.
 }
 
 void PWMScheduler::start()
@@ -99,7 +107,7 @@ void PWMScheduler::update()
         printf("Deadline missed! Curr time: %lu | scheduled time: %lu\r\n",
                timer_raw, next_pwm_task_update_time_us);
 #endif
-        while(1); //return;
+        handle_missed_deadline();
     }
     // Normal case: arm the alarm and let the interrupt apply the state change.
     alarm_queued_ = true; // Do this first in case alarm fires immediately.
@@ -117,4 +125,9 @@ void __not_in_flash_func(set_new_ttl_pin_state)(void)
     PWMScheduler::alarm_queued_ = false;
     // Clear the latched hardware interrupt.
     timer_hw->intr |= (1u << PWMScheduler::alarm_num_);
+}
+
+void __attribute__((weak)) handle_missed_deadline()
+{
+    while(1); // block forever by default.
 }
