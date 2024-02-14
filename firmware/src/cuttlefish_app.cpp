@@ -31,7 +31,7 @@ void set_port_direction(msg_t& msg)
 {
     HarpCore::copy_msg_payload_to_register(msg);
     // set gpio buffer direction to outputs (1) or inputs (0).
-    gpio_set_dir_masked((0xFF << PORT_DIR_BASE),
+    gpio_set_dir_masked((0x000000FF << PORT_DIR_BASE),
                         uint32_t(app_regs.port_dir) << PORT_DIR_BASE);
     // set ttl buffers to outputs or inputs.
     if (!HarpCore::is_muted())
@@ -49,7 +49,7 @@ void write_to_port(msg_t& msg)
 {
     HarpCore::copy_msg_payload_to_register(msg);
     // write to GPIOs here.
-    gpio_put_masked(app_regs.port_dir,
+    gpio_put_masked((uint32_t(app_regs.port_dir) << PORT_BASE),
                     (uint32_t(app_regs.port_raw) << PORT_BASE));
     if (!HarpCore::is_muted())
         HarpCore::send_harp_reply(WRITE, msg.header.address);
@@ -101,9 +101,7 @@ void write_schedule_ctrl(msg_t& msg)
     const uint8_t& schedule_ctrl = *((uint8_t*)msg.payload);
     if (schedule_ctrl & 0x01)
     {
-        multicore_reset_core1(); // Kill core1.
-        gpio_put_masked((0x000000FF << PORT_BASE), 0); // Write all GPIOs to 0.
-        multicore_launch_core1(core1_main); // Restart schedule.
+        reset_schedule();
     }
     else if (schedule_ctrl & 0x02)
     {
@@ -119,8 +117,6 @@ void update_app_state()
 
 void reset_app()
 {
-    // Reset non-zero struct elements.
-    app_regs.ext_trigger_edge = 0xFF;
 
     // init all pins used as GPIOs.
     gpio_init_mask((0x000000FF << PORT_DIR_BASE) | (0x000000FF << PORT_BASE));
@@ -130,6 +126,8 @@ void reset_app()
     // Default behavior: set each chip as an output and drive a 0.
     gpio_put_masked((0x000000FF << PORT_DIR_BASE) | (0x000000FF << PORT_BASE),
                     (0x000000FF << PORT_DIR_BASE));
-
-    // TODO: clear schedule.
+    // Reset non-zero Harp register struct elements.
+    app_regs.ext_trigger_edge = 0xFF;
+    app_regs.port_dir = 0xFF; // all outputs.
+    reset_schedule();
 }

@@ -15,6 +15,8 @@ etl::vector<PWMTask, NUM_TTL_IOS> pwm_tasks; // Allocate space for up to 8 tasks
 // Core1 main.
 void core1_main()
 {
+    // Clear existing tasks since this func can be called repeatedly from core0.
+    pwm_tasks.clear();
 #if defined(DEBUG) || defined(PROFILE_CPU)
 #warning "Initializing uart printing will slow down core1 main loop."
     stdio_uart_init_full(DEBUG_UART, 921600, DEBUG_UART_TX_PIN, -1); // tx only.

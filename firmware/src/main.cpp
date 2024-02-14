@@ -39,7 +39,6 @@ int main()
     // Init Synchronizer.
     HarpSynchronizer::init(SYNC_UART, HARP_SYNC_RX_PIN);
     app.set_synchronizer(&HarpSynchronizer::instance());
-    reset_app(); // init TTL buffer.
     // Configure core1 to have high priority on the bus.
     bus_ctrl_hw->priority = 0x00000010;
     // Initialize queues for multicore communication.
@@ -73,8 +72,7 @@ int main()
     //uint8_t start_signal = 1;
     //queue_try_add(&cmd_signal_queue, &start_signal);
 
-    // Launch core 1, which runs the PWMScheduler.
-    multicore_launch_core1(core1_main);
+    reset_app(); // Setup GPIO states. Get scheduler ready.
     // Loop forever.
     while(true)
         app.run();
