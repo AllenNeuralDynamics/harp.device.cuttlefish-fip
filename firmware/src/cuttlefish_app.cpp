@@ -51,6 +51,11 @@ void write_to_port(msg_t& msg)
     // write to GPIOs here.
     gpio_put_masked((uint32_t(app_regs.port_dir) << PORT_BASE),
                     (uint32_t(app_regs.port_raw) << PORT_BASE));
+    // Read back what we just wrote since it's fast.
+    // Add delay for change to take effect. (May be related to slew rate).
+    asm volatile("nop \n nop \n nop");
+    app_regs.port_raw = uint8_t(0xFF & (gpio_get_all() >> PORT_BASE));
+    // Reply with the actual value that we wrote.
     if (!HarpCore::is_muted())
         HarpCore::send_harp_reply(WRITE, msg.header.address);
 }
