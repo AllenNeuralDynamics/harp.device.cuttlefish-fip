@@ -32,6 +32,7 @@ void PWMScheduler::reset()
     cancel_alarm(); // Cancel any upcoming alarms.
     // TODO: we should consider writing all zeros to each PWMtask.
     pq_.clear(); // Remove all tasks in the priority queue.
+    port_event_buffer_.clear();
 }
 
 void PWMScheduler::start()
@@ -53,6 +54,7 @@ void PWMScheduler::start()
     }
     // Schedule the initial pin state. (masks were already updated upon
     // pushing them into the pq_.)
+    // TODO: push to circular buffer here.
     alarm_queued_ = true; // Do this first in case alarm fires immediately.
     timer_hw->inte |= (1u << alarm_num_); // enable alarm to trigger interrupt.
     timer_hw->alarm[alarm_num_] = start_time_us; // write time (also arms alarm).
@@ -69,8 +71,11 @@ void PWMScheduler::clear()
 void PWMScheduler::update()
 {
     // Prevent queuing another alarm until the port state change has occured.
-    if (alarm_queued_)
+    // TODO: see if the circular buffer is full.
+    if (port_event_buffer_.full())
         return;
+    //if (alarm_queued_)
+    //    return;
     next_gpio_port_mask_ = 0;
     next_gpio_port_state_ = 0;
     uint32_t next_pwm_task_update_time_us = pq_.top().get().next_update_time_us_;
@@ -110,6 +115,24 @@ void PWMScheduler::update()
         handle_missed_deadline();
     }
     // Normal case: arm the alarm and let the interrupt apply the state change.
+    // If the interrupt is not yet queued, queue it.
+    if (alarm_queued_)
+    {
+        // Lockout interrupts if the ISR can drain the FIFO while we update it.
+        if (port_event_buffer.size() < 2)
+        {
+            uint32_t interrupt_status = save_and_disable_interrupts();
+            port_event_buffer.push(PortEvent{next_pwm_task_update_time_us,
+                                             next_gpio_port_state_});
+            restore_interrupts(interrupt_status);
+        }
+        else
+        {
+            port_event_buffer.push(PortEvent{next_pwm_task_update_time_us,
+                                             next_gpio_port_state_});
+        }
+        return;
+    }
     alarm_queued_ = true; // Do this first in case alarm fires immediately.
     timer_hw->inte |= (1u << alarm_num_); // enable alarm to trigger interrupt.
     timer_hw->alarm[alarm_num_] = next_pwm_task_update_time_us; // write time
@@ -119,12 +142,23 @@ void PWMScheduler::update()
 // Put the ISR in RAM so as to avoid (slow) flash access.
 void __not_in_flash_func(set_new_ttl_pin_state)(void)
 {
+    PortEvent& event = next_event.front();
     // Apply the next GPIO state.
-    gpio_put_masked(PWMScheduler::next_gpio_port_mask_,
-                    PWMScheduler::next_gpio_port_state_);
-    PWMScheduler::alarm_queued_ = false;
+    //gpio_put_masked(PWMScheduler::next_gpio_port_mask_, PWMScheduler::next_gpio_port_state_);
+    gpio_put_masked(event.port_mask, event.port_state);
     // Clear the latched hardware interrupt.
     timer_hw->intr |= (1u << PWMScheduler::alarm_num_);
+    // Schedule the next port event if one exists in the circular buffer.
+    if (port_event_buffer_.empty())
+    {
+        PWMScheduler::alarm_queued_ = false;
+        return;
+    }
+    // Pop next from the fifo and re-arm the alarm.
+    PortEvent& next_event = next_event.front();
+    timer_hw->inte |= (1u << alarm_num_);
+    timer_hw->alarm[alarm_num_] = next_event.time_us_32;
+    next_event.pop(); // Remove PortEvent from the fifo.
 }
 
 void __attribute__((weak)) handle_missed_deadline()

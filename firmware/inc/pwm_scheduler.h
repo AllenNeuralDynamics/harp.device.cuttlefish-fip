@@ -16,6 +16,14 @@
 class PWMScheduler
 {
 public:
+    struct PortEvent
+    {
+        uint32_t port_state;
+        uint32_t port_mask;
+        uint32_t time_us_32;
+    };
+
+
     PWMScheduler();
     ~PWMScheduler();
 
@@ -72,6 +80,8 @@ private:
                         NUM_ENTRIES,
                         etl::vector<std::reference_wrapper<PWMTask>, NUM_ENTRIES>,
                         etl::greater<std::reference_wrapper<PWMTask>>> pq_;
+
+    static volatile etl::circular_buffer<PortEvent, 8> port_event_buffer_;
 
 // FIXME: make this private again.
 public:
