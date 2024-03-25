@@ -72,6 +72,7 @@ bitMasks:
   Ports:
     description: "Available ports on the device"
     bits:
+      None: 0x0
       Port0: 0x1
       Port1: 0x2
       Port2: 0x4
