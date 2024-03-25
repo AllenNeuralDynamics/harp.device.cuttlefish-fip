@@ -80,5 +80,3 @@ bitMasks:
       Port5: 0x20
       Port6: 0x40
       Port7: 0x80
-groupMasks:
-  EnableFlag
