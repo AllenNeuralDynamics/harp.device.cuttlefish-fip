@@ -1,0 +1,84 @@
+%YAML 1.1
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/harp-tech/reflex-generator/main/schema/device.json
+device: Cuttlefish
+whoAmI: 1403
+firmwareVersion: "0.1"
+hardwareTargets: "0.0"
+registers:
+  PortDirection:
+    address: 32
+    type: U8
+    access: Write
+    maskType: Ports
+    description: "Set the direction of the ports"
+  PortState:
+    address: 33
+    type: U8
+    access: [Event, Write]
+    maskType: Ports
+    description: "Read or write the state of the ports. An event will be triggered when the state changes without a write command."
+  PwmTask:
+    address: 34
+    type: U8
+    access: Write
+    length: 18
+    description: "Struct to configure the PWM task. offset_us (U32), start_time_us (U32), stop_time_us (U32), port_mask (U8), cycles (U32),invert (U8)"
+  ArmExternalStartTrigger: &external_trigger
+    address: 35
+    type: U8
+    access: Write
+    description: "If set to 1, the device will execute the PMW task using the selected pins."
+    maskType: Ports
+  ExternalStartTriggerEdge: &trigger_edge
+    address: 36
+    type: U8
+    access: Write
+    description: "Set the edge of the external trigger. 0: Rising, 1: Falling"
+    maskType: Ports
+  ArmExternalStopTrigger:
+    <<: *external_trigger
+    address: 37
+    description: "If set to 1, the device will stop the PMW task using the selected pins."
+  ExternalStopTriggerEdge:
+    <<: *trigger_edge
+    address: 38
+  SoftwareStartTrigger: &software_trigger
+    address: 39
+    type: U8
+    access: Write
+    description: "Writing a non-0 value to this register will trigger the PWM task."
+  SoftwareStopTrigger:
+    <<: *software_trigger
+    address: 40
+    description: "Writing a non-0 value to this register will stop the PWM task."
+  TaskControl:
+    address: 41
+    type: U8
+    access: Write
+    payloadSpec:
+      ClearAllTasks:
+        mask: 0x1
+        maskType: EnableFlag
+        description: "Halts and clears all tasks."
+      DumpAllTasks:
+        mask: 0x2
+        maskType: EnableFlag
+        description: "Sends an event from PwmTask register per currently configured task. Once all events have been sent, a write message will be returned from this register."
+      TaskCount:
+        mask: 0xF0
+        description: "Number of tasks currently configured. This portiion of the register is read-only."
+bitMasks:
+  Ports:
+    description: "Available ports on the device"
+    bits:
+      Port0: 0x1
+      Port1: 0x2
+      Port2: 0x4
+      Port3: 0x8
+      Port4: 0x10
+      Port5: 0x20
+      Port6: 0x40
+      Port7: 0x80
+groupMasks:
+  EnableFlag
