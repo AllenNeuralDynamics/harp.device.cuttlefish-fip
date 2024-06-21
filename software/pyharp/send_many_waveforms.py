@@ -9,8 +9,8 @@ import os
 from time import sleep, perf_counter
 
 PWM_TASK_REG = 34
-SW_TRIGGER_REG = 37
-SCHEDULE_CTRL_REG = 38
+SW_TRIGGER_REG = 39
+SCHEDULE_CTRL_REG = 41
 
 #logger = logging.getLogger()
 #logger.setLevel(logging.DEBUG)
