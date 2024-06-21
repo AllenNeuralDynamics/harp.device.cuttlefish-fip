@@ -30,7 +30,7 @@ extern const uint8_t fw_version_minor;
 extern const uint16_t serial_number;
 
 // Setup for Harp App
-const size_t reg_count = 7;
+const size_t reg_count = 10;
 
 extern PWMScheduler pwm_schedule;
 extern RegSpecs app_reg_specs[reg_count];
@@ -48,6 +48,8 @@ struct app_regs_t
                                                          //  port_mask (U8),
                                                          //  cycles (U32),
                                                          //  invert (U8)}
+                                                         // This register reads
+                                                         // all zeros.
     volatile uint8_t arm_ext_trigger; // which port pins (configured as
                                       // inputs) cause the schedule to
                                       // trigger.
@@ -64,12 +66,21 @@ struct app_regs_t
                                        //      falling edge (0).
                                        // ...
                                        // Resets to rising edge.
+    volatile uint8_t arm_ext_untrigger; // 
+    volatile uint8_t ext_untrigger_edge;  // 
     volatile uint8_t sw_trigger;    // Writing nonzero value to this register
                                     // starts the schedule.
+    volatile uint8_t sw_untrigger;
+
     volatile uint8_t schedule_ctrl; // Apply/read various settings. Reads as 0.
-                                    // [0] : clear pwm_tasks.
-                                    // [1] : dump pwm_tasks as a series of
-                                    //       write messages.
+                                    // [0] : Stop and clear all configured
+                                    //       pwm_tasks.
+                                    // [1] : dump 1 event message per configured
+                                    //       pwm task from the pwm_task register
+                                    //       followed by a
+                                    //       write message from this register.
+                                    // [4:7]: number of configured tasks.
+
     // More app "registers" here.
 };
 #pragma pack(pop)
@@ -111,7 +122,11 @@ void write_arm_ext_trigger(msg_t& msg);
 
 void write_ext_trigger_edge(msg_t& msg);
 
+void write_ext_untrigger_edge(msg_t& msg);
+
 void write_sw_trigger(msg_t& msg);
+
+void write_sw_untrigger(msg_t& msg);
 
 void write_schedule_ctrl(msg_t& msg);
 

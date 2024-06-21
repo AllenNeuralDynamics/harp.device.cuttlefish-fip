@@ -5,25 +5,32 @@ app_regs_t app_regs;
 // Define "specs" per-register
 RegSpecs app_reg_specs[reg_count]
 {
-    {(uint8_t*)&app_regs.port_dir, sizeof(app_regs.port_dir), U8},
-    {(uint8_t*)&app_regs.port_raw, sizeof(app_regs.port_raw), U8},
-    {(uint8_t*)&app_regs.pwm_task, sizeof(app_regs.pwm_task), U8},
+    {(uint8_t*)&app_regs.port_dir, sizeof(app_regs.port_dir), U8}, // 32
+    {(uint8_t*)&app_regs.port_raw, sizeof(app_regs.port_raw), U8},  // 33
+    {(uint8_t*)&app_regs.pwm_task, sizeof(app_regs.pwm_task), U8},  // 34
     {(uint8_t*)&app_regs.arm_ext_trigger, sizeof(app_regs.arm_ext_trigger), U8},
     {(uint8_t*)&app_regs.ext_trigger_edge, sizeof(app_regs.ext_trigger_edge), U8},
-    {(uint8_t*)&app_regs.sw_trigger, sizeof(app_regs.sw_trigger), U8},
-    {(uint8_t*)&app_regs.schedule_ctrl, sizeof(app_regs.schedule_ctrl), U8}
+    {(uint8_t*)&app_regs.arm_ext_trigger, sizeof(app_regs.arm_ext_trigger), U8}, // 37
+    {(uint8_t*)&app_regs.ext_untrigger_edge, sizeof(app_regs.ext_untrigger_edge), U8}, // 38
+    {(uint8_t*)&app_regs.sw_trigger, sizeof(app_regs.sw_trigger), U8}, // 39
+    {(uint8_t*)&app_regs.sw_untrigger, sizeof(app_regs.sw_untrigger), U8}, // 40
+    {(uint8_t*)&app_regs.schedule_ctrl, sizeof(app_regs.schedule_ctrl), U8} // 41
+
     // More specs here if we add additional registers.
 };
 
 RegFnPair reg_handler_fns[reg_count]
 {
-    {HarpCore::read_reg_generic, set_port_direction},
-    {read_from_port, write_to_port},
-    {HarpCore::read_reg_generic, write_pwm_task},
-    {HarpCore::read_reg_generic, write_arm_ext_trigger},
-    {HarpCore::read_reg_generic, write_ext_trigger_edge},
-    {HarpCore::read_reg_generic, write_sw_trigger},
-    {HarpCore::read_reg_generic, write_schedule_ctrl}
+    {HarpCore::read_reg_generic, set_port_direction},       // 32
+    {read_from_port, write_to_port},                        // 33
+    {HarpCore::read_reg_generic, write_pwm_task},           // 34
+    {HarpCore::read_reg_generic, write_arm_ext_trigger},    // 35
+    {HarpCore::read_reg_generic, write_ext_trigger_edge},   // 36
+    {HarpCore::read_reg_generic, write_arm_ext_trigger},    // 37
+    {HarpCore::read_reg_generic, write_ext_untrigger_edge}, // 38
+    {HarpCore::read_reg_generic, write_sw_trigger},         // 39
+    {HarpCore::read_reg_generic, write_sw_untrigger},       // 40
+    {HarpCore::read_reg_generic, write_schedule_ctrl}       // 41
     // More handler function pairs here if we add additional registers.
 };
 
@@ -92,11 +99,28 @@ void write_ext_trigger_edge(msg_t& msg)
         HarpCore::send_harp_reply(WRITE, msg.header.address);
 }
 
+void write_ext_untrigger_edge(msg_t& msg)
+{
+    // FIXME: implement this.
+    if (!HarpCore::is_muted())
+        HarpCore::send_harp_reply(WRITE, msg.header.address);
+}
+
 void write_sw_trigger(msg_t& msg)
 {
     const uint8_t& start = *((uint8_t*)msg.payload);
     if (start)
         queue_try_add(&cmd_signal_queue, &start);
+    if (!HarpCore::is_muted())
+        HarpCore::send_harp_reply(WRITE, msg.header.address);
+}
+
+void write_sw_untrigger(msg_t& msg)
+{
+    // FIXME: implement this.
+    //const uint8_t& start = *((uint8_t*)msg.payload);
+    //if (start)
+    //    queue_try_add(&cmd_signal_queue, &start);
     if (!HarpCore::is_muted())
         HarpCore::send_harp_reply(WRITE, msg.header.address);
 }
