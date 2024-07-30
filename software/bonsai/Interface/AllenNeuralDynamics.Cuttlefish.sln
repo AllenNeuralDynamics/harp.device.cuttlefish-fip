@@ -1,0 +1,25 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32825.248
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{35FD4D92-5501-4BBF-AE2D-EEDBC78E88EC}") = "AllenNeuralDynamics.Cuttlefish", "AllenNeuralDynamics.Cuttlefish\AllenNeuralDynamics.Cuttlefish.csproj", "{36E1229A-4068-4D12-BA3E-4E4370DC7E23}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{36E1229A-4068-4D12-BA3E-4E4370DC7E23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36E1229A-4068-4D12-BA3E-4E4370DC7E23}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36E1229A-4068-4D12-BA3E-4E4370DC7E23}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36E1229A-4068-4D12-BA3E-4E4370DC7E23}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {37A5B99E-31D1-492E-B924-ECDA58C1CA74}
+	EndGlobalSection
+EndGlobal
