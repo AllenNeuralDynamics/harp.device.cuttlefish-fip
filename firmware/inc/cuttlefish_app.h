@@ -32,6 +32,7 @@ extern const uint16_t serial_number;
 // Setup for Harp App
 const size_t reg_count = 10;
 
+extern uint8_t pwm_task_mask;
 extern PWMScheduler pwm_schedule;
 extern RegSpecs app_reg_specs[reg_count];
 extern RegFnPair reg_handler_fns[reg_count];
@@ -41,7 +42,11 @@ extern HarpCApp& app;
 struct app_regs_t
 {
     volatile uint8_t port_dir; // 1 = output; 0 = input.
-    volatile uint8_t port_raw; // current gpio state. Readable and writeable.
+    volatile uint8_t port_state; // current gpio state. Readable and writeable.
+                                 // Issues event if port state has changed for
+                                 // port channels marked as inputs.
+                                 // Writing to pins shared with a task
+                                 // does not change their state.
     volatile uint8_t pwm_task[sizeof(pwm_task_specs_t)]; // {offset_us (U32),
                                                          //  start_time_us (U32),
                                                          //  stop_time_us (U32),
@@ -50,9 +55,8 @@ struct app_regs_t
                                                          //  invert (U8)}
                                                          // This register reads
                                                          // all zeros.
-    volatile uint8_t arm_ext_trigger; // which port pins (configured as
-                                      // inputs) cause the schedule to
-                                      // trigger.
+    volatile uint8_t arm_ext_trigger; // which port input pin(s) cause the
+                                      // schedule to trigger.
                                       // Arm a hardware trigger.
                                       // [0] = 1: TTL pin 0 starts the trigger.
                                       // [1] = 1: TTL pin 1 starts the trigger.
@@ -100,18 +104,18 @@ inline void reset_schedule()
  * \warning this status can be overwritten if a pin is later assigned to a PWMTask
  */
 
-void set_port_direction(msg_t& msg);
+void write_port_dir(msg_t& msg);
 
 /**
  * \brief read the 8-channel port simultaneousy
  */
-void read_from_port(uint8_t reg_address);
+void read_port_state(uint8_t reg_address);
 
 /**
  * \brief write to the 8-channel port as a group. (Values for pins specified
  *  as inputs will be ignored.)
  */
-void write_to_port(msg_t& msg);
+void write_port_state(msg_t& msg);
 
 /**
  * \brief Create a PWMTask.
@@ -121,6 +125,8 @@ void write_pwm_task(msg_t& msg);
 void write_arm_ext_trigger(msg_t& msg);
 
 void write_ext_trigger_edge(msg_t& msg);
+
+void write_arm_ext_untrigger(msg_t& msg);
 
 void write_ext_untrigger_edge(msg_t& msg);
 

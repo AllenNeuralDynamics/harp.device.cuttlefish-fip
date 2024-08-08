@@ -6,7 +6,7 @@ add_definitions(-DGIT_HASH="${COMMIT_ID}") # Usable in source code.
 
 include(${PICO_SDK_PATH}/pico_sdk_init.cmake)
 
-project(cuttlefish-${COMMIT_ID})
+project(cuttlefish)
 
 set(CMAKE_CXX_STANDARD 17)
 
