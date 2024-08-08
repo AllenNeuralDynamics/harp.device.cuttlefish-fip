@@ -172,7 +172,7 @@ void update_app_state()
     uint8_t trigger = app_regs.arm_ext_trigger &
         ((rising_edge_pins & app_regs.ext_trigger_edge) |
          (falling_edge_pins & ~app_regs.ext_trigger_edge));
-    // Start PWM Task schedule in core1.
+    // Start PWM Task schedule in core1 if externally triggered.
     if (trigger)
     {
         uint8_t start = 1;
