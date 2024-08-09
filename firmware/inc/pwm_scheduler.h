@@ -47,8 +47,7 @@ public:
  */
     void update();
 
-    // FIXME: this should be part of a reset function.
-    static inline void cancel_alarm()
+    inline void cancel_alarm()
     {
         timer_hw->armed |= (1u << alarm_num_); // Disarm alarm if it was armed.
         alarm_queued_ = false;

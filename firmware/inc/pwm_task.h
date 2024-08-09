@@ -28,7 +28,8 @@ public:
     enum update_state_t: uint8_t
     {
         LOW = 0,
-        HIGH = 1
+        HIGH = 1,
+        DONE = 2
     };
 
 /**
@@ -71,11 +72,7 @@ public:
  * \brief true if update() must be called again in the future.
  */
     inline bool requires_future_update()
-    {
-        if (count_ == 0 || cycles_ != count_)
-            return true;
-        return false;
-    }
+    {return state_ != DONE;}
 
 private:
     friend class PWMScheduler;
@@ -88,6 +85,8 @@ private:
     update_state_t state_; /// current state of pulse waveform.
     uint32_t count_; /// How many pulses to issue.
                      ///  0: pulse forever. >0: execute N times.
+    uint32_t loops_; /// how many iterations of the state machine we have been
+                     ///    through.
     uint32_t cycles_; /// how many times we have pulsed.
     uint32_t start_time_us_; /// What (32-bit) time the pulse started.
 
@@ -98,6 +97,7 @@ private:
 
     inline void reset(bool skip_output_action = false)
     {
+        loops_ = 0;
         cycles_ = 0;
         gpio_put_masked(pin_mask_, 0);
         state_ = (delay_us_ == 0)? HIGH: LOW;

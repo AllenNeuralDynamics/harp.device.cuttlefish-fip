@@ -95,8 +95,11 @@ extern app_regs_t app_regs;
 inline void reset_schedule()
 {
     multicore_reset_core1(); // Kill any actively running schedule.
+    //(void)multicore_fifo_pop_blocking(); // Wait until core1 is ready.
     gpio_put_masked((0x000000FF << PORT_BASE), 0); // Write all GPIOs to 0.
     multicore_launch_core1(core1_main);
+    // TODO: ideally, we want to communicate with core1, cancel alarms, and
+    //  destroy all instances with their destructors.
 }
 
 /**

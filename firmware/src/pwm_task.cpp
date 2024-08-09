@@ -3,7 +3,7 @@
 PWMTask::PWMTask(uint32_t t_delay_us, uint32_t t_on_us, uint32_t t_period_us,
                  uint32_t pin_mask, uint32_t count, bool invert)
 : delay_us_{t_delay_us}, on_time_us_{t_on_us}, period_us_{t_period_us},
-  pin_mask_{pin_mask}, count_{count_}, cycles_{0}, start_time_us_{0},
+  pin_mask_{pin_mask}, count_{count}, loops_{0}, cycles_{0}, start_time_us_{0},
   next_update_time_us_{0}
 {
     // Initialize this GPIO pin.
@@ -33,19 +33,28 @@ void PWMTask::update(bool force, bool skip_output_action)
     if ((!force) && (!time_to_update()))
         return;
     update_state_t next_state{state_};
-    switch (state_)
+    if ((cycles_ == count_) && (count_ > 0))
+        next_state = DONE;
+    else
     {
-        case HIGH:
-            next_state = LOW;
-            next_update_time_us_ += period_us_ - on_time_us_;
-            break;
-        case LOW:
-            next_state = HIGH;
-            next_update_time_us_ += on_time_us_;
-            break;
+        switch (state_)
+        {
+            case HIGH:
+                next_state = LOW;
+                next_update_time_us_ += period_us_ - on_time_us_;
+                break;
+            case LOW:
+                next_state = HIGH;
+                next_update_time_us_ += on_time_us_;
+                break;
+            case DONE:
+                next_state = DONE;
+            default: // Shouldn't be accessible in this section.
+                next_state = DONE;
+        }
     }
-    if (state_ == HIGH && next_state == LOW)
-        cycles_ += 1;
+    loops_ += 1;
+    cycles_ = loops_ >> 1; // loops/2.
     state_ = next_state;
     // Update outputs.
     // Update the gpio state here.

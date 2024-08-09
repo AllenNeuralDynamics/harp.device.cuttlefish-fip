@@ -30,7 +30,6 @@ PWMScheduler::~PWMScheduler()
 void PWMScheduler::reset()
 {
     cancel_alarm(); // Cancel any upcoming alarms.
-    // TODO: we should consider writing all zeros to each PWMtask.
     pq_.clear(); // Remove all tasks in the priority queue.
 }
 
@@ -69,7 +68,8 @@ void PWMScheduler::clear()
 void PWMScheduler::update()
 {
     // Prevent queuing another alarm until the port state change has occured.
-    if (alarm_queued_)
+    // Bail early if there are no tasks.
+    if (alarm_queued_ || (pq_.size() == 0))
         return;
     next_gpio_port_mask_ = 0;
     next_gpio_port_state_ = 0;
@@ -86,14 +86,18 @@ void PWMScheduler::update()
         next_gpio_port_mask_ |= pwm.pin_mask_;
         if (pwm.state_ == PWMTask::update_state_t::HIGH)
             next_gpio_port_state_ |= pwm.pin_mask_;
-        // Put this task back in the pq.
-        pq_.push(pwm);
+        // Put this task back in the pq if it must be updated later.
+        if (pwm.requires_future_update())
+            pq_.push(pwm);
         // Continue scheduling all PWM tasks that will fire simultaneously.
+        if (pq_.size() == 0)
+            break;
         if (pq_.top().get().next_update_time_us_ != next_pwm_task_update_time_us)
             break;
     }
     // Save next update time although we currently don't use it.
-    next_update_time_us_ = pq_.top().get().next_update_time_us_;
+    if (pq_.size())
+        next_update_time_us_ = pq_.top().get().next_update_time_us_;
     // Schedule the GPIO port state change!
     // Schedule alarm with ptr to class instance as a parameter.
     // TODO: figure out how to disambiguate Harp/Pico time.

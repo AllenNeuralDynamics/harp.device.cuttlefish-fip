@@ -31,6 +31,8 @@ void core1_main()
 #warning "Initializing uart printing will slow down core1 main loop."
     stdio_uart_init_full(DEBUG_UART, 921600, DEBUG_UART_TX_PIN, -1); // tx only.
     printf("hello, from core1\r\n");
+    printf("Size of PWMTask vector: %d/%d\r\n", pwm_tasks.size(),
+                                                pwm_tasks.max_size());
 #endif
 #if defined(PROFILE_CPU)
     // Configure SYSTICK register to tick with CPU clock (125MHz) and enable it.
@@ -55,7 +57,7 @@ void core1_main()
                         task_specs.period_us,
                         (uint32_t(task_specs.port_mask) << PORT_BASE),
                         task_specs.cycles,
-                        task_specs.invert));
+                        bool(task_specs.invert)));
             pwm_schedule.schedule_pwm_task(pwm_tasks.back());
         }
         if (!queue_is_empty(&cmd_signal_queue))
