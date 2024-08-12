@@ -77,12 +77,12 @@ struct app_regs_t
     volatile uint8_t sw_untrigger;
 
     volatile uint8_t schedule_ctrl; // Apply/read various settings. Reads as 0.
-                                    // [0] : Stop and clear all configured
-                                    //       pwm_tasks.
-                                    // [1] : dump 1 event message per configured
-                                    //       pwm task from the pwm_task register
-                                    //       followed by a
-                                    //       write message from this register.
+                                    // [0] = 1 : Stop and clear all configured
+                                    //           pwm_tasks.
+                                    // [1] = 1 : dump 1 event msg per configured
+                                    //           pwm task from the pwm_task
+                                    //           register followed by a write
+                                    //           msg from this register.
                                     // [4:7]: number of configured tasks.
 
     // More app "registers" here.

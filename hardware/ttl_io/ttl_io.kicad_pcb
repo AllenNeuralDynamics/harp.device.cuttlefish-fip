@@ -16907,7 +16907,7 @@
   (gr_text "Sonya Vasquez" (at 189.1 115.1) (layer "F.SilkS") (tstamp 703f0836-15a3-47b2-87bb-4decd08a4fc0)
     (effects (font (size 1 1) (thickness 0.15)) (justify left bottom))
   )
-  (gr_text "cuTTLfish:\nsquare wave\ngenerator" (at 187.4 79.8) (layer "F.SilkS") (tstamp 8a954ed1-4cbf-4e4c-8a99-c7196d6ecc39)
+  (gr_text "cuTTLefish:\nsquare wave\ngenerator" (at 187.4 79.8) (layer "F.SilkS") (tstamp 8a954ed1-4cbf-4e4c-8a99-c7196d6ecc39)
     (effects (font (size 2.5 2.5) (thickness 0.4) italic) (justify bottom))
   )
   (gr_text "v0.1.2, Aug 8, 2024" (at 185.2 117) (layer "F.SilkS") (tstamp aa0ebbec-dcc0-4070-8b1f-5b9ef448fae2)

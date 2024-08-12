@@ -46,6 +46,11 @@ int main()
     queue_init(&pwm_task_setup_queue, sizeof(pwm_task_specs_t), 8);
     queue_init(&cmd_signal_queue, sizeof(uint8_t), 2);
 
+#if defined(DEBUG) || defined(PROFILE_CPU)
+#warning "Initializing printf from UART will slow down core1 main loop."
+    stdio_uart_init_full(DEBUG_UART, 921600, DEBUG_UART_TX_PIN, -1);
+#endif
+
     // For testing: schedule some waveforms on core1.
     //pwm_task_specs_t pwm0{0, 5, 10, (1u << LED1)|(1u << PORT_BASE)}; // only works if we don't do anything else.
     //pwm_task_specs_t pwm0{0, 20, 40, (1u << LED1)|(1u << PORT_BASE)};

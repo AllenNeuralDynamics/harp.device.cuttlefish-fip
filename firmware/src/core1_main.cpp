@@ -27,13 +27,6 @@ void core1_main()
     // Clear existing tasks since this func can be called repeatedly from core0.
     pwm_tasks.clear();
     pwm_schedule.reset();
-#if defined(DEBUG) || defined(PROFILE_CPU)
-#warning "Initializing uart printing will slow down core1 main loop."
-    stdio_uart_init_full(DEBUG_UART, 921600, DEBUG_UART_TX_PIN, -1); // tx only.
-    printf("hello, from core1\r\n");
-    printf("Size of PWMTask vector: %d/%d\r\n", pwm_tasks.size(),
-                                                pwm_tasks.max_size());
-#endif
 #if defined(PROFILE_CPU)
     // Configure SYSTICK register to tick with CPU clock (125MHz) and enable it.
     SYST_CSR |= (1 << 2) | (1 << 0);

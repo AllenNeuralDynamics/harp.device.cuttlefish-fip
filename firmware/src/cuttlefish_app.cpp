@@ -38,11 +38,14 @@ RegFnPair reg_handler_fns[reg_count]
 void write_port_dir(msg_t& msg)
 {
     HarpCore::copy_msg_payload_to_register(msg);
-    // Set gpio buffer direction to outputs (1) or inputs (0).
-    // Note: Exclude output pins driven by pwm tasks.
-    gpio_set_dir_masked(((0x000000FF & ~pwm_task_mask) << PORT_DIR_BASE),
-                        uint32_t(app_regs.port_dir) << PORT_DIR_BASE);
-    // set ttl buffers to outputs or inputs.
+    // Set Buffer ctrl pins and corresponding IO pin to both match.
+    // Omit setting direction of pins used by existing PWM Tasks.
+    // Note: additional 0x000000FF masking is because bitwise '~' on a uint8_t
+    //  will perform integral promotion automatically for a 32-bit system.
+    gpio_put_masked((0x000000FF & uint32_t(~pwm_task_mask)) << PORT_DIR_BASE,
+                    uint32_t(app_regs.port_dir) << PORT_DIR_BASE);
+    gpio_set_dir_masked((0x000000FF & uint32_t(~pwm_task_mask)) << PORT_BASE,
+                        uint32_t(app_regs.port_dir) << PORT_BASE);
     if (!HarpCore::is_muted())
         HarpCore::send_harp_reply(WRITE, msg.header.address);
 }
@@ -50,7 +53,7 @@ void write_port_dir(msg_t& msg)
 void read_port_state(uint8_t reg_address)
 {
     // Include the state of pins driven by PWMTasks.
-    app_regs.port_state = uint8_t(0xFF & (gpio_get_all() >> PORT_BASE));
+    app_regs.port_state = uint8_t(gpio_get_all() >> PORT_BASE);
     if (!HarpCore::is_muted())
         HarpCore::send_harp_reply(READ, reg_address);
 }
@@ -60,13 +63,16 @@ void write_port_state(msg_t& msg)
     HarpCore::copy_msg_payload_to_register(msg);
     // Exclude pins controlled by PWM tasks.
     uint8_t output_pins = app_regs.port_dir & ~pwm_task_mask;
-    // write to output pins.
-    gpio_put_masked((uint32_t(output_pins) << PORT_BASE),
-                    (uint32_t(app_regs.port_state) << PORT_BASE));
+    // write to output pins (not including pins controlled by PWM Tasks).
+    gpio_put_masked(uint32_t(output_pins) << PORT_BASE,
+                    uint32_t(app_regs.port_state) << PORT_BASE);
     // Read back what we just wrote since it's fast.
     // Add delay for change to take effect. (May be related to slew rate).
     asm volatile("nop \n nop \n nop");
-    app_regs.port_state = uint8_t(0xFF & (gpio_get_all() >> PORT_BASE));
+    app_regs.port_state = uint8_t(gpio_get_all() >> PORT_BASE);
+#if defined(DEBUG)
+    printf("Wrote to GPIOs. New GPIO state: 0x%08lx\r\n", gpio_get_all());
+#endif
     // Reply with the actual value that we wrote.
     if (!HarpCore::is_muted())
         HarpCore::send_harp_reply(WRITE, msg.header.address);
@@ -75,11 +81,18 @@ void write_port_state(msg_t& msg)
 
 void write_pwm_task(msg_t& msg)
 {
-    //HarpCore::copy_msg_payload_to_register(msg);
-    // TODO: update port_dir to mark the specified ports as outputs.
+    // FIXME: writing a pwm task config while the schedule is running should
+    //     throw an error.
+    // Note: we do not copy payload to register. We will send this data directly
+    // to the PWM scheduler without storing a Harp register representation.
+
     // Interpret byte array as packed function arguments to create a PWMTask.
     pwm_task_specs_t& specs = *((pwm_task_specs_t*)msg.payload);
     pwm_task_mask |= specs.port_mask; // Track pins controlled by PWM Tasks.
+    // Set Buffer ctrl pins to output for the PWM task pin.
+    gpio_put_masked(uint32_t(pwm_task_mask) << PORT_DIR_BASE, 0xFFFFFFFF);
+    // Set corresponding IO pins to outputs for the PWM Task.
+    gpio_set_dir_masked(uint32_t(pwm_task_mask) << PORT_BASE, 0xFFFFFFFF);
     // Send the task to core1.
     queue_try_add(&pwm_task_setup_queue, &specs);
     if (!HarpCore::is_muted())
@@ -90,9 +103,10 @@ void write_arm_ext_trigger(msg_t& msg)
 {
     HarpCore::copy_msg_payload_to_register(msg);
     uint8_t& ext_trigger_mask = *((uint8_t*)msg.payload);
-    // FIXME: implement this.
-    // Set pin as input if not already set as such.
-    // TODO: consider using interrupt to start the schedule.
+    // Set Buffer ctrl pins and corresponding IO pins to inputs for the trigger.
+    gpio_set_dir_masked(uint32_t(app_regs.arm_ext_trigger) << PORT_DIR_BASE |
+                        uint32_t(app_regs.arm_ext_trigger) << PORT_BASE,
+                        0);
     if (!HarpCore::is_muted())
         HarpCore::send_harp_reply(WRITE, msg.header.address);
 }
@@ -100,7 +114,6 @@ void write_arm_ext_trigger(msg_t& msg)
 void write_ext_trigger_edge(msg_t& msg)
 {
     HarpCore::copy_msg_payload_to_register(msg);
-    // FIXME: implement this.
     // Check if ext trigger has already been configured. Re-configure if so.
     if (!HarpCore::is_muted())
         HarpCore::send_harp_reply(WRITE, msg.header.address);
@@ -148,9 +161,15 @@ void write_schedule_ctrl(msg_t& msg)
     const uint8_t& schedule_ctrl = *((uint8_t*)msg.payload);
     if (schedule_ctrl & 0x01)
     {
+        // Reset the schedule.
+        // Clear claimed PWM Task pins to inputs on Buffer ctrl pins and
+        // corresponding io pins.
+        gpio_set_dir_masked(uint32_t(pwm_task_mask) << PORT_BASE, 0);
+        gpio_put_masked(uint32_t(pwm_task_mask) << PORT_DIR_BASE, 0);
+        pwm_task_mask = 0; // Clear reserved pwm task pins.
         reset_schedule();
     }
-    else if (schedule_ctrl & 0x02)
+    if (schedule_ctrl & 0x02)
     {
         // TODO: dump schedule.
     }
@@ -163,7 +182,7 @@ void update_app_state()
     uint8_t input_pins = ~app_regs.port_dir;
     uint8_t old_port_state = app_regs.port_state;
     // Update raw port state.
-    app_regs.port_state = uint8_t(0xFF & (gpio_get_all() >> PORT_BASE));
+    app_regs.port_state = uint8_t(gpio_get_all() >> PORT_BASE);
     // Filter for input pins that changed.
     uint8_t changed_input_pins = ((old_port_state ^ app_regs.port_state) & input_pins);
     // Check to see if any pins trigger the PWM Task schedule.
@@ -191,15 +210,17 @@ void reset_app()
     pwm_task_mask = 0; // Clear local tracking of pwm task pins.
     // init all pins used as GPIOs.
     gpio_init_mask((0x000000FF << PORT_DIR_BASE) | (0x000000FF << PORT_BASE));
-    // Reset PORT to all outputs. Reset DIR to all outputs.
-    gpio_set_dir_masked((0x000000FF << PORT_DIR_BASE) | (0x000000FF << PORT_BASE),
-                        (0x000000FF << PORT_DIR_BASE) | (0x000000FF << PORT_BASE));
-    // Default behavior: set each chip as an output and drive a 0.
-    gpio_put_masked((0x000000FF << PORT_DIR_BASE) | (0x000000FF << PORT_BASE),
-                    (0x000000FF << PORT_DIR_BASE));
-    // Reset non-zero Harp register struct elements.
-    app_regs.ext_trigger_edge = 0xFF; // Rising edge.
+    // Reset unbuffered IO pins to inputs.
+    gpio_set_dir_masked(0x000000FF << PORT_BASE, 0);
+    // Reset Buffer ctrl pins to all outputs and drive an input setting.
+    gpio_set_dir_masked(0x000000FF << PORT_DIR_BASE, 0xFFFFFFFF);
+    gpio_put_masked(0x000000FF << PORT_DIR_BASE, 0);
+    // Reset Harp register struct elements.
     app_regs.port_dir = 0xFF; // all outputs.
-    app_regs.port_state = uint8_t(0xFF & (gpio_get_all() >> PORT_BASE));
+    app_regs.port_state = uint8_t(gpio_get_all() >> PORT_BASE);
+    app_regs.arm_ext_trigger = 0x00;
+    app_regs.ext_trigger_edge = 0xFF; // Rising edge.
+    app_regs.arm_ext_untrigger = 0x00;
+    app_regs.ext_untrigger_edge = 0xFF; // Rising edge.
     reset_schedule();
 }

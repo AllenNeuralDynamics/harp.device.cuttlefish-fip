@@ -4371,7 +4371,7 @@
   (symbol (lib_id "Device:C") (at 178.435 85.725 0) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 26145a66-c77c-459a-b245-01025520f820)
-    (property "Reference" "C6" (at 173.99 83.185 0)
+    (property "Reference" "C32" (at 173.99 83.185 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "100nF" (at 171.45 88.9 0)
@@ -4408,9 +4408,6 @@
     (pin "2" (uuid 91c79a43-a9b3-4abe-927f-9d9a5da370b3))
     (instances
       (project "ttl_io"
-        (path "/de782c9d-fd54-45ed-aa91-6297331e40f6/1fe1f8ff-b1f9-48b6-8256-97b16d4120ca"
-          (reference "C6") (unit 1)
-        )
         (path "/de782c9d-fd54-45ed-aa91-6297331e40f6/76bb2607-2d2e-4d2c-9a45-1b3b3938988a"
           (reference "C32") (unit 1)
         )
@@ -4672,7 +4669,7 @@
   (symbol (lib_id "Device:C") (at 119.38 85.725 180) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 64632933-0e24-4d34-9705-a6af72e49536)
-    (property "Reference" "C6" (at 123.825 83.185 0)
+    (property "Reference" "C31" (at 123.825 83.185 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "100nF" (at 126.365 88.265 0)
@@ -4709,9 +4706,6 @@
     (pin "2" (uuid ef130dee-3ae3-47a0-82be-9085b5288b6d))
     (instances
       (project "ttl_io"
-        (path "/de782c9d-fd54-45ed-aa91-6297331e40f6/1fe1f8ff-b1f9-48b6-8256-97b16d4120ca"
-          (reference "C6") (unit 1)
-        )
         (path "/de782c9d-fd54-45ed-aa91-6297331e40f6/76bb2607-2d2e-4d2c-9a45-1b3b3938988a"
           (reference "C31") (unit 1)
         )
@@ -4835,7 +4829,7 @@
   (symbol (lib_id "Device:R") (at 182.88 100.965 180) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 81e457dd-8b2c-4e46-bc16-9c570879793a)
-    (property "Reference" "R8" (at 185.42 99.06 90)
+    (property "Reference" "R25" (at 185.42 99.06 90)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "10K" (at 182.88 99.06 90)
@@ -4863,9 +4857,6 @@
     (pin "2" (uuid 2b156850-deea-4b66-9c12-e7db7a93e46b))
     (instances
       (project "ttl_io"
-        (path "/de782c9d-fd54-45ed-aa91-6297331e40f6/1fe1f8ff-b1f9-48b6-8256-97b16d4120ca"
-          (reference "R8") (unit 1)
-        )
         (path "/de782c9d-fd54-45ed-aa91-6297331e40f6/76bb2607-2d2e-4d2c-9a45-1b3b3938988a"
           (reference "R25") (unit 1)
         )
@@ -5059,7 +5050,7 @@
   (symbol (lib_id "Device:R") (at 172.72 100.965 0) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid b3ed9ea2-d207-4948-8e67-a95d29cbff45)
-    (property "Reference" "R8" (at 173.355 97.155 0)
+    (property "Reference" "R23" (at 173.355 97.155 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "10K" (at 172.72 99.06 90)
@@ -5087,9 +5078,6 @@
     (pin "2" (uuid 17d272cc-03cb-473d-9fd5-d6e6ef9fcd58))
     (instances
       (project "ttl_io"
-        (path "/de782c9d-fd54-45ed-aa91-6297331e40f6/1fe1f8ff-b1f9-48b6-8256-97b16d4120ca"
-          (reference "R8") (unit 1)
-        )
         (path "/de782c9d-fd54-45ed-aa91-6297331e40f6/76bb2607-2d2e-4d2c-9a45-1b3b3938988a"
           (reference "R23") (unit 1)
         )
@@ -5143,7 +5131,7 @@
   (symbol (lib_id "Device:R") (at 124.46 100.965 180) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid b722b2fc-f806-4965-bd4a-f3728b5c5a48)
-    (property "Reference" "R8" (at 123.825 97.155 0)
+    (property "Reference" "R22" (at 123.825 97.155 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "10K" (at 124.46 99.06 90)
@@ -5171,9 +5159,6 @@
     (pin "2" (uuid 0c02f539-4186-40ab-b85a-3517dfd7f9e2))
     (instances
       (project "ttl_io"
-        (path "/de782c9d-fd54-45ed-aa91-6297331e40f6/1fe1f8ff-b1f9-48b6-8256-97b16d4120ca"
-          (reference "R8") (unit 1)
-        )
         (path "/de782c9d-fd54-45ed-aa91-6297331e40f6/76bb2607-2d2e-4d2c-9a45-1b3b3938988a"
           (reference "R22") (unit 1)
         )
@@ -5189,7 +5174,7 @@
   (symbol (lib_id "Device:R") (at 114.3 100.965 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid b908abeb-cd99-4792-8ffa-4638dbdf5949)
-    (property "Reference" "R8" (at 111.76 102.87 90)
+    (property "Reference" "R21" (at 111.76 102.87 90)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "10K" (at 114.3 102.87 90)
@@ -5217,9 +5202,6 @@
     (pin "2" (uuid 4c8477b5-2cf9-4604-8155-8251ca90480d))
     (instances
       (project "ttl_io"
-        (path "/de782c9d-fd54-45ed-aa91-6297331e40f6/1fe1f8ff-b1f9-48b6-8256-97b16d4120ca"
-          (reference "R8") (unit 1)
-        )
         (path "/de782c9d-fd54-45ed-aa91-6297331e40f6/76bb2607-2d2e-4d2c-9a45-1b3b3938988a"
           (reference "R21") (unit 1)
         )

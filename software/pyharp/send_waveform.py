@@ -30,18 +30,22 @@ else: # assume Windows.
 settings = \
 (
     0,          # offset_us
-    500000,     # on_time_us
-    1000000,    # period_us
+    5000,     # on_time_us
+    10000,    # period_us
     (1 << 0),   # port_mask. 0 is device pin0.
     0,          # cycles. (0 = repeat forever.)
     False       # invert.
 )
 data_fmt = "<LLLBLB"
+print("Disabling task.")
+device.send(WriteU8HarpMessage(SCHEDULE_CTRL_REG, 1).frame)
+
 print("Configuring device with PWM task.")
 measurement = device.send(WriteU8ArrayMessage(PWM_TASK_REG,
                                               data_fmt, settings).frame)
 print("Enabling task.")
 device.send(WriteU8HarpMessage(SW_TRIGGER_REG, int(True)).frame)
 sleep(3)
+
 print("Disabling task.")
 device.send(WriteU8HarpMessage(SCHEDULE_CTRL_REG, 1).frame)

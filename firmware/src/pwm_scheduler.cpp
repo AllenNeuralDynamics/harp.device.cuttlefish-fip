@@ -95,9 +95,11 @@ void PWMScheduler::update()
         if (pq_.top().get().next_update_time_us_ != next_pwm_task_update_time_us)
             break;
     }
+/*
     // Save next update time although we currently don't use it.
     if (pq_.size())
         next_update_time_us_ = pq_.top().get().next_update_time_us_;
+*/
     // Schedule the GPIO port state change!
     // Schedule alarm with ptr to class instance as a parameter.
     // TODO: figure out how to disambiguate Harp/Pico time.

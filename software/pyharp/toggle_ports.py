@@ -26,12 +26,13 @@ if os.name == 'posix': # check for Linux.
 else: # assume Windows.
     device = Device("COM95", "ibl.bin")
 
-print("Configuring TTL pins 0, 1, 2, 3.")
-device.send(WriteU8HarpMessage(PORT_DIR_REG, int(0x0F)).frame)
+#print("Configuring TTL pins 0, 1, 2, 3.")
+print("Configuring TTL pins 0, 1, 2, 3, 4, 5, 6, 7.")
+device.send(WriteU8HarpMessage(PORT_DIR_REG, int(0xFF)).frame)
 sleep(1)
 for i in range(3):
-    print("Writing: 0x0F", end = " ")
-    reply = device.send(WriteU8HarpMessage(PORT_REG, int(0x0F)).frame)
+    print("Writing: 0xFF", end = " ")
+    reply = device.send(WriteU8HarpMessage(PORT_REG, int(0xFF)).frame)
     print(f" Read back: {hex(reply.payload[0])}")
     sleep(0.5)
     print("Writing: 0x00", end=" ")
