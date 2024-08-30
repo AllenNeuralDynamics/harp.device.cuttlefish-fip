@@ -13,7 +13,6 @@
 class PWMTask
 {
 public:
-    // FIXME: pin should be a pin mask since this PWMTask could apply to multiple pins.
     PWMTask(uint32_t t_delay_us, uint32_t t_on_us, uint32_t t_period_us,
             uint32_t pin_mask, uint32_t count = 0, bool invert = false);
 
@@ -29,7 +28,8 @@ public:
     {
         LOW = 0,
         HIGH = 1,
-        DONE = 2
+        DONE = 2,
+        DELAY = 3,
     };
 
 /**
@@ -48,18 +48,26 @@ public:
     const inline uint32_t next_update_time_us()
     {return next_update_time_us_;}
 
-    // TODO: should(?) have access to Harp time in the future.
-    inline void start(bool skip_output_action = false)
-    {start_at_time(timer_hw->timerawl, skip_output_action);}
-
 /**
- * \brief start the PWM state machine but override its start time to
- *  schedule it in the future.
+ * \brief stop outputs.
  */
-    inline void start_at_time(uint32_t start_time_us, bool skip_output_action = false)
+    inline void stop()
+    {gpio_put_masked(pin_mask_, 0);}
+
+    void reset(bool skip_output_action = false);
+
+    inline void start(bool skip_output_action = false)
+    {
+        reset(skip_output_action);
+        set_time_started(timer_hw->timerawl);
+    }
+
+    inline void set_time_started(uint32_t start_time_us)
     {
         start_time_us_ = start_time_us;
-        reset(skip_output_action);
+        next_update_time_us_ = start_time_us_ + delay_us_;
+        if (starting_state() == HIGH)
+            next_update_time_us_ += on_time_us_;
     }
 
 /**
@@ -74,6 +82,9 @@ public:
     inline bool requires_future_update()
     {return state_ != DONE;}
 
+    inline update_state_t starting_state()
+    {return (delay_us_ == 0)? HIGH : DELAY;}
+
 private:
     friend class PWMScheduler;
 
@@ -85,6 +96,7 @@ private:
     update_state_t state_; /// current state of pulse waveform.
     uint32_t count_; /// How many pulses to issue.
                      ///  0: pulse forever. >0: execute N times.
+    bool invert_;   /// Whether the waveform is inverted. Used externally.
     uint32_t loops_; /// how many iterations of the state machine we have been
                      ///    through.
     uint32_t cycles_; /// how many times we have pulsed.
@@ -94,21 +106,5 @@ private:
  * \brief absolute time that the state machine needs to update.
  */
     uint32_t next_update_time_us_;
-
-    inline void reset(bool skip_output_action = false)
-    {
-        loops_ = 0;
-        cycles_ = 0;
-        gpio_put_masked(pin_mask_, 0);
-        state_ = (delay_us_ == 0)? HIGH: LOW;
-        next_update_time_us_ = start_time_us_ + delay_us_;
-        if (state_ == HIGH)
-            next_update_time_us_ += on_time_us_;
-        if (skip_output_action)
-            return;
-        // Apply initial pwm state to gpio pins.
-        uint32_t pin_state = (state_ == HIGH)? pin_mask_: 0;
-        gpio_put_masked(pin_mask_, pin_state);
-    }
 };
 #endif // PWM_TASK_H

@@ -39,7 +39,7 @@ pwm_task_settings = (
     (0, 50000, 100000,  (1 << 7), 0, False)
 )
 #pwm_task_settings = (
-#    (0, 500000, 1000000, (1 << 0), 0, False),
+#    (0, 1000000, 2000000, (1 << 0), 0, False),
 #    (0, 100000, 1000000, (1 << 1), 0, False),
 #    (0, 400000, 1000000, (1 << 2), 0, False),
 #    (0, 300000, 1000000, (1 << 3), 0, False),
@@ -57,7 +57,7 @@ for setting in pwm_task_settings:
 print("Enabling many tasks.")
 device.send(WriteU8HarpMessage(SW_TRIGGER_REG, int(True)).frame)
 
-sleep(3)
+sleep(5)
 
 print("Disabling all tasks.")
 device.send(WriteU8HarpMessage(SCHEDULE_CTRL_REG, 1).frame)

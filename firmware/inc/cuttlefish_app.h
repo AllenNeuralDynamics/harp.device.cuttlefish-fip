@@ -85,6 +85,10 @@ struct app_regs_t
                                     //           msg from this register.
                                     // [4:7]: number of configured tasks.
 
+    uint8_t status; // Read-only state of the schedule.
+    uint8_t error_state;    // Read-only state of device errors.
+                            // Issues EVENT if a running schedule cannot
+                            // execute the given schedule.
     // More app "registers" here.
 };
 #pragma pack(pop)
@@ -92,21 +96,12 @@ struct app_regs_t
 extern app_regs_t app_regs;
 
 
-inline void reset_schedule()
-{
-    multicore_reset_core1(); // Kill any actively running schedule.
-    //(void)multicore_fifo_pop_blocking(); // Wait until core1 is ready.
-    gpio_put_masked((0x000000FF << PORT_BASE), 0); // Write all GPIOs to 0.
-    multicore_launch_core1(core1_main);
-    // TODO: ideally, we want to communicate with core1, cancel alarms, and
-    //  destroy all instances with their destructors.
-}
+void reset_schedule();
 
 /**
  * \brief declare pins inputs or outputs.
  * \warning this status can be overwritten if a pin is later assigned to a PWMTask
  */
-
 void write_port_dir(msg_t& msg);
 
 /**

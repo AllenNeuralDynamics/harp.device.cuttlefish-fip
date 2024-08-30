@@ -21,7 +21,7 @@ uint64_t time_us_64_unsafe();
 #endif
 
 extern PWMScheduler pwm_schedule;
-extern etl::vector<PWMTask, NUM_TTL_IOS> pwm_tasks;
+//extern etl::vector<PWMTask, NUM_TTL_IOS> pwm_tasks;
 
 void core1_main();
 

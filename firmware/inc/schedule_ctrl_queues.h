@@ -21,5 +21,6 @@ struct pwm_task_specs_t
 
 extern queue_t pwm_task_setup_queue;
 extern queue_t cmd_signal_queue;
+extern queue_t schedule_error_signal_queue;
 
 #endif // SCHEDULE_CTRL_QUEUES_H

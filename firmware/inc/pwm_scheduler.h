@@ -19,39 +19,33 @@ public:
     PWMScheduler();
     ~PWMScheduler();
 
-    inline void schedule_pwm_task(PWMTask& task)
-    {
-        // Aggreggate initial pin state vector.
-        next_gpio_port_mask_ |= task.pin_mask_;
-        if (task.state_ == PWMTask::update_state_t::HIGH)
-            next_gpio_port_mask_ |= task.pin_mask_;
-        pq_.push(task); // pushes task with unset "t=0" time.
-#ifdef DEBUG
-        printf("Pushed PWMTask: (%d, %d, %d, 0x%08x)\r\n", task.delay_us_,
-               task.on_time_us_, task.period_us_, task.pin_mask_);
-#endif
-    }
-    void start();
-    void clear();
-
-    friend void set_new_ttl_pin_state(void);
-    friend void handle_missed_deadline();
-
+    void schedule_pwm_task(uint32_t delay_us, uint32_t t_on_us,
+                           uint32_t t_period_us, uint32_t pin_mask,
+                           uint32_t count, bool invert);
+    void schedule_pwm_task(PWMTask task);
 /**
  * \brief cancel any active alarms and clear the queue.
  */
     void reset();
 
 /**
+ * \brief start the schedule.
+ */
+    void start();
+
+    inline void clear()
+    {reset();}
+
+    friend void set_new_ttl_pin_state(void);
+    friend void handle_missed_deadline();
+
+
+/**
  * \brief called periodically. Sets up next PWMTask to occur on a timer.
  */
-    void update();
+    void update(bool first_update = false);
 
-    inline void cancel_alarm()
-    {
-        timer_hw->armed |= (1u << alarm_num_); // Disarm alarm if it was armed.
-        alarm_queued_ = false;
-    }
+    void cancel_alarm();
 
 /**
  * \brief absolute time before which the priority queue needs to be updated.
@@ -59,8 +53,9 @@ public:
     uint64_t next_update_time_us_;
 
 private:
-
-
+    etl::vector<PWMTask, NUM_TTL_IOS> pwm_tasks_; // Container to hold PWMTasks.
+                                                  // We will access them
+                                                  // (usually) through the pq_;
 /**
  * \brief the priority queue
  * \details We need to use references wrappers to access mutable versions of

@@ -1,7 +1,7 @@
 #include <cuttlefish_app.h>
 
 app_regs_t app_regs;
-uint8_t pwm_task_mask;
+uint8_t pwm_task_mask; // Record of pins dedicated to running PWMTasks.
 
 // Define "specs" per-register
 RegSpecs app_reg_specs[reg_count]
@@ -34,6 +34,19 @@ RegFnPair reg_handler_fns[reg_count]
     {HarpCore::read_reg_generic, write_schedule_ctrl}       // 41
     // More handler function pairs here if we add additional registers.
 };
+
+void reset_schedule()
+{
+    // Abort any existing schedule on core1.
+    uint8_t abort_schedule = 1u << 1; // FIXME: use bitfields via struct interface.
+    // Signal to core1 to trash all PWMTasks and reset their GPIO pins to input.
+    queue_try_add(&cmd_signal_queue, &abort_schedule);
+    // Reset the corresponding PORT pins to input.
+    gpio_put_masked(uint32_t(pwm_task_mask) << PORT_DIR_BASE, 0);
+    // Represent this change in Harp register. // TODO: validate this.
+    app_regs.port_dir &= uint8_t(~pwm_task_mask >> PORT_DIR_BASE);
+    pwm_task_mask = 0; // Clear reserved pwm task pins.
+}
 
 void write_port_dir(msg_t& msg)
 {
@@ -162,11 +175,6 @@ void write_schedule_ctrl(msg_t& msg)
     if (schedule_ctrl & 0x01)
     {
         // Reset the schedule.
-        // Clear claimed PWM Task pins to inputs on Buffer ctrl pins and
-        // corresponding io pins.
-        gpio_set_dir_masked(uint32_t(pwm_task_mask) << PORT_BASE, 0);
-        gpio_put_masked(uint32_t(pwm_task_mask) << PORT_DIR_BASE, 0);
-        pwm_task_mask = 0; // Clear reserved pwm task pins.
         reset_schedule();
     }
     if (schedule_ctrl & 0x02)
@@ -203,6 +211,13 @@ void update_app_state()
     // Exclude PWM Task pins.
     if (changed_input_pins & ~pwm_task_mask)
         HarpCore::send_harp_reply(EVENT, 33); // port_state address. FIXME: magic #
+    // Check pwm schedule state.
+    uint8_t schedule_error = 0;
+    if (!queue_is_empty(&schedule_error_signal_queue))
+        queue_try_remove(&schedule_error_signal_queue, &schedule_error);
+    app_regs.error_state |= schedule_error;
+    if (schedule_error != 0)
+        HarpCore::send_harp_reply(EVENT, 43); // error_state address. FIXME: magic #
 }
 
 void reset_app()
@@ -222,5 +237,7 @@ void reset_app()
     app_regs.ext_trigger_edge = 0xFF; // Rising edge.
     app_regs.arm_ext_untrigger = 0x00;
     app_regs.ext_untrigger_edge = 0xFF; // Rising edge.
+    app_regs.status = 0;    // FIXME: update status in other locations.
+    app_regs.error_state = 0;
     reset_schedule();
 }

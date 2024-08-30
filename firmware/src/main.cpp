@@ -11,6 +11,7 @@
 
 queue_t pwm_task_setup_queue;
 queue_t cmd_signal_queue;
+queue_t schedule_error_signal_queue;
 
 // Create device name array.
 const uint16_t who_am_i = CUTTLEFISH_HARP_DEVICE_ID;
@@ -45,6 +46,7 @@ int main()
     // Initialize queues for multicore communication.
     queue_init(&pwm_task_setup_queue, sizeof(pwm_task_specs_t), 8);
     queue_init(&cmd_signal_queue, sizeof(uint8_t), 2);
+    queue_init(&schedule_error_signal_queue, sizeof(uint8_t), 2);
 
 #if defined(DEBUG) || defined(PROFILE_CPU)
 #warning "Initializing printf from UART will slow down core1 main loop."
@@ -78,6 +80,9 @@ int main()
     //uint8_t start_signal = 1;
     //queue_try_add(&cmd_signal_queue, &start_signal);
 
+    multicore_reset_core1();
+    (void)multicore_fifo_pop_blocking(); // Wait until core1 is ready.
+    multicore_launch_core1(core1_main);
     reset_app(); // Setup GPIO states. Get scheduler ready.
     // Loop forever.
     while(true)
