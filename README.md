@@ -1,22 +1,11 @@
-An octal TTL input-or-output board with programmable square wave output
+A [Cuttlefish](https://github.com/AllenNeuralDynamics/harp.device.cuttlefish) adapted to a dedicated fiber photometry application.
 
-## Features
-* 8x TTL output or input, configurable.
-* Programmable square wave generation.
-* Harp-protocol compliant (serial num: 0x057B).
-* Bonus: "passthrough buffer mode." External 3.3V and 5V CMOS devices can use this device as an octal buffer with external pins.
+## Waveform Parameter Overview
+This firmware generates the waveform below.
 
-## Extra Features
-* 6-20VDC input (2.1 x 5.5mm barrel jack, positive center)
-* isolated USB to prevent forming ground loops with the PC.
+![fip_waveform](./assets/pics/fip_waveform.png)
 
-## Wiring Diagram
-TODO
-
-
-## Theory of Operation
-TODO: awesome diagram {here}
-
-## Harp Register Map
-TODO
-
+Multiple parameters are configurable:
+* Continuous, or iterations
+* software-trigger to start waveform generation
+* `EVENT` message emitted upon rising edge of any camera trigger (configurable)
