@@ -7,10 +7,10 @@
 inline constexpr uint32_t LED_PIN = 25;
 
 // Create a pulse task w/static mem allocation.
-pulse_event_t pulse_events[] = {{1, 0}, {0, 1'000'000}};
-pulse_event_t* pulse_event_ptrs[] = {&pulse_events[0], &pulse_events[1]};
+pulse_event_t pulse_events[] = {{1, 0}, {0, 100'000}, {1, 200'000}, {0, 300'000}};
+pulse_event_t* pulse_event_ptrs[] = {&pulse_events[0], &pulse_events[1], &pulse_events[2], &pulse_events[3]};
 
-PulseTrainTask pulse_task(pulse_event_ptrs, std::size(pulse_events), 2'000'000,
+PulseTrainTask pulse_task(pulse_event_ptrs, std::size(pulse_events), 1'000'000,
                           1 << LED_PIN);
 
 

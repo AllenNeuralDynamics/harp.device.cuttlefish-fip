@@ -16,7 +16,7 @@ void Task::update()
         next_update_time_us_ += period_us_ - events_[event_count_ - 1]->us
                                 + events_[0]->us;
     else
-        next_update_time_us_ += events_[event_index_]->us;
+        next_update_time_us_ += events_[event_index_]->us - events_[event_index_-1]->us;
     printf("update completed.\r\n");
 }
 
