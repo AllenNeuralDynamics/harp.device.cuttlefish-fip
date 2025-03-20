@@ -18,6 +18,10 @@ add_library(pulsetrain
     ../../src/pulse_train_task.cpp
 )
 
+add_library(task
+    ../../src/task.cpp
+)
+
 add_executable(${PROJECT_NAME}
     main.cpp
 )
@@ -27,7 +31,8 @@ include_directories(../../inc)
 #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fverbose-asm")
 
 # Link libraries to the targets that need them.
-target_link_libraries(pulsetrain hardware_timer pico_stdlib)
+target_link_libraries(task hardware_timer pico_stdlib)
+target_link_libraries(pulsetrain task pico_stdlib)
 target_link_libraries(${PROJECT_NAME} pulsetrain pico_stdlib)
 
 # create map/bin/hex/uf2 file in addition to ELF.
