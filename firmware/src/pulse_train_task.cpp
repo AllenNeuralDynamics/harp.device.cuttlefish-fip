@@ -15,9 +15,10 @@ void PulseTrainTask::update()
 
 void PulseTrainTask::reset()
 {
+    stop();
     gpio_init_mask(pin_mask_);
     gpio_set_dir_out_masked(pin_mask_);
-    stop();
+    Task::reset();
 }
 
 void PulseTrainTask::start()

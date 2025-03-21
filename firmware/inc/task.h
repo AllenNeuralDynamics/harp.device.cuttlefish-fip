@@ -72,7 +72,7 @@ public:
     friend bool operator<(const Task& lhs, const Task& rhs)
     {return int32_t(rhs.next_update_time_us_ - lhs.next_update_time_us_) > 0;}
 
-    virtual void reset() = 0;
+    virtual void reset();
 
     virtual void start();
 

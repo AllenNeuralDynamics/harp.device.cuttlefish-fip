@@ -17,12 +17,16 @@ void Task::update()
                                 + events_[0]->us;
     else
         next_update_time_us_ += events_[event_index_]->us - events_[event_index_-1]->us;
+#if (DEBUG)
     printf("update completed.\r\n");
+#endif
 }
 
 void Task::start()
 {
+#if (DEBUG)
     printf("starting task.\r\n");
+#endif
     event_index_ = 0;
     loops_ = 0;
     start_time_us_ = timer_hw->timerawl;
@@ -32,3 +36,9 @@ void Task::start()
     update();
 }
 
+
+void Task::reset()
+{
+    event_index_ = 0;
+    loops_ = 0;
+}

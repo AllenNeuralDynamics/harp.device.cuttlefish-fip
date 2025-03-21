@@ -66,12 +66,6 @@ public:
 
     void start();
 
-/**
- * \brief true if update() must be called again in the future.
- */
-    inline bool requires_future_update() override
-    {return state_ != DONE;}
-
 protected:
 
 /**
@@ -79,7 +73,7 @@ protected:
  *  if defined.
  * \note overrideable by child classes.
  */
-    virtual inline void update_outputs()
+    inline void update_outputs()
     {
         uint32_t mask_value = pulse_events_[event_index_]->pin_state ? 0xFFFFFFFF: 0;
         gpio_put_masked(pin_mask_, mask_value);
