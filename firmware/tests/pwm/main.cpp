@@ -9,7 +9,7 @@ inline constexpr uint32_t LED_PIN = 25;
 // Create a pulse task.
 pwm_event_t pwm_events[] = {{0.5, 10'000, 0}, {1.0, 10'000, 500'000}};
 pwm_event_t* pwm_event_ptrs[] = {&pwm_events[0], &pwm_events[1]};
-PWMTask pulse_task(pwm_event_ptrs, std::size(pwm_events), 1'000'000, LED_PIN);
+PWMTask pwm_task(pwm_event_ptrs, std::size(pwm_events), 1'000'000, LED_PIN);
 
 
 int main()
@@ -19,7 +19,7 @@ int main()
     while (!stdio_usb_connected()){} // Block until connection to serial port.
     printf("Hello, world!\r\n");
 
-    pulse_task.start();
+    pwm_task.start();
     while(true)
-        pulse_task.spin();
+        pwm_task.spin();
 }
