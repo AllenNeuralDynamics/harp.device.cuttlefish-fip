@@ -19,8 +19,9 @@
 
 // Setup for Harp App
 inline constexpr uint8_t REG_COUNT = 13;
+inline constexpr uint8_t LASER_BASE_ADDRESS = APP_REG_START_ADDRESS + 5;
 
-extern etl::vector<LaserFIPTask, 8> laser_fip_tasks;
+extern etl::vector<LaserFIPTask, MAX_TASK_COUNT> fip_tasks;
 extern PWMScheduler pwm_schedule;
 extern RegSpecs app_reg_specs[reg_count];
 extern RegFnPair reg_handler_fns[reg_count];
@@ -34,30 +35,28 @@ struct app_regs_t
     uint8_t RemoveLaserTask;
     uint8_t RemoveAllLaserTasks;
     uint8_t LaserTaskCount;
-    LaserFIPTaskSettings ReconfigureLaserTask0;
-    LaserFIPTaskSettings ReconfigureLaserTask1;
-    LaserFIPTaskSettings ReconfigureLaserTask2;
-    LaserFIPTaskSettings ReconfigureLaserTask3;
-    LaserFIPTaskSettings ReconfigureLaserTask4;
-    LaserFIPTaskSettings ReconfigureLaserTask5;
-    LaserFIPTaskSettings ReconfigureLaserTask6;
-    LaserFIPTaskSettings ReconfigureLaserTask7;
+    LaserFIPTaskSettings ReconfigureLaserTask[MAX_TASK_COUNT];
     // More app "registers" here.
 };
 #pragma pack(pop)
 
 extern app_regs_t app_regs;
 
-// TODO: handler functions!
+/**
+ * \brief helper function. Get fip task index from app reg index.
+ */
+inline size_t get_fip_task_index(uint8_t address)
+{return address - LASER_BASE_ADDRESS;}
+
+/**
+ * \brief helper function. Get fip task index from msg.
+ */
+inline size_t get_fip_task_index(msg_t& msg)
+{return msg.header.address - LASER_BASE_ADDRESS;}
 
 /**
  * \brief read whether the laser task schedule is enabled or not.
  */
-void read_enable_task_schedule(uint8_t reg_address);
-void read_add_laser_task(uint8_t address); // stub?
-void read_remove_laser_task(uint8_t address); // stub?
-void read_remove_all_laser_takss(uint8_t address); // stub?
-void read_laser_task_count(uint8_t address);
 void read_reconfigure_laser_task(uint8_t address);
 
 void write_enable_task_schedule(msg_t& msg);

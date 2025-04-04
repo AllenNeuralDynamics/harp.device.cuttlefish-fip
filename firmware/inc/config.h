@@ -23,6 +23,9 @@
 #define PORT_BASE (8)
 #define PORT_DIR_BASE (16)
 
+
+#define MAX_TASK_COUNT (8)
+
 #define HARP_DEVICE_ID (0x057B) // FIXME: should be distinct from old cuttlefish.
 
 #endif // CONFIG_H

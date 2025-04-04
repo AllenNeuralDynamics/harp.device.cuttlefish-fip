@@ -3,24 +3,20 @@
 #include <config.h>
 #include <harp_c_app.h>
 #include <harp_synchronizer.h>
-#include <cuttlefish_app.h>
+#include <cuttlefish_fip_app.h>
 #include <schedule_ctrl_queues.h>
 #include <pico/multicore.h>
 #include <hardware/structs/bus_ctrl.h>
 #include <core1_main.h>
 
-queue_t pwm_task_setup_queue;
-queue_t cmd_signal_queue;
-queue_t schedule_error_signal_queue;
-
 HarpCApp& app = HarpCApp::init(WHO_AM_I, HW_VERSION_MAJOR, HW_VERSION_MINOR,
                                ASSEMBLY_VERSION,
                                HARP_VERSION_MAJOR, HARP_VERSION_MINOR,
                                FW_VERSION_MAJOR, FW_VERSION_MINOR,
-                               SERIAL_NUMBER, "Cuttlefish",
+                               SERIAL_NUMBER, "cuttlefish-fip",
                                (uint8_t*)GIT_HASH,
                                &app_regs, app_reg_specs,
-                               reg_handler_fns, reg_count, update_app_state,
+                               reg_handler_fns, REG_COUNT, update_app_state,
                                reset_app);
 
 // Core0 main.
@@ -41,11 +37,14 @@ int main()
     stdio_uart_init_full(DEBUG_UART, 921600, DEBUG_UART_TX_PIN, -1);
 #endif
 
+/* Uncomment this when ready!
+
     multicore_reset_core1();
     (void)multicore_fifo_pop_blocking(); // Wait until core1 is ready.
     multicore_launch_core1(core1_main);
-    reset_app(); // Setup GPIO states. Get scheduler ready.
-    // Loop forever.
+*/
+
+    reset_app();
     while(true)
         app.run();
 }

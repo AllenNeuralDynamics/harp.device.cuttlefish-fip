@@ -3,6 +3,7 @@
 
 #include <hardware/timer.h>
 #include <laser_fip_task.h>
+#include <config.h>
 #include <etl/vector.h>
 
 
@@ -23,7 +24,7 @@ inline constexpr uint32_t DELTA4 = 50;
 inline constexpr uint32_t ENABLED_DIGITAL_OUTPUTS = 0xFFFFFFFF;
 
 
-extern etl::vector<LaserFIPTask, 8> laser_fip_task;
+extern etl::vector<LaserFIPTask, MAX_TASK_COUNT> laser_fip_task;
 
 
 /**

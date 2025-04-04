@@ -39,7 +39,7 @@ public:
 /**
  * \brief apply the settings specified.
  */
-    inline void apply_settings(LaserFIPTaskSettings& settings);
+    inline void apply_settings(LaserFIPTaskSettings& settings)
     {settings_ = settings;} // Use default assignment operator.
 
     inline void set_output()
