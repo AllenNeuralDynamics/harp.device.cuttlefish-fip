@@ -2,7 +2,8 @@
 #define FIP_SCHEDULE_H
 
 #include <hardware/timer.h>
-#include <pwm.h>
+#include <laser_fip_task.h>
+#include <etl/vector.h>
 
 
 inline constexpr uint32_t PWM_470_PIN = 1;
@@ -13,6 +14,7 @@ inline constexpr uint32_t CAM_R_PIN = 4;
 inline constexpr uint32_t CAM_G_PIN = 5;
 
 inline constexpr uint32_t CAM_EXPOSURE_TIME = 15350;
+inline constexpr uint32_t DELTA1 = CAM_EXPOSURE_TIME;
 inline constexpr uint32_t DELTA2 = 666;
 inline constexpr uint32_t DELTA3 = 600;
 inline constexpr uint32_t DELTA4 = 50;
@@ -21,9 +23,7 @@ inline constexpr uint32_t DELTA4 = 50;
 inline constexpr uint32_t ENABLED_DIGITAL_OUTPUTS = 0xFFFFFFFF;
 
 
-extern PWM pwm470;
-extern PWM pwm415;
-extern PWM pwm565;
+extern etl::vector<LaserFIPTask, 8> laser_fip_task;
 
 
 /**
@@ -33,7 +33,7 @@ void run();
 
 void run_sequence();
 
-void run_exposure();
+void run_exposure(LaserFIPTask& laser_fip_task);
 
 uint64_t time_us_64_unsafe();
 

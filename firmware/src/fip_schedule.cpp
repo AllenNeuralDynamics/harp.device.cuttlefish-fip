@@ -1,8 +1,6 @@
 #include <fip_schedule.h>
 
-PWM pwm470(PWM_470_PIN);
-PWM pwm415(PWM_415_PIN);
-PWM pwm565(PWM_565_PIN);
+etl::vector<LaserFIPTask, 8> laser_fip_tasks;
 
 /// \warning: this fn should not be called inside an interrupt.
 inline uint64_t time_us_64_unsafe()
@@ -25,16 +23,13 @@ bool stop_received()
 
 void setup_fip_schedule()
 {
-    // Declare outputs.
-    gpio_init_mask((1u << CAM_G_PIN) | (1u << CAM_R_PIN));
-    gpio_set_dir_masked((1u << CAM_G_PIN) | (1u << CAM_R_PIN), 0xFFFFFFFF);
-
-    PWM* pwms[] = {&pwm470, &pwm415, &pwm565};
-    for (auto pwm: pwms)
-    {
-        pwm->set_duty_cycle(0.5);
-        pwm->set_frequency(10000.0);
-    }
+    // TODO: refactor to create from settings objects arriving from core0.
+    laser_fip_tasks.emplace_back(PWM_470_PIN, 0.5, 10000, (1 << CAM_R_PIN),
+                                 true, false, DELTA1, DELTA2, DELTA3, DELTA4);
+    laser_fip_tasks.emplace_back(PWM_415_PIN, 0.5, 10000, (1 << CAM_R_PIN),
+                                 true, false, DELTA1, DELTA2, DELTA3, DELTA4);
+    laser_fip_tasks.emplace_back(PWM_565_PIN, 0.5, 10000, (1 << CAM_G_PIN),
+                                 true, false, DELTA1, DELTA2, DELTA3, DELTA4);
 }
 
 void run()
@@ -50,32 +45,33 @@ void run()
 
 void push_harp_msg(uint32_t output_state, uint64_t time_us)
 {
-    // TODO.
+    // TODO: send this to core0.
 }
 
 void run_sequence()
 {
-    run_exposure(pwm470, (1u << CAM_G_PIN));
-    run_exposure(pwm415, (1u << CAM_G_PIN));
-    run_exposure(pwm565, (1u << CAM_R_PIN));
+    // TODO: pick a data structure for adding/removing fip tasks and accessing them by index.
+    //  or accessing them by GPIO pin?
+    for (auto& laser_fip_task: laser_fip_tasks)
+        run_exposure(laser_fip_task);
 }
 
-inline void run_exposure(PWM& laser, uint32_t camera_mask)
+inline void run_exposure(LaserFIPTask& laser_fip_task)
 {
     // TODO: tweak delays to account for elapsed time to trigger signals.
-    laser.enable_output();
+    laser_fip_task.laser_.enable_output();
     // Send pin state w/ pwm rising edge.
-    push_harp_msg((1u << laser.pin()), time_us_64_unsafe());
+    push_harp_msg((1u << laser_fip_task.laser_.pin()), time_us_64_unsafe());
     sleep_us(DELTA3);
-    gpio_put_masked((camera_mask & ENABLED_DIGITAL_OUTPUTS), 0xFFFFFFFF);
+    laser_fip_task.set_output();
     // Send pin state w/ CAM_G rising edge.
     push_harp_msg(
-        ((1u << laser.pin()) | (camera_mask & ENABLED_DIGITAL_OUTPUTS)),
+        ((1u << laser_fip_task.laser_.pin()) | laser_fip_task.output_mask()),
         time_us_64_unsafe());
     sleep_us(CAM_EXPOSURE_TIME);
-    gpio_put_masked((camera_mask & ENABLED_DIGITAL_OUTPUTS), 0);
+    laser_fip_task.clear_output();
     sleep_us(DELTA4);
-    laser.disable_output();
+    laser_fip_task.laser_.disable_output();
     sleep_us(DELTA2);
 }
 
