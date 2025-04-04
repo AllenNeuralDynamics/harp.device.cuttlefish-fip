@@ -18,6 +18,7 @@ void sleep_us(uint32_t us)
 
 bool stop_received()
 {
+    // Do nothing.
     return false;
 }
 

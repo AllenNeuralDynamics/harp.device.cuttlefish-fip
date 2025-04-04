@@ -3,7 +3,7 @@
 
 #include <pwm.h>
 
-
+#pragma pack(push, 1)
 struct LaserFIPTaskSettings
 {
     size_t pwm_pin;
@@ -20,13 +20,12 @@ struct LaserFIPTaskSettings
     uint32_t delta3_us;
     uint32_t delta4_us;
 };
+#pragma pack(pop)
 
 
 class  LaserFIPTask
 {
 public:
-
-
 /**
  * \brief constructor.
  */
@@ -37,10 +36,11 @@ public:
 
      ~LaserFIPTask();
 
-    LaserFIPTaskSettings settings_;
-
-    PWM laser_;
-
+/**
+ * \brief apply the settings specified.
+ */
+    inline void apply_settings(LaserFIPTaskSettings& settings);
+    {settings_ = settings;} // Use default assignment operator.
 
     inline void set_output()
     {
@@ -59,5 +59,7 @@ public:
         return settings_.output_mask;
     }
 
+    LaserFIPTaskSettings settings_;
+    PWM laser_;
 };
 #endif // LASER_FIP_TASK_H
