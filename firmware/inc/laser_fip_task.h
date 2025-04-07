@@ -1,6 +1,5 @@
 #ifndef LASER_FIP_TASK_H
 #define LASER_FIP_TASK_H
-
 #include <pwm.h>
 
 #pragma pack(push, 1)

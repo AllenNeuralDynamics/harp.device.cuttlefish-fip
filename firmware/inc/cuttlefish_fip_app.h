@@ -9,7 +9,6 @@
 #include <harp_synchronizer.h>
 #include <etl/vector.h>
 #include <schedule_ctrl_queues.h>
-#include <core1_main.h>
 #include <pico/multicore.h>
 #include <laser_fip_task.h>
 #ifdef DEBUG
@@ -22,9 +21,8 @@ inline constexpr uint8_t REG_COUNT = 13;
 inline constexpr uint8_t LASER_BASE_ADDRESS = APP_REG_START_ADDRESS + 5;
 
 extern etl::vector<LaserFIPTask, MAX_TASK_COUNT> fip_tasks;
-extern PWMScheduler pwm_schedule;
-extern RegSpecs app_reg_specs[reg_count];
-extern RegFnPair reg_handler_fns[reg_count];
+extern RegSpecs app_reg_specs[REG_COUNT];
+extern RegFnPair reg_handler_fns[REG_COUNT];
 extern HarpCApp& app;
 
 #pragma pack(push, 1)

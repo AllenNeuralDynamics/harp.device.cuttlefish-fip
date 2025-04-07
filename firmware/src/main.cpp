@@ -9,6 +9,18 @@
 #include <hardware/structs/bus_ctrl.h>
 #include <core1_main.h>
 
+
+HarpCApp& app = HarpCApp::init(0, 0, 0,
+                               0,
+                               0, 0,
+                               0, 0,
+                               0, "cuttlefish-fip",
+                               (uint8_t*)GIT_HASH,
+                               &app_regs, app_reg_specs,
+                               reg_handler_fns, REG_COUNT, update_app,
+                               reset_app);
+/*
+
 HarpCApp& app = HarpCApp::init(WHO_AM_I, HW_VERSION_MAJOR, HW_VERSION_MINOR,
                                ASSEMBLY_VERSION,
                                HARP_VERSION_MAJOR, HARP_VERSION_MINOR,
@@ -16,8 +28,9 @@ HarpCApp& app = HarpCApp::init(WHO_AM_I, HW_VERSION_MAJOR, HW_VERSION_MINOR,
                                SERIAL_NUMBER, "cuttlefish-fip",
                                (uint8_t*)GIT_HASH,
                                &app_regs, app_reg_specs,
-                               reg_handler_fns, REG_COUNT, update_app_state,
+                               reg_handler_fns, REG_COUNT, update_app,
                                reset_app);
+*/
 
 // Core0 main.
 int main()
@@ -28,21 +41,21 @@ int main()
     // Configure core1 to have high bus priority.
     bus_ctrl_hw->priority = 0x00000010;
     // Initialize queues for multicore communication.
+/*
     queue_init(&pwm_task_setup_queue, sizeof(pwm_task_specs_t), 8);
     queue_init(&cmd_signal_queue, sizeof(uint8_t), 2);
     queue_init(&schedule_error_signal_queue, sizeof(uint8_t), 2);
+*/
 
-#if defined(DEBUG) || defined(PROFILE_CPU)
+#if defined(DEBUG)
 #warning "Initializing printf from UART will slow down core1 main loop."
     stdio_uart_init_full(DEBUG_UART, 921600, DEBUG_UART_TX_PIN, -1);
 #endif
 
-/* Uncomment this when ready!
-
+    // Launch core1 to juggle pwm tasks.
     multicore_reset_core1();
     (void)multicore_fifo_pop_blocking(); // Wait until core1 is ready.
     multicore_launch_core1(core1_main);
-*/
 
     reset_app();
     while(true)
