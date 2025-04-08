@@ -2,6 +2,8 @@
 
 etl::vector<LaserFIPTask, MAX_TASK_COUNT> fip_tasks;
 
+bool enabled = false;
+
 /// \warning: this fn should not be called inside an interrupt.
 inline uint64_t time_us_64_unsafe()
 {
@@ -16,12 +18,6 @@ void sleep_us(uint32_t us)
         asm volatile("nop");
 }
 
-bool stop_received()
-{
-    // Do nothing.
-    return false;
-}
-
 void setup_fip_schedule()
 {
     // TODO: refactor to create from settings objects arriving from core0.
@@ -31,6 +27,21 @@ void setup_fip_schedule()
                            true, false, DELTA1, DELTA2, DELTA3, DELTA4);
     fip_tasks.emplace_back(PWM_565_PIN, 0.5, 10000, (1 << CAM_G_PIN),
                            true, false, DELTA1, DELTA2, DELTA3, DELTA4);
+
+    enabled = false;
+}
+
+void update_enabled_state()
+{
+    // TODO get messages from core0.
+    // Update enabled state.
+    enabled = true;
+}
+
+void update_fip_tasks()
+{
+    // TODO: get messages from core0.
+    // Check if fip_tasks were added, removed, or clear.
 }
 
 void run()
@@ -38,9 +49,12 @@ void run()
     // do a continuous sequence.
     while (true)
     {
-        run_sequence();
-        if (stop_received())
-            return;
+        // Check for input from core1.
+        update_enabled_state();
+        if (!enabled)
+            update_fip_tasks();
+        if (enabled)
+            run_sequence();
     }
 }
 
@@ -51,8 +65,6 @@ void push_harp_msg(uint32_t output_state, uint64_t time_us)
 
 void run_sequence()
 {
-    // TODO: pick a data structure for adding/removing fip tasks and accessing them by index.
-    //  or accessing them by GPIO pin?
     for (auto& fip_task: fip_tasks)
         run_exposure(fip_task);
 }

@@ -26,11 +26,17 @@ inline constexpr uint32_t ENABLED_DIGITAL_OUTPUTS = 0xFFFFFFFF;
 
 extern etl::vector<LaserFIPTask, MAX_TASK_COUNT> laser_fip_task;
 
+extern bool enabled;
+
 
 /**
- * \brief run sequence
+ * \brief loop forever.
  */
 void run();
+
+void update_enabled_state();
+
+inline void update_fip_tasks();
 
 void run_sequence();
 

@@ -17,7 +17,7 @@
 #endif
 
 // Setup for Harp App
-inline constexpr uint8_t REG_COUNT = 13;
+inline constexpr uint8_t REG_COUNT = 14;
 inline constexpr uint8_t LASER_BASE_ADDRESS = APP_REG_START_ADDRESS + 5;
 
 extern etl::vector<LaserFIPTask, MAX_TASK_COUNT> fip_tasks;
@@ -33,10 +33,30 @@ struct app_regs_t
     uint8_t RemoveLaserTask;
     uint8_t RemoveAllLaserTasks;
     uint8_t LaserTaskCount;
+    uint8_t RisingEdgeEvent;
     LaserFIPTaskSettings ReconfigureLaserTask[MAX_TASK_COUNT];
     // More app "registers" here.
 };
 #pragma pack(pop)
+
+enum AppRegNum
+{
+    EnableTaskSchedule = 32,
+    AddLaserTask = 33,
+    RemoveLaserTask = 34,
+    RemoveAllLaserTasks = 35,
+    LaserTaskCount = 36,
+    RisingEdgeEvent = 37,
+    ReconfigureLaserTask0 = 38,
+    ReconfigureLaserTask1 = 39,
+    ReconfigureLaserTask2 = 40,
+    ReconfigureLaserTask3 = 41,
+    ReconfigureLaserTask4 = 42,
+    ReconfigureLaserTask5 = 43,
+    ReconfigureLaserTask6 = 44,
+    ReconfigureLaserTask7 = 45,
+
+};
 
 extern app_regs_t app_regs;
 

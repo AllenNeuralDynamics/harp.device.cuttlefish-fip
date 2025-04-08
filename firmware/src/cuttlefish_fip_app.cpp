@@ -9,6 +9,7 @@ RegSpecs app_reg_specs[REG_COUNT]
     {(uint8_t*)&app_regs.RemoveLaserTask, sizeof(app_regs.RemoveLaserTask), U8},
     {(uint8_t*)&app_regs.RemoveAllLaserTasks, sizeof(app_regs.RemoveAllLaserTasks), U8},
     {(uint8_t*)&app_regs.LaserTaskCount, sizeof(app_regs.LaserTaskCount), U8},
+    {(uint8_t*)&app_regs.RisingEdgeEvent, sizeof(app_regs.RisingEdgeEvent), U8},
     {(uint8_t*)&app_regs.ReconfigureLaserTask[0], sizeof(LaserFIPTaskSettings), U8},
     {(uint8_t*)&app_regs.ReconfigureLaserTask[1], sizeof(LaserFIPTaskSettings), U8},
     {(uint8_t*)&app_regs.ReconfigureLaserTask[2], sizeof(LaserFIPTaskSettings), U8},
@@ -24,6 +25,7 @@ RegFnPair reg_handler_fns[REG_COUNT]
     {HarpCore::read_reg_generic, write_enable_task_schedule}, // read is technically undefined
     {HarpCore::read_reg_generic, write_add_laser_task},       // read is technically undefined
     {HarpCore::read_reg_generic, write_remove_laser_task},    // read is technically undefined
+    {HarpCore::read_reg_generic, HarpCore::write_to_read_only_reg_error},
     {HarpCore::read_reg_generic, HarpCore::write_to_read_only_reg_error},
 
     {read_reconfigure_laser_task, write_reconfigure_laser_task},
@@ -117,7 +119,10 @@ void write_reconfigure_laser_task(msg_t& msg)
 void update_app()
 {
     // TODO: Receive msgs from core1 with state/timings.
+    void* new_msg = nullptr; // TODO: implement this.
     //  Send them back over Harp Protocol.
+    if (new_msg != nullptr)
+        HarpCore::send_harp_reply(EVENT, AppRegNum::RisingEdgeEvent);
 }
 
 void reset_app()
