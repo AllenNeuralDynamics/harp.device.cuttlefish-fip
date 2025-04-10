@@ -25,7 +25,7 @@ RegFnPair reg_handler_fns[REG_COUNT]
     {HarpCore::read_reg_generic, write_enable_task_schedule}, // read is technically undefined
     {HarpCore::read_reg_generic, write_add_laser_task},       // read is technically undefined
     {HarpCore::read_reg_generic, write_remove_laser_task},    // read is technically undefined
-    {HarpCore::read_reg_generic, write_remove_all_laser_taks}, // read is technically undefined
+    {HarpCore::read_reg_generic, write_remove_all_laser_tasks}, // read is technically undefined
     {HarpCore::read_reg_generic, HarpCore::write_to_read_only_reg_error},
     {HarpCore::read_reg_generic, HarpCore::write_to_read_only_reg_error},
 

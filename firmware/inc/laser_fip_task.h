@@ -5,7 +5,7 @@
 #pragma pack(push, 1)
 struct LaserFIPTaskSettings
 {
-    size_t pwm_pin;
+    uint32_t pwm_pin;
     float pwm_duty_cycle;
     float pwm_frequency_hz;
 

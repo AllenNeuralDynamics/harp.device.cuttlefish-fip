@@ -80,7 +80,7 @@ void read_reconfigure_laser_task(uint8_t address);
 void write_enable_task_schedule(msg_t& msg);
 void write_add_laser_task(msg_t& msg);
 void write_remove_laser_task(msg_t& msg);
-void write_remove_all_laser_taks(msg_t& msg);
+void write_remove_all_laser_tasks(msg_t& msg);
 void write_laser_task_count(msg_t& msg);
 void write_reconfigure_laser_task(msg_t& msg);
 

@@ -1,6 +1,7 @@
 #ifndef FIP_CTRL_QUEUES_H
 #define FIP_CTRL_QUEUES_H
 #include <pico/util/queue.h>
+#include <laser_fip_task.h>
 
 // Container to unpack laser task index and settings from a received harp message.
 struct ReconfigureTaskData

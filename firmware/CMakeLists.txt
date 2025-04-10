@@ -13,6 +13,8 @@ set(CMAKE_CXX_STANDARD 17)
 # Enable try/catch exception interface.
 #set(PICO_CXX_ENABLE_EXCEPTIONS 1)
 
+add_definitions(-DUSBD_MANUFACTURER="Allen Institute")
+add_definitions(-DUSBD_PRODUCT="cuttlefish-fip")
 
 # Compile for profiling/debugging/etc. Default: none enabled.
 #add_definitions(-DDEBUG) # Warning! initializing uart slows down core1 loop.

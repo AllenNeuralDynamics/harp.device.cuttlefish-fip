@@ -9,6 +9,12 @@
 #include <hardware/structs/bus_ctrl.h>
 #include <core1_main.h>
 
+queue_t enable_task_schedule_queue;
+queue_t add_task_queue;
+queue_t remove_task_queue;
+queue_t clear_tasks_queue;
+queue_t reconfigure_task_queue;
+queue_t rising_edge_event_queue;
 
 HarpCApp& app = HarpCApp::init(0, 0, 0,
                                0,
