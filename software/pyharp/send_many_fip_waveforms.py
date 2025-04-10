@@ -26,18 +26,46 @@ device = Device(com_port)
 
 # Provision device with a square wave.
 settings = \
-(
-    0,   # pwm_pin
-    0.5, # pwm duty cycle
-    10000., # pwm frequency (hz)
-    0x0002, # output mask
-    1,      # events
-    0,      # mute
-    15350,  # DELTA1
-    666,    # DELTA2
-    600,    # DELTA3
-    50     # DELTA4
-)
+[
+    (
+        0,   # pwm_pin
+        0.25, # pwm duty cycle
+        10000., # pwm frequency (hz)
+        0x0002, # output mask
+        1,      # events
+        0,      # mute
+        15350,  # DELTA1
+        666,    # DELTA2
+        600,    # DELTA3
+        50     # DELTA4
+    ),
+
+    (
+        2,   # pwm_pin
+        0.75, # pwm duty cycle
+        10000., # pwm frequency (hz)
+        0x0008, # output mask
+        1,      # events
+        0,      # mute
+        15350,  # DELTA1
+        666,    # DELTA2
+        600,    # DELTA3
+        50     # DELTA4
+    ),
+
+    (
+        4,   # pwm_pin
+        0.5, # pwm duty cycle
+        10000., # pwm frequency (hz)
+        0x0020, # output mask
+        1,      # events
+        0,      # mute
+        15350,  # DELTA1
+        666,    # DELTA2
+        600,    # DELTA3
+        50     # DELTA4
+    )
+]
 data_fmt = "<LffLBBLLLL"
 
 print("Disabling schedule.")
@@ -45,8 +73,10 @@ device.send(WriteU8HarpMessage(AppRegs.EnableTaskSchedule, 0).frame)
 print("Clearing all tasks.")
 device.send(WriteU8HarpMessage(AppRegs.RemoveAllLaserTasks, 1).frame)
 
-print("Configuring device with FIP task.")
-measurement = device.send(WriteU8ArrayMessage(AppRegs.AddLaserTask,
+print("Configuring device with many FIP tasks.")
+for index, settings in enumerate(settings):
+    print(f"Sending over fip task {index} settings.")
+    _ = device.send(WriteU8ArrayMessage(AppRegs.AddLaserTask,
                                               data_fmt, settings).frame)
 print("Enabling schedule")
 device.send(WriteU8HarpMessage(AppRegs.EnableTaskSchedule, 1).frame)
