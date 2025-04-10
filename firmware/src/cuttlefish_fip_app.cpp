@@ -25,6 +25,7 @@ RegFnPair reg_handler_fns[REG_COUNT]
     {HarpCore::read_reg_generic, write_enable_task_schedule}, // read is technically undefined
     {HarpCore::read_reg_generic, write_add_laser_task},       // read is technically undefined
     {HarpCore::read_reg_generic, write_remove_laser_task},    // read is technically undefined
+    {HarpCore::read_reg_generic, write_remove_all_laser_taks}, // read is technically undefined
     {HarpCore::read_reg_generic, HarpCore::write_to_read_only_reg_error},
     {HarpCore::read_reg_generic, HarpCore::write_to_read_only_reg_error},
 
@@ -52,7 +53,15 @@ void read_reconfigure_laser_task(uint8_t address)
 void write_enable_task_schedule(msg_t& msg)
 {
     HarpCore::copy_msg_payload_to_register(msg);
-    // TODO: push en/disable signal to core1.
+
+    // Push enable/disable signal to core1.
+    if (!queue_try_add(&enable_task_schedule_queue, &app_regs.EnableTaskSchedule))
+    {
+        // Handle queue full error.
+        HarpCore::send_harp_reply(WRITE_ERROR, msg.header.address);
+        return;
+    }
+
     if (!HarpCore::is_muted())
         HarpCore::send_harp_reply(WRITE, msg.header.address);
 }
@@ -68,7 +77,15 @@ void write_add_laser_task(msg_t& msg)
     HarpCore::copy_msg_payload_to_register(msg);
     LaserFIPTaskSettings* settings_ptr
         = reinterpret_cast<LaserFIPTaskSettings*>(msg.payload);
-    // TODO: push added task settings to core1.
+
+    // Push the task settings to core1.
+    if (!queue_try_add(&add_task_queue, settings_ptr))
+    {
+        // Handle queue full error.
+        HarpCore::send_harp_reply(WRITE_ERROR, msg.header.address);
+        return;
+    }
+
     ++app_regs.LaserTaskCount;
     if (!HarpCore::is_muted())
         HarpCore::send_harp_reply(WRITE, msg.header.address);
@@ -84,7 +101,13 @@ void write_remove_laser_task(msg_t& msg)
         return;
     }
     HarpCore::copy_msg_payload_to_register(msg);
-    // TODO: push remove-by-index signal to core1.
+    // push remove-by-index signal to core1.
+    if (!queue_try_add(&remove_task_queue, &task_index))
+    {
+        // Handle queue full error.
+        HarpCore::send_harp_reply(WRITE_ERROR, msg.header.address);
+        return;
+    }
     --app_regs.LaserTaskCount;
     if (!HarpCore::is_muted())
         HarpCore::send_harp_reply(WRITE, msg.header.address);
@@ -93,7 +116,13 @@ void write_remove_laser_task(msg_t& msg)
 void write_remove_all_laser_tasks(msg_t& msg)
 {
     HarpCore::copy_msg_payload_to_register(msg);
-    // TODO: push remove-all signal to core1.
+    // push remove-all signal to core1.
+    if (!queue_try_add(&clear_tasks_queue, &app_regs.RemoveAllLaserTasks))
+    {
+        // Handle queue full error.
+        HarpCore::send_harp_reply(WRITE_ERROR, msg.header.address);
+        return;
+    }
     app_regs.LaserTaskCount = 0;
     if (!HarpCore::is_muted())
         HarpCore::send_harp_reply(WRITE, msg.header.address);
@@ -111,18 +140,34 @@ void write_reconfigure_laser_task(msg_t& msg)
     HarpCore::copy_msg_payload_to_register(msg);
     LaserFIPTaskSettings* settings_ptr
         = reinterpret_cast<LaserFIPTaskSettings*>(msg.payload);
-    // TODO: push new task settings to core1 and apply them there.
+
+    ReconfigureTaskData task_data = {task_index, *settings_ptr};
+
+    // Push reconfigured task data to core1.
+    if (!queue_try_add(&reconfigure_task_queue, &task_data))
+    {
+        // Handle queue full error.
+        HarpCore::send_harp_reply(WRITE_ERROR, msg.header.address);
+        return;
+    }
+
     if (!HarpCore::is_muted())
         HarpCore::send_harp_reply(WRITE, msg.header.address);
 }
 
 void update_app()
 {
-    // TODO: Receive msgs from core1 with state/timings.
-    void* new_msg = nullptr; // TODO: implement this.
-    //  Send them back over Harp Protocol.
-    if (new_msg != nullptr)
-        HarpCore::send_harp_reply(EVENT, AppRegNum::RisingEdgeEvent);
+    // Receive msgs from core1 with state/timings.
+    if (!queue_is_empty(&rising_edge_event_queue))
+    {
+        // Retrieve the rising edge event data from the queue.
+        RisingEdgeEventData event_data;
+        queue_remove_blocking(&rising_edge_event_queue, &event_data);
+        app_regs.RisingEdgeEvent = event_data.output_state;
+        
+        //  Send them back over Harp Protocol.
+        HarpCore::send_harp_reply(EVENT, AppRegNum::RisingEdgeEvent, event_data.time_us);
+    }
 }
 
 void reset_app()

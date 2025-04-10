@@ -8,7 +8,7 @@
 #include <harp_c_app.h>
 #include <harp_synchronizer.h>
 #include <etl/vector.h>
-#include <schedule_ctrl_queues.h>
+#include <fip_ctrl_queues.h>
 #include <pico/multicore.h>
 #include <laser_fip_task.h>
 #ifdef DEBUG

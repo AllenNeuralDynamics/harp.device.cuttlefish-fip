@@ -29,5 +29,6 @@ inline constexpr uint16_t SERIAL_NUMBER = 0;
 
 #define MAX_TASK_COUNT (8)
 
+inline constexpr uint8_t MAX_QUEUE_SIZE = 32;
 
 #endif // CONFIG_H

@@ -1,4 +1,7 @@
+#include <harp_core.h>
 #include <fip_schedule.h>
+#include <fip_ctrl_queues.h>
+#include <hardware/structs/timer.h>
 
 etl::vector<LaserFIPTask, MAX_TASK_COUNT> fip_tasks;
 
@@ -21,27 +24,131 @@ void sleep_us(uint32_t us)
 void setup_fip_schedule()
 {
     // TODO: refactor to create from settings objects arriving from core0.
-    fip_tasks.emplace_back(PWM_470_PIN, 0.5, 10000, (1 << CAM_R_PIN),
-                           true, false, DELTA1, DELTA2, DELTA3, DELTA4);
-    fip_tasks.emplace_back(PWM_415_PIN, 0.5, 10000, (1 << CAM_R_PIN),
-                           true, false, DELTA1, DELTA2, DELTA3, DELTA4);
-    fip_tasks.emplace_back(PWM_565_PIN, 0.5, 10000, (1 << CAM_G_PIN),
-                           true, false, DELTA1, DELTA2, DELTA3, DELTA4);
+    // Check if there are messages in the add task queue.
+    LaserFIPTaskSettings task_settings{};
+    while (!queue_is_empty(&add_task_queue))
+    {
+        // Retrieve the task settings from the queue.
+        if (queue_try_remove(&add_task_queue, &task_settings) && fip_tasks.size() < MAX_TASK_COUNT)
+        {
+            // Add the task to the fip_tasks vector directly.
+            fip_tasks.emplace_back(
+                task_settings.pwm_pin,
+                task_settings.pwm_duty_cycle,
+                task_settings.pwm_frequency_hz,
+                task_settings.output_mask,
+                task_settings.events,
+                task_settings.mute,
+                task_settings.delta1_us,
+                task_settings.delta2_us,
+                task_settings.delta3_us,
+                task_settings.delta4_us);
+        }
+    }
 
     enabled = false;
 }
 
 void update_enabled_state()
 {
-    // TODO get messages from core0.
     // Update enabled state.
-    enabled = true;
+    if (!queue_is_empty(&enable_task_schedule_queue))
+    {
+        uint8_t enable_state;
+
+        if (queue_try_remove(&enable_task_schedule_queue, &enable_state))
+        {
+            // Update the enabled state based on the message.
+            if (enable_state)
+                enabled = true;
+            else
+                enabled = false;
+        }
+    }
 }
 
 void update_fip_tasks()
 {
-    // TODO: get messages from core0.
-    // Check if fip_tasks were added, removed, or clear.
+    LaserFIPTaskSettings task_settings;
+
+    // Check if there are messages in the add task queue.
+    while (!queue_is_empty(&add_task_queue))
+    {
+        // Retrieve the task settings from the queue.
+        if (queue_try_remove(&add_task_queue, &task_settings) && fip_tasks.size() < MAX_TASK_COUNT)
+        {
+            // Add the task to the fip_tasks vector.
+            fip_tasks.emplace_back(
+                task_settings.pwm_pin,
+                task_settings.pwm_duty_cycle,
+                task_settings.pwm_frequency_hz,
+                task_settings.output_mask,
+                task_settings.events,
+                task_settings.mute,
+                task_settings.delta1_us,
+                task_settings.delta2_us,
+                task_settings.delta3_us,
+                task_settings.delta4_us);
+        }
+    }
+
+    // Check if there are messages in the remove task queue.
+    uint8_t task_index;
+    while (!queue_is_empty(&remove_task_queue))
+    {
+        // Retrieve the task index from the queue.
+        if (queue_try_remove(&remove_task_queue, &task_index))
+        {
+            // Remove the task from the fip_tasks vector.
+            if (task_index < fip_tasks.size())
+            {
+                fip_tasks.erase(fip_tasks.begin() + task_index);
+            }
+        }
+    }
+
+    // Check if there are messages in the clear tasks queue.
+    bool clear_all;
+    if (!queue_is_empty(&clear_tasks_queue))
+    {
+        // Retrieve the clear signal from the queue.
+        if (queue_try_remove(&clear_tasks_queue, &clear_all))
+        {
+            if (clear_all)
+            {
+                // Clear all tasks from the fip_tasks vector.
+                fip_tasks.clear();
+            }
+        }
+    }
+
+    // Check if there are messages in the reconfigure task queue.
+    ReconfigureTaskData task_data{};
+    while (!queue_is_empty(&reconfigure_task_queue))
+    {
+        // Retrieve the task settings from the queue.
+        if (queue_try_remove(&reconfigure_task_queue, &task_data))
+        {
+            size_t task_index = task_data.task_index;
+            LaserFIPTaskSettings task_settings = task_data.settings;
+            
+            if (task_index < fip_tasks.size())
+            {
+                // Reconfigure the task in the fip_tasks vector.
+                fip_tasks[task_index] = LaserFIPTask(
+                    task_settings.pwm_pin,
+                    task_settings.pwm_duty_cycle,
+                    task_settings.pwm_frequency_hz,
+                    task_settings.output_mask,
+                    task_settings.events,
+                    task_settings.mute,
+                    task_settings.delta1_us,
+                    task_settings.delta2_us,
+                    task_settings.delta3_us,
+                    task_settings.delta4_us);
+            }
+        }
+    }
 }
 
 void run()
@@ -60,7 +167,9 @@ void run()
 
 void push_harp_msg(uint32_t output_state, uint64_t time_us)
 {
-    // TODO: send this to core0.
+    // Send rising edge output state to core0.
+    RisingEdgeEventData event_data = {output_state, time_us};
+    queue_try_add(&rising_edge_event_queue, &event_data);
 }
 
 void run_sequence()
