@@ -6,7 +6,5 @@ void core1_main()
 #if defined(DEBUG)
     printf("Hello from core1.\r\n");
 #endif
-    setup_fip_schedule();
-
     run(); // blocks.
 }

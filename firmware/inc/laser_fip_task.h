@@ -42,11 +42,7 @@ public:
     {settings_ = settings;} // Use default assignment operator.
 
     inline void set_output()
-    {
-        if (settings_.mute)
-            return;
-        gpio_put_masked(settings_.output_mask, 0xFFFFFFFF);
-    }
+    {gpio_put_masked(output_mask(), 0xFFFFFFFF);}
 
     inline void clear_output()
     {gpio_put_masked(settings_.output_mask, 0);}

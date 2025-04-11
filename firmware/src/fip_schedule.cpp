@@ -14,39 +14,14 @@ inline uint64_t time_us_64_unsafe()
     return (uint64_t(timer_hw->timehr) << 32) | time;
 }
 
+inline uint32_t time_us_32_fast()
+{return timer_hw->timerawl;}
+
 void sleep_us(uint32_t us)
 {
     uint32_t start_time_us = timer_hw->timerawl;
     while (int32_t(timer_hw->timerawl - start_time_us) < us)
-        asm volatile("nop");
-}
-
-void setup_fip_schedule()
-{
-    // TODO: refactor to create from settings objects arriving from core0.
-    // Check if there are messages in the add task queue.
-    LaserFIPTaskSettings task_settings{};
-    while (!queue_is_empty(&add_task_queue))
-    {
-        // Retrieve the task settings from the queue.
-        if (queue_try_remove(&add_task_queue, &task_settings) && fip_tasks.size() < MAX_TASK_COUNT)
-        {
-            // Add the task to the fip_tasks vector directly.
-            fip_tasks.emplace_back(
-                task_settings.pwm_pin,
-                task_settings.pwm_duty_cycle,
-                task_settings.pwm_frequency_hz,
-                task_settings.output_mask,
-                task_settings.events,
-                task_settings.mute,
-                task_settings.delta1_us,
-                task_settings.delta2_us,
-                task_settings.delta3_us,
-                task_settings.delta4_us);
-        }
-    }
-
-    enabled = false;
+        tight_loop_contents();
 }
 
 void update_enabled_state()
@@ -131,7 +106,7 @@ void update_fip_tasks()
         {
             size_t task_index = task_data.task_index;
             LaserFIPTaskSettings task_settings = task_data.settings;
-            
+
             if (task_index < fip_tasks.size())
             {
                 // Reconfigure the task in the fip_tasks vector.
@@ -153,6 +128,7 @@ void update_fip_tasks()
 
 void run()
 {
+    enabled = false;
     // do a continuous sequence.
     while (true)
     {
@@ -180,20 +156,24 @@ void run_sequence()
 
 inline void run_exposure(LaserFIPTask& fip_task)
 {
-    // TODO: tweak delays to account for elapsed time to trigger signals.
+    // TODO: consider tweaking delays to account for elapsed time to trigger signals.
+    //uint32_t start_time_us = time_us_32_fast();
+    //uint32_t elapsed_time_us;
     fip_task.laser_.enable_output();
     // Send pin state w/ pwm rising edge.
     push_harp_msg((1u << fip_task.laser_.pin()), time_us_64_unsafe());
-    sleep_us(DELTA3);
+    //elapsed_time_us = time_us_32_fast() - start_time_us;
+    //sleep_us(fip_task.settings_.delta3_us - elapsed_time_us);
+    sleep_us(fip_task.settings_.delta3_us);
     fip_task.set_output();
     // Send pin state w/ CAM_G rising edge.
     push_harp_msg(
         ((1u << fip_task.laser_.pin()) | fip_task.output_mask()),
         time_us_64_unsafe());
-    sleep_us(CAM_EXPOSURE_TIME);
+    sleep_us(fip_task.settings_.delta1_us);
     fip_task.clear_output();
-    sleep_us(DELTA4);
+    sleep_us(fip_task.settings_.delta4_us);
     fip_task.laser_.disable_output();
-    sleep_us(DELTA2);
+    sleep_us(fip_task.settings_.delta2_us);
 }
 

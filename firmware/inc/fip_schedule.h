@@ -43,6 +43,7 @@ void run_sequence();
 void run_exposure(LaserFIPTask& laser_fip_task);
 
 uint64_t time_us_64_unsafe();
+uint32_t time_us_32_fast();
 
 void sleep_us(uint32_t us);
 

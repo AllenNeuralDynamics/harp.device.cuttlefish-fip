@@ -72,15 +72,18 @@ print("Disabling schedule.")
 device.send(WriteU8HarpMessage(AppRegs.EnableTaskSchedule, 0).frame)
 print("Clearing all tasks.")
 device.send(WriteU8HarpMessage(AppRegs.RemoveAllLaserTasks, 1).frame)
+sleep(0.1)
 
 print("Configuring device with many FIP tasks.")
 for index, settings in enumerate(settings):
     print(f"Sending over fip task {index} settings.")
     _ = device.send(WriteU8ArrayMessage(AppRegs.AddLaserTask,
                                               data_fmt, settings).frame)
-print("Enabling schedule")
-device.send(WriteU8HarpMessage(AppRegs.EnableTaskSchedule, 1).frame)
-sleep(3)
-
-print("Disabling schedule.")
-device.send(WriteU8HarpMessage(AppRegs.EnableTaskSchedule, 0).frame)
+    sleep(0.1)
+for i in range(2):
+    print("Enabling schedule")
+    device.send(WriteU8HarpMessage(AppRegs.EnableTaskSchedule, 1).frame)
+    sleep(0.5)
+    print("Disabling schedule.")
+    device.send(WriteU8HarpMessage(AppRegs.EnableTaskSchedule, 0).frame)
+    sleep(0.5)
