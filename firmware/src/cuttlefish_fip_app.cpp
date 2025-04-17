@@ -174,6 +174,12 @@ void reset_app()
 {
     // Clear all settings configurations to all zero.
     app_regs.LaserTaskCount = 0;
-    // FIXME: probably reset other things too.
-    // reset core1.
+    // Configure bus switches for software control of the BNC connectors.
+    // Init bus switch pins.
+    gpio_init_mask((0x000000FF << PORT_DIR_BASE));
+    // Set bus switch to all-outputs and drive an output setting for main IO pins.
+    gpio_set_dir_masked(0x000000FF << PORT_DIR_BASE, 0xFFFFFFFF);
+    gpio_put_masked(0x000000FF << PORT_DIR_BASE, 1);
+
+    //TODO:  reset core1?.
 }
