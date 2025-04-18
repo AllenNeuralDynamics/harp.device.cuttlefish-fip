@@ -1,7 +1,7 @@
 %YAML 1.1
 ---
 # yaml-language-server: $schema=https://harp-tech.org/draft-02/schema/device.json
-device: Cuttlefish-fip
+device: CuttlefishFip
 whoAmI: 1407
 firmwareVersion: "0.1"
 hardwareTargets: "0.0"
@@ -57,7 +57,7 @@ registers:
     <<: *taskSettings
     address: 41
     description: "Represents the settings of Task3."
-  Task4:
+  Task4Settings:
     <<: *taskSettings
     address: 42
     description: "Represents the settings of Task4."
