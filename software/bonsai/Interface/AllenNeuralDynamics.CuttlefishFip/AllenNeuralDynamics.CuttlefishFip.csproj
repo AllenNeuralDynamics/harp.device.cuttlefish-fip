@@ -3,21 +3,21 @@
   <PropertyGroup>
     <Title>AllenNeuralDynamics.Cuttlefish</Title>
     <Authors></Authors>
-    <Copyright>Copyright © 2024 Allen Institute for Neural Dynamics</Copyright>
+    <Copyright>Copyright © 2025 Allen Institute for Neural Dynamics</Copyright>
     <PackageProjectUrl>https://github.com/AllenNeuralDynamics/bonsai.allen-neural-dynamics</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/AllenNeuralDynamics/harp.device.cuttlefish</RepositoryUrl>
+    <RepositoryUrl>https://github.com/AllenNeuralDynamics/harp.device.cuttlefish-fip</RepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <GeneratePackageOnBuild Condition="'$(Configuration)'=='Release'">true</GeneratePackageOnBuild>
-    <Description>Bonsai Library containing interfaces for data acquisition and control of AllenNeuralDynamics Cuttlefish device.</Description>
+    <Description>Bonsai Library containing interfaces for data acquisition and control of AllenNeuralDynamics CuttlefishFip device.</Description>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageTags>AllenNeuralDynamics Cuttlefish Bonsai Rx</PackageTags>
-    <PackageLicenseExpression></PackageLicenseExpression>
+    <PackageTags>AllenNeuralDynamics CuttlefishFip Bonsai Rx</PackageTags>
+    <PackageType>Dependency;BonsaiLibrary</PackageType>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageIcon>icon.png</PackageIcon>
     <PackageOutputPath></PackageOutputPath>
     <TargetFrameworks>net462;netstandard2.0</TargetFrameworks>
-    <VersionPrefix>0.2.0</VersionPrefix>
+    <VersionPrefix>0.1.0</VersionPrefix>
     <LangVersion>9.0</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
