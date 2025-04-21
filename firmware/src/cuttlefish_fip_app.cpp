@@ -50,20 +50,25 @@ void read_reconfigure_laser_task(uint8_t address)
         HarpCore::send_harp_reply(READ, address);
 }
 
+bool set_task_schedule_state(bool state)
+{
+    // Push enable/disable signal to core1.
+    bool success = queue_try_add(&enable_task_schedule_queue, &state);
+    // Harp register should represent the actual state of the task schedule.
+    app_regs.EnableTaskSchedule = uint8_t(state);
+    return success;
+}
+
 void write_enable_task_schedule(msg_t& msg)
 {
     HarpCore::copy_msg_payload_to_register(msg);
-
-    // Push enable/disable signal to core1.
-    if (!queue_try_add(&enable_task_schedule_queue, &app_regs.EnableTaskSchedule))
-    {
-        // Handle queue full error.
-        HarpCore::send_harp_reply(WRITE_ERROR, msg.header.address);
+    bool success = set_task_schedule_state(bool(app_regs.EnableTaskSchedule));
+    if (HarpCore::is_muted())
         return;
-    }
-
-    if (!HarpCore::is_muted())
+    if (success)
         HarpCore::send_harp_reply(WRITE, msg.header.address);
+    else
+        HarpCore::send_harp_reply(WRITE_ERROR, msg.header.address);
 }
 
 void write_add_laser_task(msg_t& msg)
@@ -171,6 +176,9 @@ void update_app()
         //  Send them back over Harp Protocol.
         HarpCore::send_harp_reply(EVENT, AppRegNum::RisingEdgeEvent, event_data.time_us);
     }
+    // Disable output waveforms if we've disconnected com ports (safety feature).
+    if (HarpCore::get_op_mode() != ACTIVE)
+        set_task_schedule_state(false);
 }
 
 void reset_app()

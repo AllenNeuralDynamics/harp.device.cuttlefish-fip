@@ -73,6 +73,13 @@ inline size_t get_fip_task_index(msg_t& msg)
 {return msg.header.address - LASER_BASE_ADDRESS;}
 
 /**
+ * \brief set waveform output to enabled or disabled, but do not destroy tasks.
+ * Also update the Harp register representation of the task schedule state.
+ * \return whether or not the state change was successful.
+ */
+bool set_task_schedule_state(bool state);
+
+/**
  * \brief read whether the laser task schedule is enabled or not.
  */
 void read_reconfigure_laser_task(uint8_t address);
