@@ -28,7 +28,7 @@ registers:
     address: 35
     type: U8
     access: Write
-    description: "Clears all scheduled tasks."
+    description: "A value greater than 0 will clear all scheduled tasks."
   TaskCount:
     address: 36
     type: U8

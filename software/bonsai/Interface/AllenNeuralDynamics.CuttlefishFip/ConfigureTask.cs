@@ -58,18 +58,30 @@ namespace AllenNeuralDynamics.CuttlefishFip
             }
         }
 
+        private float dutyCycle = 0.1f;
         /// <summary>
         /// Gets or sets the duty cycle (0-1) of the PWM port in the task.
         /// </summary>
-        [Description("The duty cycle of the PWM.")]
+        [Description("The duty cycle (0-1) of the PWM.")]
         [Range(0.0, 1.0)]
         [Editor(DesignTypes.SliderEditor, DesignTypes.UITypeEditor)]
-        public float DutyCycle { get; set; } = 0;
+        public float DutyCycle
+        {
+            get => dutyCycle;
+            set
+            {
+                if (value < 0.0f || value > 1.0f)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(DutyCycle), "Duty cycle must be between 0 and 1.");
+                }
+                dutyCycle = value;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the frequency (Hz) of the PWM port in the task.
         /// </summary>
-        [Description("The frequency of the PWM.")]
+        [Description("The frequency (Hz) of the PWM.")]
         [Range(5000, 100000)]
         [Editor(DesignTypes.SliderEditor, DesignTypes.UITypeEditor)]
         public float Frequency { get; set; } = 10000;
@@ -97,26 +109,26 @@ namespace AllenNeuralDynamics.CuttlefishFip
         /// <summary>
         /// Gets or sets duration of Delta1 delay (in microseconds).
         /// </summary>
-        [Description("The length of the Delta1 delay.")]
+        [Description("The duration (microseconds) of the Delta1 delay.")]
         public uint Delta1 { get; set; } = 0;
 
         /// <summary>
         /// Gets or sets duration of Delta2 delay (in microseconds).
         /// </summary>
-        [Description("The length of the Delta2 delay.")]
+        [Description("The duration (microseconds) of the Delta2 delay.")]
         public uint Delta2 { get; set; } = 0;
 
 
         /// <summary>
         /// Gets or sets duration of Delta3 delay (in microseconds).
         /// </summary>
-        [Description("The length of the Delta3 delay.")]
+        [Description("The duration (microseconds) of the Delta3 delay.")]
         public uint Delta3 { get; set; } = 0;
 
         /// <summary>
         /// Gets or sets duration of Delta4 delay (in microseconds).
         /// </summary>
-        [Description("The length of the Delta4 delay.")]
+        [Description("The duration (microseconds) of the Delta4 delay.")]
         public uint Delta4 { get; set; } = 0;
 
 

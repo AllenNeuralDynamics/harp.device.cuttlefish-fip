@@ -1,4 +1,4 @@
-using Bonsai;
+﻿using Bonsai;
 using Bonsai.Harp;
 using System;
 using System.Collections.Generic;
@@ -556,9 +556,9 @@ namespace AllenNeuralDynamics.CuttlefishFip
     }
 
     /// <summary>
-    /// Represents a register that clears all scheduled tasks.
+    /// Represents a register that a value greater than 0 will clear all scheduled tasks.
     /// </summary>
-    [Description("Clears all scheduled tasks.")]
+    [Description("A value greater than 0 will clear all scheduled tasks.")]
     public partial class ClearAllTasks
     {
         /// <summary>
@@ -1836,16 +1836,16 @@ namespace AllenNeuralDynamics.CuttlefishFip
 
     /// <summary>
     /// Represents an operator that creates a message payload
-    /// that clears all scheduled tasks.
+    /// that a value greater than 0 will clear all scheduled tasks.
     /// </summary>
     [DisplayName("ClearAllTasksPayload")]
-    [Description("Creates a message payload that clears all scheduled tasks.")]
+    [Description("Creates a message payload that a value greater than 0 will clear all scheduled tasks.")]
     public partial class CreateClearAllTasksPayload
     {
         /// <summary>
-        /// Gets or sets the value that clears all scheduled tasks.
+        /// Gets or sets the value that a value greater than 0 will clear all scheduled tasks.
         /// </summary>
-        [Description("The value that clears all scheduled tasks.")]
+        [Description("The value that a value greater than 0 will clear all scheduled tasks.")]
         public byte ClearAllTasks { get; set; }
 
         /// <summary>
@@ -1858,7 +1858,7 @@ namespace AllenNeuralDynamics.CuttlefishFip
         }
 
         /// <summary>
-        /// Creates a message that clears all scheduled tasks.
+        /// Creates a message that a value greater than 0 will clear all scheduled tasks.
         /// </summary>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new message for the ClearAllTasks register.</returns>
@@ -1870,14 +1870,14 @@ namespace AllenNeuralDynamics.CuttlefishFip
 
     /// <summary>
     /// Represents an operator that creates a timestamped message payload
-    /// that clears all scheduled tasks.
+    /// that a value greater than 0 will clear all scheduled tasks.
     /// </summary>
     [DisplayName("TimestampedClearAllTasksPayload")]
-    [Description("Creates a timestamped message payload that clears all scheduled tasks.")]
+    [Description("Creates a timestamped message payload that a value greater than 0 will clear all scheduled tasks.")]
     public partial class CreateTimestampedClearAllTasksPayload : CreateClearAllTasksPayload
     {
         /// <summary>
-        /// Creates a timestamped message that clears all scheduled tasks.
+        /// Creates a timestamped message that a value greater than 0 will clear all scheduled tasks.
         /// </summary>
         /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
         /// <param name="messageType">Specifies the type of the created message.</param>
