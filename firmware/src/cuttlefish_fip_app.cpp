@@ -77,6 +77,9 @@ void write_add_laser_task(msg_t& msg)
     HarpCore::copy_msg_payload_to_register(msg);
     LaserFIPTaskSettings* settings_ptr
         = reinterpret_cast<LaserFIPTaskSettings*>(msg.payload);
+    // PCB "IO0" = GPIO0 + PORT_BASE. Do offset.
+    settings_ptr->pwm_pin = settings_ptr->pwm_pin + PORT_BASE;
+    settings_ptr->output_mask = settings_ptr->output_mask << PORT_BASE;
 
     // Push the task settings to core1.
     if (!queue_try_add(&add_task_queue, settings_ptr))
@@ -179,7 +182,7 @@ void reset_app()
     gpio_init_mask((0x000000FF << PORT_DIR_BASE));
     // Set bus switch to all-outputs and drive an output setting for main IO pins.
     gpio_set_dir_masked(0x000000FF << PORT_DIR_BASE, 0xFFFFFFFF);
-    gpio_put_masked(0x000000FF << PORT_DIR_BASE, 1);
+    gpio_put_masked(0x000000FF << PORT_DIR_BASE, 0xFFFFFFFF);
 
     //TODO:  reset core1?.
 }
