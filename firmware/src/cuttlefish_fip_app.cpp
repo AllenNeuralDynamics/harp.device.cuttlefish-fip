@@ -171,8 +171,8 @@ void update_app()
         // Retrieve the rising edge event data from the queue.
         RisingEdgeEventData event_data;
         queue_remove_blocking(&rising_edge_event_queue, &event_data);
-        app_regs.RisingEdgeEvent = event_data.output_state;
-        
+        // Offset to account for the GPIO to IO mapping.
+        app_regs.RisingEdgeEvent = uint8_t(event_data.output_state >> PORT_BASE);
         //  Send them back over Harp Protocol.
         HarpCore::send_harp_reply(EVENT, AppRegNum::RisingEdgeEvent, event_data.time_us);
     }
