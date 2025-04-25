@@ -2429,7 +2429,7 @@ namespace AllenNeuralDynamics.CuttlefishFip
     }
 
     /// <summary>
-    /// Available ports on the device
+    /// Available ports on the device. This enum is a bit-mask. Multiple values can be set at the same time.
     /// </summary>
     [Flags]
     public enum Ports : byte
@@ -2458,5 +2458,21 @@ namespace AllenNeuralDynamics.CuttlefishFip
         Task5 = 5,
         Task6 = 6,
         Task7 = 7
+    }
+
+    /// <summary>
+    /// Available ports on the device. This enum is one-hot encoded. Only one value can be set at a time.
+    /// </summary>
+    public enum Port : byte
+    {
+        None = 0,
+        IO0 = 1,
+        IO1 = 2,
+        IO2 = 4,
+        IO3 = 8,
+        IO4 = 16,
+        IO5 = 32,
+        IO6 = 64,
+        IO7 = 128
     }
 }

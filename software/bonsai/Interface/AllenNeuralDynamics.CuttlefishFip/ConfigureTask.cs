@@ -1,11 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Linq;
-using System.Reflection;
 using System.Reactive.Linq;
 using Bonsai.Harp;
 using Bonsai;
-using System.Collections.Generic;
 
 namespace AllenNeuralDynamics.CuttlefishFip
 {
@@ -40,12 +38,12 @@ namespace AllenNeuralDynamics.CuttlefishFip
         [Description("The type of the Harp message.")]
         public MessageType MessageType { get; set; } = MessageType.Write;
 
-        private Ports pwmPort = Ports.IO0;
+        private Port pwmPort = Port.IO0;
         /// <summary>
         /// Gets or sets the port for the PWM Task.
         /// </summary>
         [Description("The PWM port. Only a single flag can be high.")]
-        public Ports PwmPort
+        public Port PwmPort
         {
             get => pwmPort;
             set

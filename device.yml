@@ -85,10 +85,22 @@ groupMasks:
       Task5: 0x5
       Task6: 0x6
       Task7: 0x7
+  Port:
+    description: "Available ports on the device. This enum is one-hot encoded. Only one value can be set at a time."
+    values:
+      None: 0x0
+      IO0: 0x1
+      IO1: 0x2
+      IO2: 0x4
+      IO3: 0x8
+      IO4: 0x10
+      IO5: 0x20
+      IO6: 0x40
+      IO7: 0x80
 
 bitMasks:
   Ports:
-    description: "Available ports on the device"
+    description: "Available ports on the device. This enum is a bit-mask. Multiple values can be set at the same time."
     bits:
       None: 0x0
       IO0: 0x1
