@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Title>AllenNeuralDynamics.Cuttlefish</Title>
+    <Title>AllenNeuralDynamics.CuttlefishFip</Title>
     <Authors></Authors>
     <Copyright>Copyright © 2025 Allen Institute for Neural Dynamics</Copyright>
     <PackageProjectUrl>https://github.com/AllenNeuralDynamics/bonsai.allen-neural-dynamics</PackageProjectUrl>
