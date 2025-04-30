@@ -16,6 +16,8 @@ def find_device():
     for port, desc, hwid in sorted(ports):
         if port.startswith("/dev/ttyUSB0") or port.startswith("/dev/ttyACM0") or port.startswith("COM5"):  
             return Device(port)
+        elif desc.startswith("cuttlefish-fip"):
+            return Device(port)
     raise Exception("Device not found.")
 
 # Function to send FIP waveform settings
