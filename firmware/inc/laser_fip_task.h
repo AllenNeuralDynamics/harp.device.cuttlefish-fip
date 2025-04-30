@@ -5,7 +5,7 @@
 #pragma pack(push, 1)
 struct LaserFIPTaskSettings
 {
-    uint32_t pwm_pin;
+    uint32_t pwm_pin_bit; // one-hot encoded pwm pin.
     float pwm_duty_cycle;
     float pwm_frequency_hz;
 
@@ -18,6 +18,27 @@ struct LaserFIPTaskSettings
     uint32_t delta2_us;
     uint32_t delta3_us;
     uint32_t delta4_us;
+
+
+/**
+ * \brief convert single pin set in a pin mask to its corresponding integer
+ *  representation.
+ */
+    static int32_t onehot_to_pin(uint32_t bitmask)
+    {
+        size_t offset = 0;
+        for (size_t index = 0; index < 32; ++ index)
+        {
+            if ((bitmask & 1u) )
+                return offset;
+            else
+            {
+                bitmask >>= 1;
+                ++offset;
+            }
+        }
+        return -1;
+    }
 };
 #pragma pack(pop)
 

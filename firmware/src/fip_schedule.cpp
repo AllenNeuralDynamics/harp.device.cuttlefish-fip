@@ -54,7 +54,7 @@ void update_fip_tasks()
         {
             // Add the task to the fip_tasks vector.
             fip_tasks.emplace_back(
-                task_settings.pwm_pin,
+                LaserFIPTaskSettings::onehot_to_pin(task_settings.pwm_pin_bit),
                 task_settings.pwm_duty_cycle,
                 task_settings.pwm_frequency_hz,
                 task_settings.output_mask,
@@ -111,7 +111,7 @@ void update_fip_tasks()
             {
                 // Reconfigure the task in the fip_tasks vector.
                 fip_tasks[task_index] = LaserFIPTask(
-                    task_settings.pwm_pin,
+                    LaserFIPTaskSettings::onehot_to_pin(task_settings.pwm_pin_bit),
                     task_settings.pwm_duty_cycle,
                     task_settings.pwm_frequency_hz,
                     task_settings.output_mask,
@@ -160,13 +160,13 @@ inline void run_exposure(LaserFIPTask& fip_task)
     //uint32_t start_time_us = time_us_32_fast();
     //uint32_t elapsed_time_us;
     fip_task.laser_.enable_output();
-    // Send pin state w/ pwm rising edge.
+    // Send pinmask state w/ pwm rising edge.
     push_harp_msg((1u << fip_task.laser_.pin()), time_us_64_unsafe());
     //elapsed_time_us = time_us_32_fast() - start_time_us;
     //sleep_us(fip_task.settings_.delta3_us - elapsed_time_us);
     sleep_us(fip_task.settings_.delta3_us);
     fip_task.set_output();
-    // Send pin state w/ CAM_G rising edge.
+    // Send pinmask state w/ CAM_G rising edge.
     push_harp_msg(
         ((1u << fip_task.laser_.pin()) | fip_task.output_mask()),
         time_us_64_unsafe());

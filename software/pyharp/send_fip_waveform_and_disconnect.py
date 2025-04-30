@@ -27,10 +27,10 @@ device = Device(com_port)
 # Provision device with a square wave.
 settings = \
 (
-    0,   # pwm_pin
+    0b00000001,   # pwm_pin
     0.5, # pwm duty cycle
     10000., # pwm frequency (hz)
-    0x0002, # output mask
+    0b00000010, # output mask
     1,      # events
     0,      # mute
     15350,  # DELTA1

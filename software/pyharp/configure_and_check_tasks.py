@@ -24,10 +24,10 @@ def find_device():
 def configure_tasks(device):
     settings = [
         (
-            0,   # pwm_pin
+            0b00000001,   # pwm_pin
             0.25, # pwm duty cycle
             10000., # pwm frequency (hz)
-            0x0002, # output mask
+            0b00000010, # output mask
             1,      # events
             0,      # mute
             15350,  # DELTA1
@@ -37,10 +37,10 @@ def configure_tasks(device):
         ),
 
         (
-            2,   # pwm_pin
+            0b00000100,   # pwm_pin
             0.75, # pwm duty cycle
             10000., # pwm frequency (hz)
-            0x0008, # output mask
+            0b00001000, # output mask
             1,      # events
             0,      # mute
             15350,  # DELTA1
@@ -50,10 +50,10 @@ def configure_tasks(device):
         ),
 
         (
-            4,   # pwm_pin
+            0b00010000,   # pwm_pin
             0.5, # pwm duty cycle
             10000., # pwm frequency (hz)
-            0x0020, # output mask
+            0b00100000, # output mask
             1,      # events
             0,      # mute
             15350,  # DELTA1
@@ -63,10 +63,10 @@ def configure_tasks(device):
         ),
 
         (
-            6,   # pwm_pin
+            0b01000000,   # pwm_pin
             0.25, # pwm duty cycle
             10000., # pwm frequency (hz)
-            0x0080, # output mask
+            0b10000000, # output mask
             1,      # events
             0,      # mute
             15350,  # DELTA1

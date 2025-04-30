@@ -8,7 +8,7 @@ include(${PICO_SDK_PATH}/pico_sdk_init.cmake)
 
 project(cuttlefish-fip)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 # Enable try/catch exception interface.
 #set(PICO_CXX_ENABLE_EXCEPTIONS 1)

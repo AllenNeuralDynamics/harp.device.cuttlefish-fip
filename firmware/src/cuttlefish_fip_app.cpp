@@ -73,7 +73,7 @@ void write_enable_task_schedule(msg_t& msg)
 
 void write_add_laser_task(msg_t& msg)
 {
-    // Emit error if schedule is running.
+    // Emit error if schedule is running or task count is at maximum.
     if (app_regs.EnableTaskSchedule || (app_regs.LaserTaskCount == MAX_TASK_COUNT))
     {
         HarpCore::send_harp_reply(WRITE_ERROR, msg.header.address);
@@ -82,8 +82,15 @@ void write_add_laser_task(msg_t& msg)
     HarpCore::copy_msg_payload_to_register(msg);
     LaserFIPTaskSettings* settings_ptr
         = reinterpret_cast<LaserFIPTaskSettings*>(msg.payload);
+    // Emit error if pwm_pin_bit is specified wrong (more than 1 or none).
+    if (std::popcount(settings_ptr->pwm_pin_bit) != 1)
+    {
+        HarpCore::send_harp_reply(WRITE_ERROR, msg.header.address);
+        return;
+    }
+    // Source is one-hot encoded and refers to pins in a range from 0 through 7.
     // PCB "IO0" = GPIO0 + PORT_BASE. Do offset.
-    settings_ptr->pwm_pin = settings_ptr->pwm_pin + PORT_BASE;
+    settings_ptr->pwm_pin_bit = settings_ptr->pwm_pin_bit << PORT_BASE;
     settings_ptr->output_mask = settings_ptr->output_mask << PORT_BASE;
 
     // Push the task settings to core1.
@@ -156,6 +163,12 @@ void write_remove_all_laser_tasks(msg_t& msg)
 void write_reconfigure_laser_task(msg_t& msg)
 {
     size_t task_index = get_fip_task_index(msg);
+    // Emit error if schedule is running.
+    if (app_regs.EnableTaskSchedule)
+    {
+        HarpCore::send_harp_reply(WRITE_ERROR, msg.header.address);
+        return;
+    }
     // Emit Write Error if this task does not yet exist in the queue.
     if ((task_index + 1) > app_regs.LaserTaskCount)
     {
@@ -165,9 +178,15 @@ void write_reconfigure_laser_task(msg_t& msg)
     HarpCore::copy_msg_payload_to_register(msg);
     LaserFIPTaskSettings* settings_ptr
         = reinterpret_cast<LaserFIPTaskSettings*>(msg.payload);
-    
+    // Emit error if pwm_pin_bit is specified wrong (more than 1 or none).
+    if (std::popcount(settings_ptr->pwm_pin_bit) != 1)
+    {
+        HarpCore::send_harp_reply(WRITE_ERROR, msg.header.address);
+        return;
+    }
+    // Source is one-hot encoded and refers to pins in a range from 0 through 7.
     // PCB "IO0" = GPIO0 + PORT_BASE. Do offset.
-    settings_ptr->pwm_pin = settings_ptr->pwm_pin + PORT_BASE;
+    settings_ptr->pwm_pin_bit = settings_ptr->pwm_pin_bit << PORT_BASE;
     settings_ptr->output_mask = settings_ptr->output_mask << PORT_BASE;
 
     ReconfigureTaskData task_data = {task_index, *settings_ptr};

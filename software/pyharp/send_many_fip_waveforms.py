@@ -28,10 +28,10 @@ device = Device(com_port)
 settings = \
 [
     (
-        0,   # pwm_pin
+        0b00000001,   # pwm_pin
         0.25, # pwm duty cycle
         10000., # pwm frequency (hz)
-        0x0002, # output mask
+        0b00000010, # output mask
         1,      # events
         0,      # mute
         15350,  # DELTA1
@@ -41,10 +41,10 @@ settings = \
     ),
 
     (
-        2,   # pwm_pin
+        0b00000100,   # pwm_pin
         0.75, # pwm duty cycle
         10000., # pwm frequency (hz)
-        0x0008, # output mask
+        0b00001000, # output mask
         1,      # events
         0,      # mute
         15350,  # DELTA1
@@ -54,10 +54,10 @@ settings = \
     ),
 
     (
-        4,   # pwm_pin
+        0b00010000,   # pwm_pin
         0.5, # pwm duty cycle
         10000., # pwm frequency (hz)
-        0x0020, # output mask
+        0b00100000, # output mask
         1,      # events
         0,      # mute
         15350,  # DELTA1
@@ -77,8 +77,10 @@ sleep(0.1)
 print("Configuring device with many FIP tasks.")
 for index, settings in enumerate(settings):
     print(f"Sending over fip task {index} settings.")
-    _ = device.send(WriteU8ArrayMessage(AppRegs.AddLaserTask,
-                                              data_fmt, settings).frame)
+    reply = device.send(WriteU8ArrayMessage(AppRegs.AddLaserTask,
+                                            data_fmt, settings).frame)
+    if reply.message_type == MessageType.WRITE_ERROR:
+        raise RuntimeError("Received WRITE_ERROR from device!")
     sleep(0.1)
 for i in range(2):
     print("Enabling schedule")

@@ -23,10 +23,10 @@ def find_device():
 # Function to send FIP waveform settings
 def send_fip_waveform(device):
     settings = (
-        0,   # pwm_pin
+        0b00000001,   # pwm_pin
         0.5, # pwm duty cycle
         10000., # pwm frequency (hz)
-        0x0002, # output mask
+        0b00000010, # output mask
         1,      # events
         0,      # mute
         15350,  # DELTA1
