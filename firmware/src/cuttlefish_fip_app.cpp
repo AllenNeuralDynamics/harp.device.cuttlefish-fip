@@ -165,6 +165,10 @@ void write_reconfigure_laser_task(msg_t& msg)
     HarpCore::copy_msg_payload_to_register(msg);
     LaserFIPTaskSettings* settings_ptr
         = reinterpret_cast<LaserFIPTaskSettings*>(msg.payload);
+    
+    // PCB "IO0" = GPIO0 + PORT_BASE. Do offset.
+    settings_ptr->pwm_pin = settings_ptr->pwm_pin + PORT_BASE;
+    settings_ptr->output_mask = settings_ptr->output_mask << PORT_BASE;
 
     ReconfigureTaskData task_data = {task_index, *settings_ptr};
 
