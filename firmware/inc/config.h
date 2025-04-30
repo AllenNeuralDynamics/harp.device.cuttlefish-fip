@@ -15,6 +15,9 @@ inline constexpr uint8_t FW_VERSION_MINOR = 0;
 inline constexpr uint16_t SERIAL_NUMBER = 0;
 */
 
+#define FIP_HARP_DEVICE_ID (0x057F)
+#define FIP_WHO_AM_I (FIP_HARP_DEVICE_ID)
+
 #define DEBUG_UART (uart0)
 #define DEBUG_UART_TX_PIN (0) // for printf-style debugging.
 

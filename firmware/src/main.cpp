@@ -16,7 +16,7 @@ queue_t clear_tasks_queue;
 queue_t reconfigure_task_queue;
 queue_t rising_edge_event_queue;
 
-HarpCApp& app = HarpCApp::init(0, 0, 0,
+HarpCApp& app = HarpCApp::init(FIP_WHO_AM_I, 0, 0,
                                0,
                                0, 0,
                                0, 0,
