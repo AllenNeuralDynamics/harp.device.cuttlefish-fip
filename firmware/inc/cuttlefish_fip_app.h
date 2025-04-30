@@ -18,7 +18,7 @@
 
 // Setup for Harp App
 inline constexpr uint8_t REG_COUNT = 14;
-inline constexpr uint8_t LASER_BASE_ADDRESS = APP_REG_START_ADDRESS + 5;
+inline constexpr uint8_t LASER_BASE_ADDRESS = APP_REG_START_ADDRESS + 6;
 
 extern etl::vector<LaserFIPTask, MAX_TASK_COUNT> fip_tasks;
 extern RegSpecs app_reg_specs[REG_COUNT];
