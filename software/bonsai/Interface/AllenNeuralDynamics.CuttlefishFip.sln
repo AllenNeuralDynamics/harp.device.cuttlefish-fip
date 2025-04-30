@@ -1,0 +1,25 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32825.248
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{5E53B21E-6676-4BBB-85E6-AF4F09135941}") = "AllenNeuralDynamics.CuttlefishFip", "AllenNeuralDynamics.CuttlefishFip\AllenNeuralDynamics.CuttlefishFip.csproj", "{1338685C-726D-4A0B-A133-354F109F1399}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1338685C-726D-4A0B-A133-354F109F1399}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1338685C-726D-4A0B-A133-354F109F1399}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1338685C-726D-4A0B-A133-354F109F1399}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1338685C-726D-4A0B-A133-354F109F1399}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4DE5060C-3462-4B4A-B27E-6F0633E1D1B0}
+	EndGlobalSection
+EndGlobal
