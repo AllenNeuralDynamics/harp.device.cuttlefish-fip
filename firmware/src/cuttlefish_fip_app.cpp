@@ -101,14 +101,17 @@ void write_add_laser_task(msg_t& msg)
 
 void write_remove_laser_task(msg_t& msg)
 {
-    size_t task_index = get_fip_task_index(msg);
+    HarpCore::copy_msg_payload_to_register(msg);
+    size_t task_index = app_regs.RemoveLaserTask;
+
     // Emit error if schedule is running or task does not exist.
-    if (app_regs.EnableTaskSchedule || ((task_index + 1 ) > app_regs.LaserTaskCount))
+    if (app_regs.EnableTaskSchedule || 
+        ((task_index + 1 ) > app_regs.LaserTaskCount || (task_index >= MAX_TASK_COUNT)))
     {
         HarpCore::send_harp_reply(WRITE_ERROR, msg.header.address);
         return;
     }
-    HarpCore::copy_msg_payload_to_register(msg);
+
     // push remove-by-index signal to core1.
     if (!queue_try_add(&remove_task_queue, &task_index))
     {
@@ -116,6 +119,13 @@ void write_remove_laser_task(msg_t& msg)
         HarpCore::send_harp_reply(WRITE_ERROR, msg.header.address);
         return;
     }
+
+    // Remove the task from the app_regs and shift all tasks down by one.
+    for (size_t i = task_index; i < (MAX_TASK_COUNT - 1); ++i)
+    {
+        app_regs.ReconfigureLaserTask[i] = app_regs.ReconfigureLaserTask[i + 1];
+    }
+
     --app_regs.LaserTaskCount;
     if (!HarpCore::is_muted())
         HarpCore::send_harp_reply(WRITE, msg.header.address);
@@ -131,6 +141,13 @@ void write_remove_all_laser_tasks(msg_t& msg)
         HarpCore::send_harp_reply(WRITE_ERROR, msg.header.address);
         return;
     }
+
+    // Clear the app_regs.
+    for (size_t i = 0; i < MAX_TASK_COUNT; ++i)
+    {
+        app_regs.ReconfigureLaserTask[i] = LaserFIPTaskSettings();
+    }
+
     app_regs.LaserTaskCount = 0;
     if (!HarpCore::is_muted())
         HarpCore::send_harp_reply(WRITE, msg.header.address);
