@@ -1,110 +1,92 @@
 #ifndef PWM_TASK_H
 #define PWM_TASK_H
+#include <task.h>
+#include <pwm.h>
 #include <stdint.h>
 #include <pico/stdlib.h>
 #include <hardware/gpio.h>
-#ifdef DEBUG
-    #include <cstdio> // for printf
-#endif
+#include <cstdio> // for printf
 
 /**
- * \brief container for bookkeeping update times/states of a PWM task.
+ * \brief datapoint representing the pwm pin state and the relative time
+ *  when that state takes place.
  */
-class PWMTask
+struct pwm_event_t : event_t
+{
+    float duty_cycle;
+    float frequency_hz;
+
+    // Set a default constructor with unused func ptr.
+    pwm_event_t(float duty_cycle, float frequency_hz, uint32_t us,
+                 void(*func_ptr)() = nullptr)
+    : event_t(us, func_ptr),
+      duty_cycle(duty_cycle), frequency_hz(frequency_hz){}
+};
+
+/**
+ * \brief a periodic sequence of pwm outputs task
+ */
+class PWMTask: public Task
 {
 public:
-    PWMTask(uint32_t t_delay_us, uint32_t t_on_us, uint32_t t_period_us,
-            uint32_t pin_mask, uint32_t count = 0, bool invert = false);
-
-    ~PWMTask();
-
 /**
- * \brief comparison operator for scheduling.
+ * \brief constructor.
+ * \param pwm_events
+ * \param pulse_event_count number of pulse events. Must be at least 2.
+ * \param period_us the period of the task (a duration) in microseconds.
+ *  Must be greater-than or equal-to the time value in the last pulse event.
+ * \param pin_mask the GPIO pins that this task will apply to.
+ * \param count number of iterations or 0 to loop forever unless stopped.
  */
-    friend bool operator<(const PWMTask& lhs, const PWMTask& rhs)
-    {return int32_t(rhs.next_update_time_us_ - lhs.next_update_time_us_) > 0;}
+    PWMTask(pwm_event_t** pwm_events, size_t event_count,
+            uint32_t period_us, uint32_t pwm_pin, uint32_t count = 0);
+
+    ~PWMTask()
+    {stop();}
 
     enum update_state_t: uint8_t
     {
-        LOW = 0,
-        HIGH = 1,
-        DONE = 2,
-        DELAY = 3,
+        APPLYING_PWM_EVENTS = 0,
+        DONE = 1,
     };
 
 /**
  * \brief should be called in a loop.
- * \param[force] if true, the pwm state change will forcibly iterate, which is
- *  useful if time/actions are managed by an external scheduler.
- * \param[skip_output_action] if true, this class will not manipulate the GPIO
- *  pins in the pin mask
  */
-    void update(bool force = false, bool skip_output_action = false);
-
-/**
- * \brief read-only public wrapper for the next absolute time that this
- *  instance must update.
- */
-    const inline uint32_t next_update_time_us()
-    {return next_update_time_us_;}
+    void update();
 
 /**
  * \brief stop outputs.
  */
-    inline void stop()
-    {gpio_put_masked(pin_mask_, 0);}
+    inline void stop() override
+    {pwm_.set_duty_cycle(0);}
 
-    void reset(bool skip_output_action = false);
+    void reset();
 
-    inline void start(bool skip_output_action = false)
+    void start();
+
+protected:
+
+/**
+ * \brief Apply change in update() loop and call any attached observer function
+ *  if defined.
+ * \note overrideable by child classes.
+ */
+    virtual inline void update_outputs() override
     {
-        reset(skip_output_action);
-        set_time_started(timer_hw->timerawl);
+        float& duty_cycle = pwm_events_[event_index_]->duty_cycle;
+        float& frequency_hz = pwm_events_[event_index_]->frequency_hz;
+        pwm_.set_frequency(frequency_hz);
+        pwm_.set_duty_cycle(duty_cycle);
+        // Apply function ptr.
+        if (pwm_events_[event_index_]->func_ptr != nullptr)
+            pwm_events_[event_index_]->func_ptr();
     }
 
-    inline void set_time_started(uint32_t start_time_us)
-    {
-        start_time_us_ = start_time_us;
-        next_update_time_us_ = start_time_us_ + delay_us_;
-        if (starting_state() == HIGH)
-            next_update_time_us_ += on_time_us_;
-    }
+protected:
+    pwm_event_t** pwm_events_;
 
-/**
- * \brief true if an update is due/overdue.
- */
-    inline bool time_to_update() // FIXME: should be harp time.
-    {return int32_t(timer_hw->timerawl - next_update_time_us_) >= 0;}
+    PWM pwm_;
 
-/**
- * \brief true if update() must be called again in the future.
- */
-    inline bool requires_future_update()
-    {return state_ != DONE;}
-
-    inline update_state_t starting_state()
-    {return (delay_us_ == 0)? HIGH : DELAY;}
-
-private:
-    friend class PWMScheduler;
-
-    uint32_t delay_us_; /// pulse train delay (phase offset) in microseconds.
-    uint32_t on_time_us_; /// pulse train duty cycle in microseconds
-    uint32_t period_us_; /// pulse train period in microseconds
-
-    uint32_t pin_mask_; /// active channels.
-    update_state_t state_; /// current state of pulse waveform.
-    uint32_t count_; /// How many pulses to issue.
-                     ///  0: pulse forever. >0: execute N times.
-    bool invert_;   /// Whether the waveform is inverted. Used externally.
-    uint32_t loops_; /// how many iterations of the state machine we have been
-                     ///    through.
-    uint32_t cycles_; /// how many times we have pulsed.
-    uint32_t start_time_us_; /// What (32-bit) time the pulse started.
-
-/**
- * \brief absolute time that the state machine needs to update.
- */
-    uint32_t next_update_time_us_;
 };
 #endif // PWM_TASK_H

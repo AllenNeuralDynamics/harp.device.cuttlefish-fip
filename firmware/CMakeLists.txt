@@ -6,13 +6,15 @@ add_definitions(-DGIT_HASH="${COMMIT_ID}") # Usable in source code.
 
 include(${PICO_SDK_PATH}/pico_sdk_init.cmake)
 
-project(cuttlefish)
+project(cuttlefish-fip)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 # Enable try/catch exception interface.
 #set(PICO_CXX_ENABLE_EXCEPTIONS 1)
 
+add_definitions(-DUSBD_MANUFACTURER="Allen Institute")
+add_definitions(-DUSBD_PRODUCT="cuttlefish-fip")
 
 # Compile for profiling/debugging/etc. Default: none enabled.
 #add_definitions(-DDEBUG) # Warning! initializing uart slows down core1 loop.
@@ -30,23 +32,24 @@ pico_sdk_init()
 
 # Add Harp Core as separate library.
 add_subdirectory(lib/harp.core.rp2040/firmware)
-add_subdirectory(lib/etl build)
+add_subdirectory(lib/rp2040.pwm)
+add_subdirectory(lib/etl)
 
-add_library(pwm_scheduler
-    src/pwm_scheduler.cpp
+add_library(laser_fip_task
+    src/laser_fip_task.cpp
 )
 
-add_library(pwm_task
-    src/pwm_task.cpp
+add_library(cuttlefish_fip_app
+    src/cuttlefish_fip_app.cpp
 )
 
 add_library(core1_main
     src/core1_main.cpp
+    src/fip_schedule.cpp
 )
 
 add_executable(${PROJECT_NAME}
     src/main.cpp
-    src/cuttlefish_app.cpp
 )
 
 # Specify where to look for header files if they're not all in the same place.
@@ -54,15 +57,15 @@ add_executable(${PROJECT_NAME}
 # Specify where to look for header files if they're all in one place.
 include_directories(inc)
 
-#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fverbose-asm")
-
 # Link libraries to the targets that need them.
-target_link_libraries(pwm_scheduler PUBLIC pico_stdlib etl::etl)
-target_link_libraries(pwm_task PUBLIC hardware_gpio pico_stdlib)
-target_link_libraries(core1_main PRIVATE etl::etl)
-target_link_libraries(core1_main PUBLIC pico_stdlib pwm_scheduler pwm_task)
-target_link_libraries(${PROJECT_NAME} PUBLIC pico_stdlib core1_main
-                      pico_multicore harp_core harp_sync harp_c_app)
+target_link_libraries(laser_fip_task
+    rp2040_pwm)
+target_link_libraries(cuttlefish_fip_app
+    laser_fip_task harp_c_app harp_core pico_stdlib etl::etl)
+target_link_libraries(core1_main
+    pico_stdlib laser_fip_task harp_core harp_c_app etl::etl)
+target_link_libraries(${PROJECT_NAME}
+    pico_stdlib core1_main pico_multicore cuttlefish_fip_app harp_core harp_c_app harp_sync)
 
 
 # create map/bin/hex/uf2 file in addition to ELF.
@@ -71,7 +74,6 @@ pico_add_extra_outputs(${PROJECT_NAME})
 if(DEFINED DEBUG)
     message(WARNING "Debug printf() messages enabled from harp core to UART \
             with baud rate 921600.")
-    #pico_enable_stdio_uart(${PROJECT_NAME} 1)
-    #pico_enable_stdio_uart(pwm_scheduler 1)
+    pico_enable_stdio_uart(${PROJECT_NAME} 1)
     pico_enable_stdio_uart(core1_main 1)
 endif()
