@@ -213,8 +213,9 @@ void update_app()
         queue_remove_blocking(&rising_edge_event_queue, &event_data);
         // Offset to account for the GPIO to IO mapping.
         app_regs.RisingEdgeEvent = uint8_t(event_data.output_state >> PORT_BASE);
-        //  Send them back over Harp Protocol.
-        HarpCore::send_harp_reply(EVENT, AppRegNum::RisingEdgeEvent, event_data.time_us);
+        //  Send them back over Harp Protocol with a Harp clock domain timestamp.
+        HarpCore::send_harp_reply(EVENT, AppRegNum::RisingEdgeEvent,
+                                  HarpCore::system_to_harp_us_64(event_data.time_us));
     }
     // Disable output waveforms if we've disconnected com ports (safety feature).
     if (HarpCore::get_op_mode() != ACTIVE)
