@@ -1,4 +1,4 @@
-﻿using Bonsai;
+using Bonsai;
 using Bonsai.Harp;
 using System;
 using System.Collections.Generic;
@@ -556,9 +556,9 @@ namespace AllenNeuralDynamics.CuttlefishFip
     }
 
     /// <summary>
-    /// Represents a register that a value greater than 0 will clear all scheduled tasks.
+    /// Represents a register that clears all scheduled tasks if a value greater than 1 is written.
     /// </summary>
-    [Description("A value greater than 0 will clear all scheduled tasks.")]
+    [Description("Clears all scheduled tasks if a value greater than 1 is written")]
     public partial class ClearAllTasks
     {
         /// <summary>
@@ -581,9 +581,9 @@ namespace AllenNeuralDynamics.CuttlefishFip
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the message payload.</returns>
-        public static byte GetPayload(HarpMessage message)
+        public static EnableFlag GetPayload(HarpMessage message)
         {
-            return message.GetPayloadByte();
+            return (EnableFlag)message.GetPayloadByte();
         }
 
         /// <summary>
@@ -591,9 +591,10 @@ namespace AllenNeuralDynamics.CuttlefishFip
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
-        public static Timestamped<byte> GetTimestampedPayload(HarpMessage message)
+        public static Timestamped<EnableFlag> GetTimestampedPayload(HarpMessage message)
         {
-            return message.GetTimestampedPayloadByte();
+            var payload = message.GetTimestampedPayloadByte();
+            return Timestamped.Create((EnableFlag)payload.Value, payload.Seconds);
         }
 
         /// <summary>
@@ -605,9 +606,9 @@ namespace AllenNeuralDynamics.CuttlefishFip
         /// A <see cref="HarpMessage"/> object for the <see cref="ClearAllTasks"/> register
         /// with the specified message type and payload.
         /// </returns>
-        public static HarpMessage FromPayload(MessageType messageType, byte value)
+        public static HarpMessage FromPayload(MessageType messageType, EnableFlag value)
         {
-            return HarpMessage.FromByte(Address, messageType, value);
+            return HarpMessage.FromByte(Address, messageType, (byte)value);
         }
 
         /// <summary>
@@ -621,9 +622,9 @@ namespace AllenNeuralDynamics.CuttlefishFip
         /// A <see cref="HarpMessage"/> object for the <see cref="ClearAllTasks"/> register
         /// with the specified message type, timestamp, and payload.
         /// </returns>
-        public static HarpMessage FromPayload(double timestamp, MessageType messageType, byte value)
+        public static HarpMessage FromPayload(double timestamp, MessageType messageType, EnableFlag value)
         {
-            return HarpMessage.FromByte(Address, timestamp, messageType, value);
+            return HarpMessage.FromByte(Address, timestamp, messageType, (byte)value);
         }
     }
 
@@ -645,7 +646,7 @@ namespace AllenNeuralDynamics.CuttlefishFip
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
-        public static Timestamped<byte> GetPayload(HarpMessage message)
+        public static Timestamped<EnableFlag> GetPayload(HarpMessage message)
         {
             return ClearAllTasks.GetTimestampedPayload(message);
         }
@@ -748,9 +749,9 @@ namespace AllenNeuralDynamics.CuttlefishFip
     }
 
     /// <summary>
-    /// Represents a register that manipulates messages from register TaskRisingEdgeEvent.
+    /// Represents a register that an event raised when a rising edge of any of the ports is detected. The `Events` flag must be enabled in the corresponding task to trigger this event. The event is raised when the task is started. The event is cleared when the task is removed or stopped.
     /// </summary>
-    [Description("")]
+    [Description("An event raised when a rising edge of any of the ports is detected. The `Events` flag must be enabled in the corresponding task to trigger this event. The event is raised when the task is started. The event is cleared when the task is removed or stopped.")]
     public partial class TaskRisingEdgeEvent
     {
         /// <summary>
@@ -1836,29 +1837,29 @@ namespace AllenNeuralDynamics.CuttlefishFip
 
     /// <summary>
     /// Represents an operator that creates a message payload
-    /// that a value greater than 0 will clear all scheduled tasks.
+    /// that clears all scheduled tasks if a value greater than 1 is written.
     /// </summary>
     [DisplayName("ClearAllTasksPayload")]
-    [Description("Creates a message payload that a value greater than 0 will clear all scheduled tasks.")]
+    [Description("Creates a message payload that clears all scheduled tasks if a value greater than 1 is written.")]
     public partial class CreateClearAllTasksPayload
     {
         /// <summary>
-        /// Gets or sets the value that a value greater than 0 will clear all scheduled tasks.
+        /// Gets or sets the value that clears all scheduled tasks if a value greater than 1 is written.
         /// </summary>
-        [Description("The value that a value greater than 0 will clear all scheduled tasks.")]
-        public byte ClearAllTasks { get; set; }
+        [Description("The value that clears all scheduled tasks if a value greater than 1 is written.")]
+        public EnableFlag ClearAllTasks { get; set; }
 
         /// <summary>
         /// Creates a message payload for the ClearAllTasks register.
         /// </summary>
         /// <returns>The created message payload value.</returns>
-        public byte GetPayload()
+        public EnableFlag GetPayload()
         {
             return ClearAllTasks;
         }
 
         /// <summary>
-        /// Creates a message that a value greater than 0 will clear all scheduled tasks.
+        /// Creates a message that clears all scheduled tasks if a value greater than 1 is written.
         /// </summary>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new message for the ClearAllTasks register.</returns>
@@ -1870,14 +1871,14 @@ namespace AllenNeuralDynamics.CuttlefishFip
 
     /// <summary>
     /// Represents an operator that creates a timestamped message payload
-    /// that a value greater than 0 will clear all scheduled tasks.
+    /// that clears all scheduled tasks if a value greater than 1 is written.
     /// </summary>
     [DisplayName("TimestampedClearAllTasksPayload")]
-    [Description("Creates a timestamped message payload that a value greater than 0 will clear all scheduled tasks.")]
+    [Description("Creates a timestamped message payload that clears all scheduled tasks if a value greater than 1 is written.")]
     public partial class CreateTimestampedClearAllTasksPayload : CreateClearAllTasksPayload
     {
         /// <summary>
-        /// Creates a timestamped message that a value greater than 0 will clear all scheduled tasks.
+        /// Creates a timestamped message that clears all scheduled tasks if a value greater than 1 is written.
         /// </summary>
         /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
         /// <param name="messageType">Specifies the type of the created message.</param>
@@ -1944,16 +1945,16 @@ namespace AllenNeuralDynamics.CuttlefishFip
 
     /// <summary>
     /// Represents an operator that creates a message payload
-    /// for register TaskRisingEdgeEvent.
+    /// that an event raised when a rising edge of any of the ports is detected. The `Events` flag must be enabled in the corresponding task to trigger this event. The event is raised when the task is started. The event is cleared when the task is removed or stopped.
     /// </summary>
     [DisplayName("TaskRisingEdgeEventPayload")]
-    [Description("Creates a message payload for register TaskRisingEdgeEvent.")]
+    [Description("Creates a message payload that an event raised when a rising edge of any of the ports is detected. The `Events` flag must be enabled in the corresponding task to trigger this event. The event is raised when the task is started. The event is cleared when the task is removed or stopped.")]
     public partial class CreateTaskRisingEdgeEventPayload
     {
         /// <summary>
-        /// Gets or sets the value for register TaskRisingEdgeEvent.
+        /// Gets or sets the value that an event raised when a rising edge of any of the ports is detected. The `Events` flag must be enabled in the corresponding task to trigger this event. The event is raised when the task is started. The event is cleared when the task is removed or stopped.
         /// </summary>
-        [Description("The value for register TaskRisingEdgeEvent.")]
+        [Description("The value that an event raised when a rising edge of any of the ports is detected. The `Events` flag must be enabled in the corresponding task to trigger this event. The event is raised when the task is started. The event is cleared when the task is removed or stopped.")]
         public Ports TaskRisingEdgeEvent { get; set; }
 
         /// <summary>
@@ -1966,7 +1967,7 @@ namespace AllenNeuralDynamics.CuttlefishFip
         }
 
         /// <summary>
-        /// Creates a message for register TaskRisingEdgeEvent.
+        /// Creates a message that an event raised when a rising edge of any of the ports is detected. The `Events` flag must be enabled in the corresponding task to trigger this event. The event is raised when the task is started. The event is cleared when the task is removed or stopped.
         /// </summary>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new message for the TaskRisingEdgeEvent register.</returns>
@@ -1978,14 +1979,14 @@ namespace AllenNeuralDynamics.CuttlefishFip
 
     /// <summary>
     /// Represents an operator that creates a timestamped message payload
-    /// for register TaskRisingEdgeEvent.
+    /// that an event raised when a rising edge of any of the ports is detected. The `Events` flag must be enabled in the corresponding task to trigger this event. The event is raised when the task is started. The event is cleared when the task is removed or stopped.
     /// </summary>
     [DisplayName("TimestampedTaskRisingEdgeEventPayload")]
-    [Description("Creates a timestamped message payload for register TaskRisingEdgeEvent.")]
+    [Description("Creates a timestamped message payload that an event raised when a rising edge of any of the ports is detected. The `Events` flag must be enabled in the corresponding task to trigger this event. The event is raised when the task is started. The event is cleared when the task is removed or stopped.")]
     public partial class CreateTimestampedTaskRisingEdgeEventPayload : CreateTaskRisingEdgeEventPayload
     {
         /// <summary>
-        /// Creates a timestamped message for register TaskRisingEdgeEvent.
+        /// Creates a timestamped message that an event raised when a rising edge of any of the ports is detected. The `Events` flag must be enabled in the corresponding task to trigger this event. The event is raised when the task is started. The event is cleared when the task is removed or stopped.
         /// </summary>
         /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
         /// <param name="messageType">Specifies the type of the created message.</param>
