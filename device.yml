@@ -40,6 +40,7 @@ registers:
     type: U8
     access: Event
     maskType: Ports
+    description: "An event raised when a rising edge of any of the ports is detected. The `Events` flag must be enabled in the corresponding task to trigger this event. The event is raised when the task is started. The event is cleared when the task is removed or stopped."
   Task0Settings: &taskSettings
     address: 38
     type: U8
