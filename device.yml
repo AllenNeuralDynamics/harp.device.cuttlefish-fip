@@ -28,7 +28,8 @@ registers:
     address: 35
     type: U8
     access: Write
-    description: "A value greater than 0 will clear all scheduled tasks."
+    maskType: EnableFlag
+    description: "Clears all scheduled tasks if a value greater than 1 is written"
   TaskCount:
     address: 36
     type: U8
