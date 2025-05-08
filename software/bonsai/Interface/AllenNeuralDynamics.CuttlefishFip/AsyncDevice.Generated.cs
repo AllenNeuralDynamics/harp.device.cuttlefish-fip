@@ -193,7 +193,7 @@ namespace AllenNeuralDynamics.CuttlefishFip
         /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
         /// property contains the register payload.
         /// </returns>
-        public async Task<byte> ReadClearAllTasksAsync(CancellationToken cancellationToken = default)
+        public async Task<EnableFlag> ReadClearAllTasksAsync(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(ClearAllTasks.Address), cancellationToken);
             return ClearAllTasks.GetPayload(reply);
@@ -209,7 +209,7 @@ namespace AllenNeuralDynamics.CuttlefishFip
         /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
         /// property contains the timestamped register payload.
         /// </returns>
-        public async Task<Timestamped<byte>> ReadTimestampedClearAllTasksAsync(CancellationToken cancellationToken = default)
+        public async Task<Timestamped<EnableFlag>> ReadTimestampedClearAllTasksAsync(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(ClearAllTasks.Address), cancellationToken);
             return ClearAllTasks.GetTimestampedPayload(reply);
@@ -223,7 +223,7 @@ namespace AllenNeuralDynamics.CuttlefishFip
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>The task object representing the asynchronous write operation.</returns>
-        public async Task WriteClearAllTasksAsync(byte value, CancellationToken cancellationToken = default)
+        public async Task WriteClearAllTasksAsync(EnableFlag value, CancellationToken cancellationToken = default)
         {
             var request = ClearAllTasks.FromPayload(MessageType.Write, value);
             await CommandAsync(request, cancellationToken);
