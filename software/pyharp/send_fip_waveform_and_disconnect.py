@@ -41,7 +41,7 @@ settings = \
 data_fmt = "<LffLBBLLLL"
 
 print("Disabling schedule.")
-device.send(WriteU8HarpMessage(AppRegs.EnableTaskSchedule, 0).frame)
+device.send(WriteU8HarpMessage(AppRegs.SetTasksState, 0).frame)
 print("Clearing all tasks.")
 device.send(WriteU8HarpMessage(AppRegs.RemoveAllLaserTasks, 1).frame)
 
@@ -49,7 +49,7 @@ print("Configuring device with FIP task.")
 measurement = device.send(WriteU8ArrayMessage(AppRegs.AddLaserTask,
                                               data_fmt, settings).frame)
 print("Enabling schedule")
-device.send(WriteU8HarpMessage(AppRegs.EnableTaskSchedule, 1).frame)
+device.send(WriteU8HarpMessage(AppRegs.SetTasksState, 1).frame)
 sleep(1)
 
 print("Disconnecting. Device should kill waveform in 3 seconds.")

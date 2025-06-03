@@ -37,7 +37,7 @@ def send_fip_waveform(device):
     data_fmt = "<LffLBBLLLL"
 
     print("Disabling schedule.")
-    device.send(WriteU8HarpMessage(AppRegs.EnableTaskSchedule, 0).frame)
+    device.send(WriteU8HarpMessage(AppRegs.SetTasksState, 0).frame)
     print("Clearing all tasks.")
     device.send(WriteU8HarpMessage(AppRegs.RemoveAllLaserTasks, 1).frame)
 
@@ -45,12 +45,12 @@ def send_fip_waveform(device):
     device.send(WriteU8ArrayMessage(AppRegs.AddLaserTask, data_fmt, settings).frame)
 
     print("Enabling schedule.")
-    device.send(WriteU8HarpMessage(AppRegs.EnableTaskSchedule, 1).frame)
+    device.send(WriteU8HarpMessage(AppRegs.SetTasksState, 1).frame)
     
     sleep(3)
 
     print("Disabling schedule.")
-    device.send(WriteU8HarpMessage(AppRegs.EnableTaskSchedule, 0).frame)
+    device.send(WriteU8HarpMessage(AppRegs.SetTasksState, 0).frame)
 
 # Function to listen for rising edge events
 def listen_for_events(device):

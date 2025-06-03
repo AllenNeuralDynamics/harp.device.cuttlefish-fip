@@ -69,7 +69,7 @@ settings = \
 data_fmt = "<LffLBBLLLL"
 
 print("Disabling schedule.")
-device.send(WriteU8HarpMessage(AppRegs.EnableTaskSchedule, 0).frame)
+device.send(WriteU8HarpMessage(AppRegs.SetTasksState, 0).frame)
 print("Clearing all tasks.")
 device.send(WriteU8HarpMessage(AppRegs.RemoveAllLaserTasks, 1).frame)
 sleep(0.1)
@@ -84,8 +84,8 @@ for index, settings in enumerate(settings):
     sleep(0.1)
 for i in range(2):
     print("Enabling schedule")
-    device.send(WriteU8HarpMessage(AppRegs.EnableTaskSchedule, 1).frame)
+    device.send(WriteU8HarpMessage(AppRegs.SetTasksState, 1).frame)
     sleep(0.5)
     print("Disabling schedule.")
-    device.send(WriteU8HarpMessage(AppRegs.EnableTaskSchedule, 0).frame)
+    device.send(WriteU8HarpMessage(AppRegs.SetTasksState, 0).frame)
     sleep(0.5)
