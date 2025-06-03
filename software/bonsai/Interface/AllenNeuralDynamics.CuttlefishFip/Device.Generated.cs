@@ -73,7 +73,7 @@ namespace AllenNeuralDynamics.CuttlefishFip
     /// describing the <see cref="CuttlefishFip"/> device registers.
     /// </summary>
     [Description("Returns the contents of the metadata file describing the CuttlefishFip device registers.")]
-    public partial class GetMetadata : Source<string>
+    public partial class GetDeviceMetadata : Source<string>
     {
         /// <summary>
         /// Returns an observable sequence with the contents of the metadata file
@@ -107,6 +107,156 @@ namespace AllenNeuralDynamics.CuttlefishFip
         public override IObservable<IGroupedObservable<Type, HarpMessage>> Process(IObservable<HarpMessage> source)
         {
             return source.GroupBy(message => Device.RegisterMap[message.Address]);
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that writes the sequence of <see cref="CuttlefishFip"/>" messages
+    /// to the standard Harp storage format.
+    /// </summary>
+    [Description("Writes the sequence of CuttlefishFip messages to the standard Harp storage format.")]
+    public partial class DeviceDataWriter : Sink<HarpMessage>, INamedElement
+    {
+        const string BinaryExtension = ".bin";
+        const string MetadataFileName = "device.yml";
+        readonly Bonsai.Harp.MessageWriter writer = new();
+
+        string INamedElement.Name => nameof(CuttlefishFip) + "DataWriter";
+
+        /// <summary>
+        /// Gets or sets the relative or absolute path on which to save the message data.
+        /// </summary>
+        [Description("The relative or absolute path of the directory on which to save the message data.")]
+        [Editor("Bonsai.Design.SaveFileNameEditor, Bonsai.Design", DesignTypes.UITypeEditor)]
+        public string Path
+        {
+            get => System.IO.Path.GetDirectoryName(writer.FileName);
+            set => writer.FileName = System.IO.Path.Combine(value, nameof(CuttlefishFip) + BinaryExtension);
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether element writing should be buffered. If <see langword="true"/>,
+        /// the write commands will be queued in memory as fast as possible and will be processed
+        /// by the writer in a different thread. Otherwise, writing will be done in the same
+        /// thread in which notifications arrive.
+        /// </summary>
+        [Description("Indicates whether writing should be buffered.")]
+        public bool Buffered
+        {
+            get => writer.Buffered;
+            set => writer.Buffered = value;
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to overwrite the output file if it already exists.
+        /// </summary>
+        [Description("Indicates whether to overwrite the output file if it already exists.")]
+        public bool Overwrite
+        {
+            get => writer.Overwrite;
+            set => writer.Overwrite = value;
+        }
+
+        /// <summary>
+        /// Gets or sets a value specifying how the message filter will use the matching criteria.
+        /// </summary>
+        [Description("Specifies how the message filter will use the matching criteria.")]
+        public FilterType FilterType
+        {
+            get => writer.FilterType;
+            set => writer.FilterType = value;
+        }
+
+        /// <summary>
+        /// Gets or sets a value specifying the expected message type. If no value is
+        /// specified, all messages will be accepted.
+        /// </summary>
+        [Description("Specifies the expected message type. If no value is specified, all messages will be accepted.")]
+        public MessageType? MessageType
+        {
+            get => writer.MessageType;
+            set => writer.MessageType = value;
+        }
+
+        private IObservable<TSource> WriteDeviceMetadata<TSource>(IObservable<TSource> source)
+        {
+            var basePath = Path;
+            if (string.IsNullOrEmpty(basePath))
+                return source;
+
+            var metadataPath = System.IO.Path.Combine(basePath, MetadataFileName);
+            return Observable.Create<TSource>(observer =>
+            {
+                Bonsai.IO.PathHelper.EnsureDirectory(metadataPath);
+                if (System.IO.File.Exists(metadataPath) && !Overwrite)
+                {
+                    throw new System.IO.IOException(string.Format("The file '{0}' already exists.", metadataPath));
+                }
+
+                System.IO.File.WriteAllText(metadataPath, Device.Metadata);
+                return source.SubscribeSafe(observer);
+            });
+        }
+
+        /// <summary>
+        /// Writes each Harp message in the sequence to the specified binary file, and the
+        /// contents of the device metadata file to a separate text file.
+        /// </summary>
+        /// <param name="source">The sequence of messages to write to the file.</param>
+        /// <returns>
+        /// An observable sequence that is identical to the <paramref name="source"/>
+        /// sequence but where there is an additional side effect of writing the
+        /// messages to a raw binary file, and the contents of the device metadata file
+        /// to a separate text file.
+        /// </returns>
+        public override IObservable<HarpMessage> Process(IObservable<HarpMessage> source)
+        {
+            return source.Publish(ps => ps.Merge(
+                WriteDeviceMetadata(writer.Process(ps.GroupBy(message => message.Address)))
+                .IgnoreElements()
+                .Cast<HarpMessage>()));
+        }
+
+        /// <summary>
+        /// Writes each Harp message in the sequence of observable groups to the
+        /// corresponding binary file, where the name of each file is generated from
+        /// the common group register address. The contents of the device metadata file are
+        /// written to a separate text file.
+        /// </summary>
+        /// <param name="source">
+        /// A sequence of observable groups, each of which corresponds to a unique register
+        /// address.
+        /// </param>
+        /// <returns>
+        /// An observable sequence that is identical to the <paramref name="source"/>
+        /// sequence but where there is an additional side effect of writing the Harp
+        /// messages in each group to the corresponding file, and the contents of the device
+        /// metadata file to a separate text file.
+        /// </returns>
+        public IObservable<IGroupedObservable<int, HarpMessage>> Process(IObservable<IGroupedObservable<int, HarpMessage>> source)
+        {
+            return WriteDeviceMetadata(writer.Process(source));
+        }
+
+        /// <summary>
+        /// Writes each Harp message in the sequence of observable groups to the
+        /// corresponding binary file, where the name of each file is generated from
+        /// the common group register name. The contents of the device metadata file are
+        /// written to a separate text file.
+        /// </summary>
+        /// <param name="source">
+        /// A sequence of observable groups, each of which corresponds to a unique register
+        /// type.
+        /// </param>
+        /// <returns>
+        /// An observable sequence that is identical to the <paramref name="source"/>
+        /// sequence but where there is an additional side effect of writing the Harp
+        /// messages in each group to the corresponding file, and the contents of the device
+        /// metadata file to a separate text file.
+        /// </returns>
+        public IObservable<IGroupedObservable<Type, HarpMessage>> Process(IObservable<IGroupedObservable<Type, HarpMessage>> source)
+        {
+            return WriteDeviceMetadata(writer.Process(source));
         }
     }
 
@@ -556,9 +706,9 @@ namespace AllenNeuralDynamics.CuttlefishFip
     }
 
     /// <summary>
-    /// Represents a register that clears all scheduled tasks if a value greater than 1 is written.
+    /// Represents a register that clears all scheduled task if a value of 1 is written.
     /// </summary>
-    [Description("Clears all scheduled tasks if a value greater than 1 is written")]
+    [Description("Clears all scheduled task if a value of 1 is written.")]
     public partial class ClearAllTasks
     {
         /// <summary>
@@ -1837,16 +1987,16 @@ namespace AllenNeuralDynamics.CuttlefishFip
 
     /// <summary>
     /// Represents an operator that creates a message payload
-    /// that clears all scheduled tasks if a value greater than 1 is written.
+    /// that clears all scheduled task if a value of 1 is written.
     /// </summary>
     [DisplayName("ClearAllTasksPayload")]
-    [Description("Creates a message payload that clears all scheduled tasks if a value greater than 1 is written.")]
+    [Description("Creates a message payload that clears all scheduled task if a value of 1 is written.")]
     public partial class CreateClearAllTasksPayload
     {
         /// <summary>
-        /// Gets or sets the value that clears all scheduled tasks if a value greater than 1 is written.
+        /// Gets or sets the value that clears all scheduled task if a value of 1 is written.
         /// </summary>
-        [Description("The value that clears all scheduled tasks if a value greater than 1 is written.")]
+        [Description("The value that clears all scheduled task if a value of 1 is written.")]
         public EnableFlag ClearAllTasks { get; set; }
 
         /// <summary>
@@ -1859,7 +2009,7 @@ namespace AllenNeuralDynamics.CuttlefishFip
         }
 
         /// <summary>
-        /// Creates a message that clears all scheduled tasks if a value greater than 1 is written.
+        /// Creates a message that clears all scheduled task if a value of 1 is written.
         /// </summary>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new message for the ClearAllTasks register.</returns>
@@ -1871,14 +2021,14 @@ namespace AllenNeuralDynamics.CuttlefishFip
 
     /// <summary>
     /// Represents an operator that creates a timestamped message payload
-    /// that clears all scheduled tasks if a value greater than 1 is written.
+    /// that clears all scheduled task if a value of 1 is written.
     /// </summary>
     [DisplayName("TimestampedClearAllTasksPayload")]
-    [Description("Creates a timestamped message payload that clears all scheduled tasks if a value greater than 1 is written.")]
+    [Description("Creates a timestamped message payload that clears all scheduled task if a value of 1 is written.")]
     public partial class CreateTimestampedClearAllTasksPayload : CreateClearAllTasksPayload
     {
         /// <summary>
-        /// Creates a timestamped message that clears all scheduled tasks if a value greater than 1 is written.
+        /// Creates a timestamped message that clears all scheduled task if a value of 1 is written.
         /// </summary>
         /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
         /// <param name="messageType">Specifies the type of the created message.</param>
