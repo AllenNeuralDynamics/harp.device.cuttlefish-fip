@@ -29,7 +29,7 @@ registers:
     type: U8
     access: Write
     maskType: EnableFlag
-    description: "Clears all scheduled tasks if a value greater than 1 is written"
+    description: "Clears all scheduled task if a value of 1 is written."
   TaskCount:
     address: 36
     type: U8
