@@ -6,11 +6,11 @@ whoAmI: 1407
 firmwareVersion: "0.1"
 hardwareTargets: "0.0"
 registers:
-  StartTasks:
+  SetTaskState:
     address: 32
     type: U8
-    maskType: EnableFlag
     access: Write
+    maskType: TaskState
     description: "Starts/Stops all scheduled tasks"
   AddTask:
     address: 33
@@ -76,6 +76,12 @@ registers:
     address: 45
     description: "Represents the settings of Task7."
 groupMasks:
+  TaskState:
+    description: "The state of the ongoing task."
+    values:
+      Stop: 0x0
+      Start: 0x1
+      Abort: 0x2
   TaskIndex:
     description: "Task slot to be used for the task. 0-7"
     values:
@@ -99,7 +105,6 @@ groupMasks:
       IO5: 0x20
       IO6: 0x40
       IO7: 0x80
-
 bitMasks:
   Ports:
     description: "Available ports on the device. This enum is a bit-mask. Multiple values can be set at the same time."

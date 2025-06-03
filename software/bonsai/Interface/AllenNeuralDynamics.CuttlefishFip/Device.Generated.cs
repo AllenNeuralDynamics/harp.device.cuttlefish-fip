@@ -37,7 +37,7 @@ namespace AllenNeuralDynamics.CuttlefishFip
         public static new IReadOnlyDictionary<int, Type> RegisterMap { get; } = new Dictionary<int, Type>
             (Bonsai.Harp.Device.RegisterMap.ToDictionary(entry => entry.Key, entry => entry.Value))
         {
-            { 32, typeof(StartTasks) },
+            { 32, typeof(SetTaskState) },
             { 33, typeof(AddTask) },
             { 34, typeof(RemoveTask) },
             { 35, typeof(ClearAllTasks) },
@@ -264,7 +264,7 @@ namespace AllenNeuralDynamics.CuttlefishFip
     /// Represents an operator that filters register-specific messages
     /// reported by the <see cref="CuttlefishFip"/> device.
     /// </summary>
-    /// <seealso cref="StartTasks"/>
+    /// <seealso cref="SetTaskState"/>
     /// <seealso cref="AddTask"/>
     /// <seealso cref="RemoveTask"/>
     /// <seealso cref="ClearAllTasks"/>
@@ -278,7 +278,7 @@ namespace AllenNeuralDynamics.CuttlefishFip
     /// <seealso cref="Task5Settings"/>
     /// <seealso cref="Task6Settings"/>
     /// <seealso cref="Task7Settings"/>
-    [XmlInclude(typeof(StartTasks))]
+    [XmlInclude(typeof(SetTaskState))]
     [XmlInclude(typeof(AddTask))]
     [XmlInclude(typeof(RemoveTask))]
     [XmlInclude(typeof(ClearAllTasks))]
@@ -300,7 +300,7 @@ namespace AllenNeuralDynamics.CuttlefishFip
         /// </summary>
         public FilterRegister()
         {
-            Register = new StartTasks();
+            Register = new SetTaskState();
         }
 
         string INamedElement.Name
@@ -313,7 +313,7 @@ namespace AllenNeuralDynamics.CuttlefishFip
     /// Represents an operator which filters and selects specific messages
     /// reported by the CuttlefishFip device.
     /// </summary>
-    /// <seealso cref="StartTasks"/>
+    /// <seealso cref="SetTaskState"/>
     /// <seealso cref="AddTask"/>
     /// <seealso cref="RemoveTask"/>
     /// <seealso cref="ClearAllTasks"/>
@@ -327,7 +327,7 @@ namespace AllenNeuralDynamics.CuttlefishFip
     /// <seealso cref="Task5Settings"/>
     /// <seealso cref="Task6Settings"/>
     /// <seealso cref="Task7Settings"/>
-    [XmlInclude(typeof(StartTasks))]
+    [XmlInclude(typeof(SetTaskState))]
     [XmlInclude(typeof(AddTask))]
     [XmlInclude(typeof(RemoveTask))]
     [XmlInclude(typeof(ClearAllTasks))]
@@ -341,7 +341,7 @@ namespace AllenNeuralDynamics.CuttlefishFip
     [XmlInclude(typeof(Task5Settings))]
     [XmlInclude(typeof(Task6Settings))]
     [XmlInclude(typeof(Task7Settings))]
-    [XmlInclude(typeof(TimestampedStartTasks))]
+    [XmlInclude(typeof(TimestampedSetTaskState))]
     [XmlInclude(typeof(TimestampedAddTask))]
     [XmlInclude(typeof(TimestampedRemoveTask))]
     [XmlInclude(typeof(TimestampedClearAllTasks))]
@@ -363,7 +363,7 @@ namespace AllenNeuralDynamics.CuttlefishFip
         /// </summary>
         public Parse()
         {
-            Register = new StartTasks();
+            Register = new SetTaskState();
         }
 
         string INamedElement.Name => $"{nameof(CuttlefishFip)}.{GetElementDisplayName(Register)}";
@@ -373,7 +373,7 @@ namespace AllenNeuralDynamics.CuttlefishFip
     /// Represents an operator which formats a sequence of values as specific
     /// CuttlefishFip register messages.
     /// </summary>
-    /// <seealso cref="StartTasks"/>
+    /// <seealso cref="SetTaskState"/>
     /// <seealso cref="AddTask"/>
     /// <seealso cref="RemoveTask"/>
     /// <seealso cref="ClearAllTasks"/>
@@ -387,7 +387,7 @@ namespace AllenNeuralDynamics.CuttlefishFip
     /// <seealso cref="Task5Settings"/>
     /// <seealso cref="Task6Settings"/>
     /// <seealso cref="Task7Settings"/>
-    [XmlInclude(typeof(StartTasks))]
+    [XmlInclude(typeof(SetTaskState))]
     [XmlInclude(typeof(AddTask))]
     [XmlInclude(typeof(RemoveTask))]
     [XmlInclude(typeof(ClearAllTasks))]
@@ -409,7 +409,7 @@ namespace AllenNeuralDynamics.CuttlefishFip
         /// </summary>
         public Format()
         {
-            Register = new StartTasks();
+            Register = new SetTaskState();
         }
 
         string INamedElement.Name => $"{nameof(CuttlefishFip)}.{GetElementDisplayName(Register)}";
@@ -419,70 +419,70 @@ namespace AllenNeuralDynamics.CuttlefishFip
     /// Represents a register that starts/Stops all scheduled tasks.
     /// </summary>
     [Description("Starts/Stops all scheduled tasks")]
-    public partial class StartTasks
+    public partial class SetTaskState
     {
         /// <summary>
-        /// Represents the address of the <see cref="StartTasks"/> register. This field is constant.
+        /// Represents the address of the <see cref="SetTaskState"/> register. This field is constant.
         /// </summary>
         public const int Address = 32;
 
         /// <summary>
-        /// Represents the payload type of the <see cref="StartTasks"/> register. This field is constant.
+        /// Represents the payload type of the <see cref="SetTaskState"/> register. This field is constant.
         /// </summary>
         public const PayloadType RegisterType = PayloadType.U8;
 
         /// <summary>
-        /// Represents the length of the <see cref="StartTasks"/> register. This field is constant.
+        /// Represents the length of the <see cref="SetTaskState"/> register. This field is constant.
         /// </summary>
         public const int RegisterLength = 1;
 
         /// <summary>
-        /// Returns the payload data for <see cref="StartTasks"/> register messages.
+        /// Returns the payload data for <see cref="SetTaskState"/> register messages.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the message payload.</returns>
-        public static EnableFlag GetPayload(HarpMessage message)
+        public static TaskState GetPayload(HarpMessage message)
         {
-            return (EnableFlag)message.GetPayloadByte();
+            return (TaskState)message.GetPayloadByte();
         }
 
         /// <summary>
-        /// Returns the timestamped payload data for <see cref="StartTasks"/> register messages.
+        /// Returns the timestamped payload data for <see cref="SetTaskState"/> register messages.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
-        public static Timestamped<EnableFlag> GetTimestampedPayload(HarpMessage message)
+        public static Timestamped<TaskState> GetTimestampedPayload(HarpMessage message)
         {
             var payload = message.GetTimestampedPayloadByte();
-            return Timestamped.Create((EnableFlag)payload.Value, payload.Seconds);
+            return Timestamped.Create((TaskState)payload.Value, payload.Seconds);
         }
 
         /// <summary>
-        /// Returns a Harp message for the <see cref="StartTasks"/> register.
+        /// Returns a Harp message for the <see cref="SetTaskState"/> register.
         /// </summary>
         /// <param name="messageType">The type of the Harp message.</param>
         /// <param name="value">The value to be stored in the message payload.</param>
         /// <returns>
-        /// A <see cref="HarpMessage"/> object for the <see cref="StartTasks"/> register
+        /// A <see cref="HarpMessage"/> object for the <see cref="SetTaskState"/> register
         /// with the specified message type and payload.
         /// </returns>
-        public static HarpMessage FromPayload(MessageType messageType, EnableFlag value)
+        public static HarpMessage FromPayload(MessageType messageType, TaskState value)
         {
             return HarpMessage.FromByte(Address, messageType, (byte)value);
         }
 
         /// <summary>
-        /// Returns a timestamped Harp message for the <see cref="StartTasks"/>
+        /// Returns a timestamped Harp message for the <see cref="SetTaskState"/>
         /// register.
         /// </summary>
         /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
         /// <param name="messageType">The type of the Harp message.</param>
         /// <param name="value">The value to be stored in the message payload.</param>
         /// <returns>
-        /// A <see cref="HarpMessage"/> object for the <see cref="StartTasks"/> register
+        /// A <see cref="HarpMessage"/> object for the <see cref="SetTaskState"/> register
         /// with the specified message type, timestamp, and payload.
         /// </returns>
-        public static HarpMessage FromPayload(double timestamp, MessageType messageType, EnableFlag value)
+        public static HarpMessage FromPayload(double timestamp, MessageType messageType, TaskState value)
         {
             return HarpMessage.FromByte(Address, timestamp, messageType, (byte)value);
         }
@@ -490,25 +490,25 @@ namespace AllenNeuralDynamics.CuttlefishFip
 
     /// <summary>
     /// Provides methods for manipulating timestamped messages from the
-    /// StartTasks register.
+    /// SetTaskState register.
     /// </summary>
-    /// <seealso cref="StartTasks"/>
-    [Description("Filters and selects timestamped messages from the StartTasks register.")]
-    public partial class TimestampedStartTasks
+    /// <seealso cref="SetTaskState"/>
+    [Description("Filters and selects timestamped messages from the SetTaskState register.")]
+    public partial class TimestampedSetTaskState
     {
         /// <summary>
-        /// Represents the address of the <see cref="StartTasks"/> register. This field is constant.
+        /// Represents the address of the <see cref="SetTaskState"/> register. This field is constant.
         /// </summary>
-        public const int Address = StartTasks.Address;
+        public const int Address = SetTaskState.Address;
 
         /// <summary>
-        /// Returns timestamped payload data for <see cref="StartTasks"/> register messages.
+        /// Returns timestamped payload data for <see cref="SetTaskState"/> register messages.
         /// </summary>
         /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
         /// <returns>A value representing the timestamped message payload.</returns>
-        public static Timestamped<EnableFlag> GetPayload(HarpMessage message)
+        public static Timestamped<TaskState> GetPayload(HarpMessage message)
         {
-            return StartTasks.GetTimestampedPayload(message);
+            return SetTaskState.GetTimestampedPayload(message);
         }
     }
 
@@ -1767,7 +1767,7 @@ namespace AllenNeuralDynamics.CuttlefishFip
     /// Represents an operator which creates standard message payloads for the
     /// CuttlefishFip device.
     /// </summary>
-    /// <seealso cref="CreateStartTasksPayload"/>
+    /// <seealso cref="CreateSetTaskStatePayload"/>
     /// <seealso cref="CreateAddTaskPayload"/>
     /// <seealso cref="CreateRemoveTaskPayload"/>
     /// <seealso cref="CreateClearAllTasksPayload"/>
@@ -1781,7 +1781,7 @@ namespace AllenNeuralDynamics.CuttlefishFip
     /// <seealso cref="CreateTask5SettingsPayload"/>
     /// <seealso cref="CreateTask6SettingsPayload"/>
     /// <seealso cref="CreateTask7SettingsPayload"/>
-    [XmlInclude(typeof(CreateStartTasksPayload))]
+    [XmlInclude(typeof(CreateSetTaskStatePayload))]
     [XmlInclude(typeof(CreateAddTaskPayload))]
     [XmlInclude(typeof(CreateRemoveTaskPayload))]
     [XmlInclude(typeof(CreateClearAllTasksPayload))]
@@ -1795,7 +1795,7 @@ namespace AllenNeuralDynamics.CuttlefishFip
     [XmlInclude(typeof(CreateTask5SettingsPayload))]
     [XmlInclude(typeof(CreateTask6SettingsPayload))]
     [XmlInclude(typeof(CreateTask7SettingsPayload))]
-    [XmlInclude(typeof(CreateTimestampedStartTasksPayload))]
+    [XmlInclude(typeof(CreateTimestampedSetTaskStatePayload))]
     [XmlInclude(typeof(CreateTimestampedAddTaskPayload))]
     [XmlInclude(typeof(CreateTimestampedRemoveTaskPayload))]
     [XmlInclude(typeof(CreateTimestampedClearAllTasksPayload))]
@@ -1817,7 +1817,7 @@ namespace AllenNeuralDynamics.CuttlefishFip
         /// </summary>
         public CreateMessage()
         {
-            Payload = new CreateStartTasksPayload();
+            Payload = new CreateSetTaskStatePayload();
         }
 
         string INamedElement.Name => $"{nameof(CuttlefishFip)}.{GetElementDisplayName(Payload)}";
@@ -1827,33 +1827,33 @@ namespace AllenNeuralDynamics.CuttlefishFip
     /// Represents an operator that creates a message payload
     /// that starts/Stops all scheduled tasks.
     /// </summary>
-    [DisplayName("StartTasksPayload")]
+    [DisplayName("SetTaskStatePayload")]
     [Description("Creates a message payload that starts/Stops all scheduled tasks.")]
-    public partial class CreateStartTasksPayload
+    public partial class CreateSetTaskStatePayload
     {
         /// <summary>
         /// Gets or sets the value that starts/Stops all scheduled tasks.
         /// </summary>
         [Description("The value that starts/Stops all scheduled tasks.")]
-        public EnableFlag StartTasks { get; set; }
+        public TaskState SetTaskState { get; set; }
 
         /// <summary>
-        /// Creates a message payload for the StartTasks register.
+        /// Creates a message payload for the SetTaskState register.
         /// </summary>
         /// <returns>The created message payload value.</returns>
-        public EnableFlag GetPayload()
+        public TaskState GetPayload()
         {
-            return StartTasks;
+            return SetTaskState;
         }
 
         /// <summary>
         /// Creates a message that starts/Stops all scheduled tasks.
         /// </summary>
         /// <param name="messageType">Specifies the type of the created message.</param>
-        /// <returns>A new message for the StartTasks register.</returns>
+        /// <returns>A new message for the SetTaskState register.</returns>
         public HarpMessage GetMessage(MessageType messageType)
         {
-            return AllenNeuralDynamics.CuttlefishFip.StartTasks.FromPayload(messageType, GetPayload());
+            return AllenNeuralDynamics.CuttlefishFip.SetTaskState.FromPayload(messageType, GetPayload());
         }
     }
 
@@ -1861,19 +1861,19 @@ namespace AllenNeuralDynamics.CuttlefishFip
     /// Represents an operator that creates a timestamped message payload
     /// that starts/Stops all scheduled tasks.
     /// </summary>
-    [DisplayName("TimestampedStartTasksPayload")]
+    [DisplayName("TimestampedSetTaskStatePayload")]
     [Description("Creates a timestamped message payload that starts/Stops all scheduled tasks.")]
-    public partial class CreateTimestampedStartTasksPayload : CreateStartTasksPayload
+    public partial class CreateTimestampedSetTaskStatePayload : CreateSetTaskStatePayload
     {
         /// <summary>
         /// Creates a timestamped message that starts/Stops all scheduled tasks.
         /// </summary>
         /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
         /// <param name="messageType">Specifies the type of the created message.</param>
-        /// <returns>A new timestamped message for the StartTasks register.</returns>
+        /// <returns>A new timestamped message for the SetTaskState register.</returns>
         public HarpMessage GetMessage(double timestamp, MessageType messageType)
         {
-            return AllenNeuralDynamics.CuttlefishFip.StartTasks.FromPayload(timestamp, messageType, GetPayload());
+            return AllenNeuralDynamics.CuttlefishFip.SetTaskState.FromPayload(timestamp, messageType, GetPayload());
         }
     }
 
@@ -2594,6 +2594,16 @@ namespace AllenNeuralDynamics.CuttlefishFip
         IO5 = 0x20,
         IO6 = 0x40,
         IO7 = 0x80
+    }
+
+    /// <summary>
+    /// The state of the ongoing task.
+    /// </summary>
+    public enum TaskState : byte
+    {
+        Stop = 0,
+        Start = 1,
+        Abort = 2
     }
 
     /// <summary>
