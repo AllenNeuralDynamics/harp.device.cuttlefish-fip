@@ -28,7 +28,8 @@ registers:
     address: 35
     type: U8
     access: Write
-    description: "A value greater than 0 will clear all scheduled tasks."
+    maskType: EnableFlag
+    description: "Clears all scheduled task if a value of 1 is written."
   TaskCount:
     address: 36
     type: U8
@@ -39,6 +40,7 @@ registers:
     type: U8
     access: Event
     maskType: Ports
+    description: "An event raised when a rising edge of any of the ports is detected. The `Events` flag must be enabled in the corresponding task to trigger this event. The event is raised when the task is started. The event is cleared when the task is removed or stopped."
   Task0Settings: &taskSettings
     address: 38
     type: U8

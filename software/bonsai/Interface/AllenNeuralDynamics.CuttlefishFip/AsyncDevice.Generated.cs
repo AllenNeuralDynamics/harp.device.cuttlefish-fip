@@ -14,15 +14,18 @@ namespace AllenNeuralDynamics.CuttlefishFip
         /// <param name="portName">
         /// The name of the serial port used to communicate with the Harp device.
         /// </param>
+        /// <param name="cancellationToken">
+        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// </param>
         /// <returns>
         /// A task that represents the asynchronous initialization operation. The value of
         /// the <see cref="Task{TResult}.Result"/> parameter contains a new instance of
         /// the <see cref="AsyncDevice"/> class.
         /// </returns>
-        public static async Task<AsyncDevice> CreateAsync(string portName)
+        public static async Task<AsyncDevice> CreateAsync(string portName, CancellationToken cancellationToken = default)
         {
             var device = new AsyncDevice(portName);
-            var whoAmI = await device.ReadWhoAmIAsync();
+            var whoAmI = await device.ReadWhoAmIAsync(cancellationToken);
             if (whoAmI != Device.WhoAmI)
             {
                 var errorMessage = string.Format(
@@ -193,7 +196,7 @@ namespace AllenNeuralDynamics.CuttlefishFip
         /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
         /// property contains the register payload.
         /// </returns>
-        public async Task<byte> ReadClearAllTasksAsync(CancellationToken cancellationToken = default)
+        public async Task<EnableFlag> ReadClearAllTasksAsync(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(ClearAllTasks.Address), cancellationToken);
             return ClearAllTasks.GetPayload(reply);
@@ -209,7 +212,7 @@ namespace AllenNeuralDynamics.CuttlefishFip
         /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
         /// property contains the timestamped register payload.
         /// </returns>
-        public async Task<Timestamped<byte>> ReadTimestampedClearAllTasksAsync(CancellationToken cancellationToken = default)
+        public async Task<Timestamped<EnableFlag>> ReadTimestampedClearAllTasksAsync(CancellationToken cancellationToken = default)
         {
             var reply = await CommandAsync(HarpCommand.ReadByte(ClearAllTasks.Address), cancellationToken);
             return ClearAllTasks.GetTimestampedPayload(reply);
@@ -223,7 +226,7 @@ namespace AllenNeuralDynamics.CuttlefishFip
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>The task object representing the asynchronous write operation.</returns>
-        public async Task WriteClearAllTasksAsync(byte value, CancellationToken cancellationToken = default)
+        public async Task WriteClearAllTasksAsync(EnableFlag value, CancellationToken cancellationToken = default)
         {
             var request = ClearAllTasks.FromPayload(MessageType.Write, value);
             await CommandAsync(request, cancellationToken);
