@@ -3,7 +3,7 @@ from enum import IntEnum
 
 
 class AppRegs(IntEnum):
-    EnableTaskSchedule = 32
+    SetTasksState = 32
     AddLaserTask = 33
     RemoveLaserTask = 34
     RemoveAllLaserTasks = 35

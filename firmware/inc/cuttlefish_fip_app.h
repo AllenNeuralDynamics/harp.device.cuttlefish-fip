@@ -28,7 +28,7 @@ extern HarpCApp& app;
 #pragma pack(push, 1)
 struct app_regs_t
 {
-    uint8_t EnableTaskSchedule;
+    uint8_t SetTasksState;
     LaserFIPTaskSettings AddLaserTask;
     uint8_t RemoveLaserTask;
     uint8_t RemoveAllLaserTasks;
@@ -41,7 +41,7 @@ struct app_regs_t
 
 enum AppRegNum
 {
-    EnableTaskSchedule = 32,
+    SetTasksState = 32,
     AddLaserTask = 33,
     RemoveLaserTask = 34,
     RemoveAllLaserTasks = 35,
@@ -56,6 +56,13 @@ enum AppRegNum
     ReconfigureLaserTask6 = 44,
     ReconfigureLaserTask7 = 45,
 
+};
+
+enum TasksState
+{
+    Start = 0x01,
+    Stop = 0x00,
+    Abort = 0x02,
 };
 
 extern app_regs_t app_regs;
@@ -73,18 +80,18 @@ inline size_t get_fip_task_index(msg_t& msg)
 {return msg.header.address - LASER_BASE_ADDRESS;}
 
 /**
- * \brief set waveform output to enabled or disabled, but do not destroy tasks.
+ * \brief Start, stop or abort waveform output tasks, but do not destroy tasks.
  * Also update the Harp register representation of the task schedule state.
  * \return whether or not the state change was successful.
  */
-bool set_task_schedule_state(bool state);
+bool set_task_schedule_state(uint8_t state);
 
 /**
  * \brief read whether the laser task schedule is enabled or not.
  */
 void read_reconfigure_laser_task(uint8_t address);
 
-void write_enable_task_schedule(msg_t& msg);
+void write_set_tasks_state(msg_t& msg);
 void write_add_laser_task(msg_t& msg);
 void write_remove_laser_task(msg_t& msg);
 void write_remove_all_laser_tasks(msg_t& msg);
