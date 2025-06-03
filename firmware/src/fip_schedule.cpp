@@ -6,6 +6,7 @@
 etl::vector<LaserFIPTask, MAX_TASK_COUNT> fip_tasks;
 
 bool enabled = false;
+bool abort_requested = false;
 
 /// \warning: this fn should not be called inside an interrupt.
 inline uint64_t time_us_64_unsafe()
@@ -21,23 +22,36 @@ void sleep_us(uint32_t us)
 {
     uint32_t start_time_us = timer_hw->timerawl;
     while (int32_t(timer_hw->timerawl - start_time_us) < us)
-        tight_loop_contents();
+    {
+        // Check if abort is requested until the sleep time is reached.
+        update_tasks_state();
+        if (abort_requested)
+            return; // Exit if abort is requested.
+    }
 }
 
-void update_enabled_state()
+void update_tasks_state()
 {
     // Update enabled state.
-    if (!queue_is_empty(&enable_task_schedule_queue))
+    if (!queue_is_empty(&set_tasks_state_queue))
     {
-        uint8_t enable_state;
+        uint8_t tasks_state;
 
-        if (queue_try_remove(&enable_task_schedule_queue, &enable_state))
+        if (queue_try_remove(&set_tasks_state_queue, &tasks_state))
         {
             // Update the enabled state based on the message.
-            if (enable_state)
+            if (tasks_state == 1)
+            {
                 enabled = true;
+                abort_requested = false;
+            }
             else
+            {
                 enabled = false;
+
+                if (tasks_state == 2) // If the state is set to "Abort".
+                    abort_requested = true;
+            }
         }
     }
 }
@@ -133,16 +147,23 @@ void run()
     while (true)
     {
         // Check for input from core1.
-        update_enabled_state();
+        update_tasks_state();
         if (!enabled)
             update_fip_tasks();
         if (enabled)
             run_sequence();
+        if (abort_requested)
+            abort_requested = false;
     }
 }
 
 void push_harp_msg(uint32_t output_state, uint64_t time_us)
 {
+    update_tasks_state();
+
+    if (abort_requested)
+        return;
+
     // Send rising edge output state to core0.
     RisingEdgeEventData event_data = {output_state, time_us};
     queue_try_add(&rising_edge_event_queue, &event_data);
@@ -151,7 +172,12 @@ void push_harp_msg(uint32_t output_state, uint64_t time_us)
 void run_sequence()
 {
     for (auto& fip_task: fip_tasks)
+    {
+        if (abort_requested)
+            return;
+
         run_exposure(fip_task);
+    }
 }
 
 inline void run_exposure(LaserFIPTask& fip_task)
@@ -165,6 +191,13 @@ inline void run_exposure(LaserFIPTask& fip_task)
     //elapsed_time_us = time_us_32_fast() - start_time_us;
     //sleep_us(fip_task.settings_.delta3_us - elapsed_time_us);
     sleep_us(fip_task.settings_.delta3_us);
+    
+    if (abort_requested)
+    {
+        fip_task.laser_.disable_output();
+        return; // Exit if abort is requested.
+    }
+
     fip_task.set_output();
     // Send pinmask state w/ CAM_G rising edge.
     push_harp_msg(

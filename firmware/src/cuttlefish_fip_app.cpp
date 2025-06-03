@@ -4,7 +4,7 @@ app_regs_t app_regs;
 
 RegSpecs app_reg_specs[REG_COUNT]
 {
-    {(uint8_t*)&app_regs.EnableTaskSchedule, sizeof(app_regs.EnableTaskSchedule), U8},
+    {(uint8_t*)&app_regs.SetTasksState, sizeof(app_regs.SetTasksState), U8},
     {(uint8_t*)&app_regs.AddLaserTask, sizeof(app_regs.AddLaserTask), U8},
     {(uint8_t*)&app_regs.RemoveLaserTask, sizeof(app_regs.RemoveLaserTask), U8},
     {(uint8_t*)&app_regs.RemoveAllLaserTasks, sizeof(app_regs.RemoveAllLaserTasks), U8},
@@ -22,7 +22,7 @@ RegSpecs app_reg_specs[REG_COUNT]
 
 RegFnPair reg_handler_fns[REG_COUNT]
 {
-    {HarpCore::read_reg_generic, write_enable_task_schedule}, // read is technically undefined
+    {HarpCore::read_reg_generic, write_set_tasks_state}, // read is technically undefined
     {HarpCore::read_reg_generic, write_add_laser_task},       // read is technically undefined
     {HarpCore::read_reg_generic, write_remove_laser_task},    // read is technically undefined
     {HarpCore::read_reg_generic, write_remove_all_laser_tasks}, // read is technically undefined
@@ -50,19 +50,20 @@ void read_reconfigure_laser_task(uint8_t address)
         HarpCore::send_harp_reply(READ, address);
 }
 
-bool set_task_schedule_state(bool state)
-{
+bool set_task_schedule_state(uint8_t state)
+{   
     // Push enable/disable signal to core1.
-    bool success = queue_try_add(&enable_task_schedule_queue, &state);
+    bool success = queue_try_add(&set_tasks_state_queue, &state);
+
     // Harp register should represent the actual state of the task schedule.
-    app_regs.EnableTaskSchedule = uint8_t(state);
+    app_regs.SetTasksState = state;
     return success;
 }
 
-void write_enable_task_schedule(msg_t& msg)
+void write_set_tasks_state(msg_t& msg)
 {
     HarpCore::copy_msg_payload_to_register(msg);
-    bool success = set_task_schedule_state(bool(app_regs.EnableTaskSchedule));
+    bool success = set_task_schedule_state(app_regs.SetTasksState);
     if (HarpCore::is_muted())
         return;
     if (success)
@@ -74,7 +75,7 @@ void write_enable_task_schedule(msg_t& msg)
 void write_add_laser_task(msg_t& msg)
 {
     // Emit error if schedule is running or task count is at maximum.
-    if (app_regs.EnableTaskSchedule || (app_regs.LaserTaskCount == MAX_TASK_COUNT))
+    if ((app_regs.SetTasksState == uint8_t(TasksState::Start)) || (app_regs.LaserTaskCount == MAX_TASK_COUNT))
     {
         HarpCore::send_harp_reply(WRITE_ERROR, msg.header.address);
         return;
@@ -112,7 +113,7 @@ void write_remove_laser_task(msg_t& msg)
     size_t task_index = app_regs.RemoveLaserTask;
 
     // Emit error if schedule is running or task does not exist.
-    if (app_regs.EnableTaskSchedule || 
+    if (app_regs.SetTasksState == uint8_t(TasksState::Start) || 
         ((task_index + 1 ) > app_regs.LaserTaskCount || (task_index >= MAX_TASK_COUNT)))
     {
         HarpCore::send_harp_reply(WRITE_ERROR, msg.header.address);
@@ -164,7 +165,7 @@ void write_reconfigure_laser_task(msg_t& msg)
 {
     size_t task_index = get_fip_task_index(msg);
     // Emit error if schedule is running.
-    if (app_regs.EnableTaskSchedule)
+    if (app_regs.SetTasksState == uint8_t(TasksState::Start))
     {
         HarpCore::send_harp_reply(WRITE_ERROR, msg.header.address);
         return;
@@ -219,7 +220,7 @@ void update_app()
     }
     // Disable output waveforms if we've disconnected com ports (safety feature).
     if (HarpCore::get_op_mode() != ACTIVE)
-        set_task_schedule_state(false);
+        set_task_schedule_state(0x00);
 }
 
 void reset_app()

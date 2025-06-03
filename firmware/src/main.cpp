@@ -9,7 +9,7 @@
 #include <hardware/structs/bus_ctrl.h>
 #include <core1_main.h>
 
-queue_t enable_task_schedule_queue;
+queue_t set_tasks_state_queue;
 queue_t add_task_queue;
 queue_t remove_task_queue;
 queue_t clear_tasks_queue;
@@ -47,7 +47,7 @@ int main()
     // Configure core1 to have high bus priority.
     bus_ctrl_hw->priority = 0x00000010;
     // Initialize queues for multicore communication.
-    queue_init(&enable_task_schedule_queue, sizeof(uint8_t), MAX_QUEUE_SIZE);
+    queue_init(&set_tasks_state_queue, sizeof(uint8_t), MAX_QUEUE_SIZE);
     queue_init(&add_task_queue, sizeof(LaserFIPTaskSettings), MAX_QUEUE_SIZE);
     queue_init(&remove_task_queue, sizeof(uint8_t), MAX_QUEUE_SIZE);
     queue_init(&clear_tasks_queue, sizeof(uint8_t), MAX_QUEUE_SIZE);
