@@ -2,6 +2,7 @@
 #include <fip_schedule.h>
 #include <fip_ctrl_queues.h>
 #include <hardware/structs/timer.h>
+#include <cuttlefish_fip_app.h>
 
 etl::vector<LaserFIPTask, MAX_TASK_COUNT> fip_tasks;
 
@@ -40,7 +41,7 @@ void update_tasks_state()
         if (queue_try_remove(&set_tasks_state_queue, &tasks_state))
         {
             // Update the enabled state based on the message.
-            if (tasks_state == 1)
+            if (tasks_state == uint8_t(TasksState::Start)) // If the state is set to "Start".
             {
                 enabled = true;
                 abort_requested = false;
@@ -49,7 +50,7 @@ void update_tasks_state()
             {
                 enabled = false;
 
-                if (tasks_state == 2) // If the state is set to "Abort".
+                if (tasks_state == uint8_t(TasksState::Abort)) // If the state is set to "Abort".
                     abort_requested = true;
             }
         }

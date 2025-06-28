@@ -220,7 +220,7 @@ void update_app()
     }
     // Disable output waveforms if we've disconnected com ports (safety feature).
     if (HarpCore::get_op_mode() != ACTIVE)
-        set_task_schedule_state(0x00);
+        set_task_schedule_state(TasksState::Abort);
 }
 
 void reset_app()
