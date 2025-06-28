@@ -79,7 +79,7 @@ def configure_tasks(device):
     data_fmt = "<LffLBBLLLL"
 
     print("\nDisabling schedule.")
-    device.send(WriteU8HarpMessage(AppRegs.EnableTaskSchedule, 0).frame)
+    device.send(WriteU8HarpMessage(AppRegs.SetTasksState, 0).frame)
     print("\nClearing all tasks.")
     device.send(WriteU8HarpMessage(AppRegs.RemoveAllLaserTasks, 1).frame)
 

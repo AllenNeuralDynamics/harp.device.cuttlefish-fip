@@ -18,7 +18,7 @@ struct RisingEdgeEventData
 };
 
 // Queues for multicore communication.
-extern queue_t enable_task_schedule_queue;
+extern queue_t set_tasks_state_queue;
 extern queue_t add_task_queue;
 extern queue_t remove_task_queue;
 extern queue_t clear_tasks_queue;

@@ -20,48 +20,63 @@ def find_device():
             return Device(port)
     raise Exception("Device not found.")
 
-
-settings = (
-        0b00000001,   # pwm_pin
-        0.5,  # pwm duty cycle
-        10000.,  # pwm frequency (hz)
-        0b00000010,  # output mask
-        1,      # events
-        0,      # mute
-        15350,  # DELTA1
-        666,    # DELTA2
-        600,    # DELTA3
-        50     # DELTA4
-    )
-
-
 # Function to send FIP waveform settings
 def send_fip_waveform(device):
-
+    settings = (
+        0b00000001,   # pwm_pin
+        0.5, # pwm duty cycle
+        10000., # pwm frequency (hz)
+        0b00000010, # output mask
+        1,      # events
+        0,      # mute
+        2000000,  # DELTA1
+        666,    # DELTA2
+        5000000,    # DELTA3
+        50     # DELTA4
+    )
     data_fmt = "<LffLBBLLLL"
 
-    print("Disabling schedule.")
+    print("*********** Disabling schedule ***********")
     device.send(WriteU8HarpMessage(AppRegs.SetTasksState, 0).frame)
-    print("Clearing all tasks.")
+
+    print("*********** Clearing all tasks ***********")
     device.send(WriteU8HarpMessage(AppRegs.RemoveAllLaserTasks, 1).frame)
 
-    print("Configuring device with FIP task.")
+    print("*********** Configuring device with FIP task ***********")
     device.send(WriteU8ArrayMessage(AppRegs.AddLaserTask, data_fmt, settings).frame)
 
-    print("Enabling schedule.")
+    print("*********** Enabling schedule ***********")
     device.send(WriteU8HarpMessage(AppRegs.SetTasksState, 1).frame)
 
-    sleep(3)
+    sleep(2)
 
-    print("Disabling schedule.")
-    device.send(WriteU8HarpMessage(AppRegs.SetTasksState, 0).frame)
+    print("*********** Aborting schedule ***********")
+    reply = device.send(WriteU8HarpMessage(AppRegs.SetTasksState, 0x02).frame)
+    print(reply)
+
+    print("*********** Clearing all tasks ***********")
+    reply = device.send(WriteU8HarpMessage(AppRegs.RemoveAllLaserTasks, 1).frame)
+    print(reply)
+
+    print("*********** Re-Configuring device with FIP task ***********")
+    reply = device.send(WriteU8ArrayMessage(AppRegs.AddLaserTask, data_fmt, settings).frame)
+    print(reply)
+
+    print("*********** Re-Enabling schedule again ***********")
+    reply = device.send(WriteU8HarpMessage(AppRegs.SetTasksState, 1).frame)
+    print(reply)
+
+    sleep(2)
+
+    print("*********** Stopping schedule ***********")
+    reply = device.send(WriteU8HarpMessage(AppRegs.SetTasksState, 0x00).frame)
+    print(reply)
 
 
 # Function to listen for rising edge events
 def listen_for_events(device):
     print("Listening for rising edge events from core 0...")
     event_times = collections.deque(maxlen=10)  # Store last 10 timestamps
-    counter = 0
 
     while True:
         messages = device.get_events()
@@ -70,20 +85,13 @@ def listen_for_events(device):
             if message._timestamp is not None:
                 timestamp = message._timestamp
                 event_times.append(timestamp)
-                counter += 1
                 if len(event_times) >= 2:
                     delta = event_times[-1] - event_times[-2]
-                    if counter % 2 == 0:
-                        nominal = settings[8]
-                        print(f"Rising edge at {timestamp:.6f} s, Δt = {delta * 1e6:.2f} µs, nominal = {nominal} µs, error = {abs(delta * 1e6 - nominal):.2f} µs")
-                    else:
-                        nominal = settings[6] + settings[7] + settings[9]
-                        print(f"Rising edge at {timestamp:.6f} s, Δt = {delta * 1e6:.2f} µs, nominal = {nominal} µs, error = {abs(delta * 1e6 - nominal):.2f} µs")
+                    print(f"Rising edge at {timestamp} s, Δt = {delta * 1e6:.2f} µs")
                 else:
-                    print(f"First Rising edge at {timestamp} us")
-
+                    print(f"First Rising edge at {timestamp} s")
+            
             print()
-
 
 if __name__ == "__main__":
     try:
@@ -97,8 +105,9 @@ if __name__ == "__main__":
 
         send_fip_waveform(device)
 
-        sleep(2)  # Allow some time for events to be processed
-        sys.exit(0)
+        # press Ctrl+C stop the script
+        while True:
+            sleep(1)  # Keep the main thread alive to allow event listening
 
     except Exception as e:
         print("An error occurred:", e)

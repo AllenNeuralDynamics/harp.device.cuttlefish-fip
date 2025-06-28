@@ -34,7 +34,7 @@ extern bool enabled;
  */
 void run();
 
-void update_enabled_state();
+void update_tasks_state();
 
 inline void update_fip_tasks();
 
