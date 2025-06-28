@@ -49,7 +49,7 @@ namespace AllenNeuralDynamics.CuttlefishFip
         }
 
         /// <summary>
-        /// Asynchronously reads the contents of the StartTasks register.
+        /// Asynchronously reads the contents of the SetTaskState register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
@@ -58,14 +58,14 @@ namespace AllenNeuralDynamics.CuttlefishFip
         /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
         /// property contains the register payload.
         /// </returns>
-        public async Task<EnableFlag> ReadStartTasksAsync(CancellationToken cancellationToken = default)
+        public async Task<TaskState> ReadSetTaskStateAsync(CancellationToken cancellationToken = default)
         {
-            var reply = await CommandAsync(HarpCommand.ReadByte(StartTasks.Address), cancellationToken);
-            return StartTasks.GetPayload(reply);
+            var reply = await CommandAsync(HarpCommand.ReadByte(SetTaskState.Address), cancellationToken);
+            return SetTaskState.GetPayload(reply);
         }
 
         /// <summary>
-        /// Asynchronously reads the timestamped contents of the StartTasks register.
+        /// Asynchronously reads the timestamped contents of the SetTaskState register.
         /// </summary>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
@@ -74,23 +74,23 @@ namespace AllenNeuralDynamics.CuttlefishFip
         /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
         /// property contains the timestamped register payload.
         /// </returns>
-        public async Task<Timestamped<EnableFlag>> ReadTimestampedStartTasksAsync(CancellationToken cancellationToken = default)
+        public async Task<Timestamped<TaskState>> ReadTimestampedSetTaskStateAsync(CancellationToken cancellationToken = default)
         {
-            var reply = await CommandAsync(HarpCommand.ReadByte(StartTasks.Address), cancellationToken);
-            return StartTasks.GetTimestampedPayload(reply);
+            var reply = await CommandAsync(HarpCommand.ReadByte(SetTaskState.Address), cancellationToken);
+            return SetTaskState.GetTimestampedPayload(reply);
         }
 
         /// <summary>
-        /// Asynchronously writes a value to the StartTasks register.
+        /// Asynchronously writes a value to the SetTaskState register.
         /// </summary>
         /// <param name="value">The value to be stored in the register.</param>
         /// <param name="cancellationToken">
         /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
         /// </param>
         /// <returns>The task object representing the asynchronous write operation.</returns>
-        public async Task WriteStartTasksAsync(EnableFlag value, CancellationToken cancellationToken = default)
+        public async Task WriteSetTaskStateAsync(TaskState value, CancellationToken cancellationToken = default)
         {
-            var request = StartTasks.FromPayload(MessageType.Write, value);
+            var request = SetTaskState.FromPayload(MessageType.Write, value);
             await CommandAsync(request, cancellationToken);
         }
 
