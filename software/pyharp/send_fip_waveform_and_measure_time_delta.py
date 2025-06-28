@@ -20,13 +20,12 @@ def find_device():
             return Device(port)
     raise Exception("Device not found.")
 
-# Function to send FIP waveform settings
-def send_fip_waveform(device):
-    settings = (
+
+settings = (
         0b00000001,   # pwm_pin
-        0.5, # pwm duty cycle
-        10000., # pwm frequency (hz)
-        0b00000010, # output mask
+        0.5,  # pwm duty cycle
+        10000.,  # pwm frequency (hz)
+        0b00000010,  # output mask
         1,      # events
         0,      # mute
         15350,  # DELTA1
@@ -34,6 +33,11 @@ def send_fip_waveform(device):
         600,    # DELTA3
         50     # DELTA4
     )
+
+
+# Function to send FIP waveform settings
+def send_fip_waveform(device):
+
     data_fmt = "<LffLBBLLLL"
 
     print("Disabling schedule.")
@@ -46,16 +50,18 @@ def send_fip_waveform(device):
 
     print("Enabling schedule.")
     device.send(WriteU8HarpMessage(AppRegs.SetTasksState, 1).frame)
-    
+
     sleep(3)
 
     print("Disabling schedule.")
     device.send(WriteU8HarpMessage(AppRegs.SetTasksState, 0).frame)
 
+
 # Function to listen for rising edge events
 def listen_for_events(device):
     print("Listening for rising edge events from core 0...")
     event_times = collections.deque(maxlen=10)  # Store last 10 timestamps
+    counter = 0
 
     while True:
         messages = device.get_events()
@@ -64,13 +70,20 @@ def listen_for_events(device):
             if message._timestamp is not None:
                 timestamp = message._timestamp
                 event_times.append(timestamp)
+                counter += 1
                 if len(event_times) >= 2:
                     delta = event_times[-1] - event_times[-2]
-                    print(f"Rising edge at {timestamp} s, Δt = {delta * 1e6:.2f} µs")
+                    if counter % 2 == 0:
+                        nominal = settings[8]
+                        print(f"Rising edge at {timestamp:.6f} s, Δt = {delta * 1e6:.2f} µs, nominal = {nominal} µs, error = {abs(delta * 1e6 - nominal):.2f} µs")
+                    else:
+                        nominal = settings[6] + settings[7] + settings[9]
+                        print(f"Rising edge at {timestamp:.6f} s, Δt = {delta * 1e6:.2f} µs, nominal = {nominal} µs, error = {abs(delta * 1e6 - nominal):.2f} µs")
                 else:
                     print(f"First Rising edge at {timestamp} us")
-            
+
             print()
+
 
 if __name__ == "__main__":
     try:
