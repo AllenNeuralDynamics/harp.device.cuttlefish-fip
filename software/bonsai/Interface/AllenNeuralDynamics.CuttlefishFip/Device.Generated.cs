@@ -416,9 +416,9 @@ namespace AllenNeuralDynamics.CuttlefishFip
     }
 
     /// <summary>
-    /// Represents a register that starts/Stops all scheduled tasks.
+    /// Represents a register that controls the state of tasks in the device.
     /// </summary>
-    [Description("Starts/Stops all scheduled tasks")]
+    [Description("Controls the state of tasks in the device.")]
     public partial class SetTaskState
     {
         /// <summary>
@@ -1825,16 +1825,16 @@ namespace AllenNeuralDynamics.CuttlefishFip
 
     /// <summary>
     /// Represents an operator that creates a message payload
-    /// that starts/Stops all scheduled tasks.
+    /// that controls the state of tasks in the device.
     /// </summary>
     [DisplayName("SetTaskStatePayload")]
-    [Description("Creates a message payload that starts/Stops all scheduled tasks.")]
+    [Description("Creates a message payload that controls the state of tasks in the device.")]
     public partial class CreateSetTaskStatePayload
     {
         /// <summary>
-        /// Gets or sets the value that starts/Stops all scheduled tasks.
+        /// Gets or sets the value that controls the state of tasks in the device.
         /// </summary>
-        [Description("The value that starts/Stops all scheduled tasks.")]
+        [Description("The value that controls the state of tasks in the device.")]
         public TaskState SetTaskState { get; set; }
 
         /// <summary>
@@ -1847,7 +1847,7 @@ namespace AllenNeuralDynamics.CuttlefishFip
         }
 
         /// <summary>
-        /// Creates a message that starts/Stops all scheduled tasks.
+        /// Creates a message that controls the state of tasks in the device.
         /// </summary>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new message for the SetTaskState register.</returns>
@@ -1859,14 +1859,14 @@ namespace AllenNeuralDynamics.CuttlefishFip
 
     /// <summary>
     /// Represents an operator that creates a timestamped message payload
-    /// that starts/Stops all scheduled tasks.
+    /// that controls the state of tasks in the device.
     /// </summary>
     [DisplayName("TimestampedSetTaskStatePayload")]
-    [Description("Creates a timestamped message payload that starts/Stops all scheduled tasks.")]
+    [Description("Creates a timestamped message payload that controls the state of tasks in the device.")]
     public partial class CreateTimestampedSetTaskStatePayload : CreateSetTaskStatePayload
     {
         /// <summary>
-        /// Creates a timestamped message that starts/Stops all scheduled tasks.
+        /// Creates a timestamped message that controls the state of tasks in the device.
         /// </summary>
         /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
         /// <param name="messageType">Specifies the type of the created message.</param>

@@ -11,7 +11,7 @@ registers:
     type: U8
     access: Write
     maskType: TaskState
-    description: "Starts/Stops all scheduled tasks"
+    description: "Controls the state of tasks in the device."
   AddTask:
     address: 33
     type: U8
